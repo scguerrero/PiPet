@@ -11,19 +11,34 @@
 ModeWidget::ModeWidget(QWidget *parent)
     : QWidget{parent}
 {
-    // initializing buttons and menu layout widgets
-    menu = new QVBoxLayout();
+    // create menu for selecting a mode
+    layout = new QVBoxLayout();
+    menu = new QWidget();
+    buttons = new QVBoxLayout();
     care = new QPushButton("Care");
     train = new QPushButton("Train");
     battle = new QPushButton("Battle");
     gear = new QPushButton("Gear");
+    buttons->addWidget(care);
+    buttons->addWidget(train);
+    buttons->addWidget(battle);
+    buttons->addWidget(gear);
+    menu->setLayout(buttons);
+
+    // create game mode pages
+    mode_care = new CareWidget();
 
     // when a mode button is clicked, open the widget for that corresponding mode
+    connect(care, SIGNAL(clicked()), this, SLOT(openCareWidget()));
 
-    // add buttons to menu layout
-    menu->addWidget(care);
-    menu->addWidget(train);
-    menu->addWidget(battle);
-    menu->addWidget(gear);
-    this->setLayout(menu);
+    // pages of the stacked widget are as follows (indices 0 to 4): menu, Care, Train, Battle, Gear
+    mode_select = new QStackedWidget();
+    mode_select->addWidget(menu);
+    mode_select->addWidget(mode_care);
+    layout->addWidget(mode_select);
+    this->setLayout(layout);
+}
+
+void ModeWidget::openCareWidget() {
+    mode_select->setCurrentIndex(1);
 }

@@ -11,7 +11,7 @@
 #ifndef MODEWIDGET_H
 #define MODEWIDGET_H
 #include <QtWidgets>
-//#include "CareWidget.h"
+#include "CareWidget.h"
 //#include "TrainWidget.h"
 //#include "BattleWidget.h"
 //#include "GearWidget.h"
@@ -23,27 +23,29 @@ public:
     explicit ModeWidget(QWidget *parent = nullptr);
 private:
     // button menu for game modes Care, Train, Battle, and Gear
-    QVBoxLayout *menu;
+    QVBoxLayout *layout;
+    QWidget *menu;
+    QVBoxLayout *buttons;
     QPushButton *care;
     QPushButton *train;
     QPushButton *battle;
     QPushButton *gear;
 
     // widgets for all game modes
-    /*
+    QStackedWidget *mode_select;
     CareWidget *mode_care;
-    TrainWidget *mode_train;
+    /*TrainWidget *mode_train;
     BattleWidget *mode_battle;
     GearWidget *mode_gear;
     */
 
     signals:
     private slots:
-        /*
-        void openCareWidget();
-        void openTrainWidget();
-        void openBattleWidget();
-        void openGearWidget();
+        // slot for going to index 0
+        void openCareWidget(); // open widget at index 1
+        /*void openTrainWidget(); // index 2
+        void openBattleWidget(); // index 3
+        void openGearWidget(); // index 4
         */
 
 };

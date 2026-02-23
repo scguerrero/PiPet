@@ -18,12 +18,13 @@ int main(int argc, char**argv)
 
     // Initialize main window
     Window window;
+
     // Fullscreen necessary for RaspPi
-    window.showFullScreen();
+    //window.showFullScreen();
 
     // Non-fullscreen mode for testing
-    //window.show();
-    //window.setFixedSize(480,640);
+    window.show();
+    window.setFixedSize(480,640);
 
     return app.exec(); // launches event loop
 }

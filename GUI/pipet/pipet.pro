@@ -7,6 +7,7 @@ SOURCES += \
     CareWidget.cpp \
     CreateWidget.cpp \
     ModeWidget.cpp \
+    TrainWidget.cpp \
     main.cpp \
     window.cpp
 
@@ -14,4 +15,5 @@ HEADERS += \
     CareWidget.h \
     CreateWidget.h \
     ModeWidget.h \
+    TrainWidget.h \
     window.h

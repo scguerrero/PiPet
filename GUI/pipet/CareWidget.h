@@ -21,13 +21,11 @@ private:
     // Text labels for the pet's hunger, energy, strength, hygiene, intelligence, happiness, days old, and age group.
     QLabel *hunger_label, *energy_label, *strength_label,
         *hygiene_label, *intelligence_label, *happiness_label,
-        *age_days_label, *age_group_label;
+        *age_days_label, *age_group_label, *age_days, *age_group;
 
     // Progress bars corresponding to the pet's attributes above.
     QProgressBar *hunger_bar, *energy_bar, *strength_bar,
-        *hygiene_bar, *intelligence_bar, *happiness_bar,
-        *age_days_bar, *age_group_bar;
-
+        *hygiene_bar, *intelligence_bar, *happiness_bar;
 };
 
 #endif // CAREWIDGET_H

@@ -4,7 +4,7 @@
  * They can also view their pet's Condition, or wellness attributes.
  * Author(s): Sasha C. Guerrero
  * Created: 2/19/2026
- * Last Edited: 2/20/2026
+ * Last Edited: 2/23/2026
  */
 #ifndef CAREWIDGET_H
 #define CAREWIDGET_H
@@ -16,7 +16,11 @@ class CareWidget : public QWidget
 public:
     explicit CareWidget(QWidget *parent = nullptr);
 private:
-    QGridLayout *grid; // Text labels and progress bars will go inside grid.
+    QVBoxLayout *layout; // Pet's Condition and Care Actions go inside here
+    QGridLayout *grid; // Text labels and progress bars for pet's condition will go inside grid
+    QGridLayout *careGrid; // Care actions will go inside careGrid
+    QGroupBox *careBox; // careGrid will go inside careBox
+    QGroupBox *conditionBox; // Condition will go inside conditionBox
 
     // Text labels for the pet's hunger, energy, strength, hygiene, intelligence, happiness, days old, and age group.
     QLabel *hunger_label, *energy_label, *strength_label,
@@ -27,13 +31,15 @@ private:
     QProgressBar *hunger_bar, *energy_bar, *strength_bar,
         *hygiene_bar, *intelligence_bar, *happiness_bar;
 
-    // Button to navigate back to menu page
-    QPushButton *back;
+    // Care actions: feed pet, groom pet, send pet to sleep, give pet affection
+    QPushButton *feed, *groom, *sleep, *affection;
 
     signals:
     private slots:
-        // Navigate back to menu page
-        void goBack();
+        void feedPet(); // feed
+        void groomPet(); // groom
+        void sendPetToSleep(); // sleep
+        void givePetAffection(); //affection
 };
 
 #endif // CAREWIDGET_H

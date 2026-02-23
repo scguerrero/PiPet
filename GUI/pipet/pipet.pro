@@ -17,3 +17,6 @@ HEADERS += \
     ModeWidget.h \
     TrainWidget.h \
     window.h
+
+DISTFILES += \
+    to_do

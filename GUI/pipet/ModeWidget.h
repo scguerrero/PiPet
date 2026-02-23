@@ -31,6 +31,9 @@ private:
     QPushButton *battle;
     QPushButton *gear;
 
+    // Button to navigate back to mode-select page
+    QPushButton *back;
+
     // widgets for all game modes
     QStackedWidget *mode_select;
     CareWidget *mode_care;
@@ -41,7 +44,7 @@ private:
 
     signals:
     private slots:
-        // slot for going to index 0
+        void goBack();// navigate back to index 0, the mode-select page
         void openCareWidget(); // open widget at index 1
         void openTrainWidget(); // index 2
         /*void openBattleWidget(); // index 3

@@ -32,7 +32,7 @@ Window::Window(QWidget *parent)
     // style properties
     title->setStyleSheet("font-size: 32px; font-weight: bold");
     title->setAlignment(Qt::AlignHCenter);
-    quit->setStyleSheet("background: navy; color: azure");
+    quit->setStyleSheet("background: darkslategreen; color: darkseagreen");
 
     // window properties
     this->setLayout(top);

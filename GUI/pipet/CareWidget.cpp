@@ -34,6 +34,10 @@ CareWidget::CareWidget(QWidget *parent)
     intelligence_bar = new QProgressBar();
     happiness_bar = new QProgressBar();
 
+    // back button returns to mode select screen
+    back = new QPushButton("Back");
+    connect(back, SIGNAL(clicked()), this, SLOT(goBack()));
+
     // add grid to layout
     this->setLayout(grid);
 
@@ -54,4 +58,10 @@ CareWidget::CareWidget(QWidget *parent)
     grid->addWidget(happiness_bar, 5, 1, Qt::AlignLeft);
     grid->addWidget(age_days, 6, 1, Qt::AlignLeft);
     grid->addWidget(age_group, 7, 1, Qt::AlignLeft);
+    grid->addWidget(back, 8, 1, 1, 2, Qt::AlignCenter);
+}
+
+void CareWidget::goBack()
+{
+    close();
 }

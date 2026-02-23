@@ -26,6 +26,14 @@ private:
     // Progress bars corresponding to the pet's attributes above.
     QProgressBar *hunger_bar, *energy_bar, *strength_bar,
         *hygiene_bar, *intelligence_bar, *happiness_bar;
+
+    // Button to navigate back to menu page
+    QPushButton *back;
+
+    signals:
+    private slots:
+        // Navigate back to menu page
+        void goBack();
 };
 
 #endif // CAREWIDGET_H

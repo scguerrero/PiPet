@@ -24,21 +24,29 @@ ModeWidget::ModeWidget(QWidget *parent)
     buttons->addWidget(battle);
     buttons->addWidget(gear);
     menu->setLayout(buttons);
+    // back button needs to go to LAYOUT not to stacked widget
 
     // create game mode pages
-    mode_care = new CareWidget();
+    mode_care = new CareWidget(mode_select);
+    mode_train = new TrainWidget();
 
     // when a mode button is clicked, open the widget for that corresponding mode
     connect(care, SIGNAL(clicked()), this, SLOT(openCareWidget()));
+    connect(train, SIGNAL(clicked()), this, SLOT(openTrainWidget()));
 
     // pages of the stacked widget are as follows (indices 0 to 4): menu, Care, Train, Battle, Gear
     mode_select = new QStackedWidget();
     mode_select->addWidget(menu);
     mode_select->addWidget(mode_care);
+    mode_select->addWidget(mode_train);
     layout->addWidget(mode_select);
     this->setLayout(layout);
 }
 
 void ModeWidget::openCareWidget() {
     mode_select->setCurrentIndex(1);
+}
+
+void ModeWidget::openTrainWidget() {
+    mode_select->setCurrentIndex(2);
 }

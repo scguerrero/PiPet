@@ -16,7 +16,7 @@ class TrainWidget : public QWidget
 public:
     explicit TrainWidget(QWidget *parent = nullptr);
 private:
-    QGridLayout *grid; // buttons leading to each mini-game will go in this grid
+    QVBoxLayout *layout; // buttons leading to each mini-game will go in this layout
     QPushButton *minigame1, *minigame2, *minigame3;
 
     // minigame widget 1

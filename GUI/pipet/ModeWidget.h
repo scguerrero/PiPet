@@ -12,7 +12,7 @@
 #define MODEWIDGET_H
 #include <QtWidgets>
 #include "CareWidget.h"
-//#include "TrainWidget.h"
+#include "TrainWidget.h"
 //#include "BattleWidget.h"
 //#include "GearWidget.h"
 
@@ -34,8 +34,8 @@ private:
     // widgets for all game modes
     QStackedWidget *mode_select;
     CareWidget *mode_care;
-    /*TrainWidget *mode_train;
-    BattleWidget *mode_battle;
+    TrainWidget *mode_train;
+    /*BattleWidget *mode_battle;
     GearWidget *mode_gear;
     */
 
@@ -43,8 +43,8 @@ private:
     private slots:
         // slot for going to index 0
         void openCareWidget(); // open widget at index 1
-        /*void openTrainWidget(); // index 2
-        void openBattleWidget(); // index 3
+        void openTrainWidget(); // index 2
+        /*void openBattleWidget(); // index 3
         void openGearWidget(); // index 4
         */
 

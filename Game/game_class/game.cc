@@ -12,9 +12,11 @@ Game::Game(QWidget *parent)
 	// Instantiate widgets
 	layout = new QVBoxLayout();
 	pages = new QStackedWidget();
+	page_start = new Start(); // starting page
 	
 	// Arrange widgets
 	layout->addWidget(pages);
+	pages->addWidget(page_start);
 /*
     // when quit button is clicked, quit application
     connect(quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));

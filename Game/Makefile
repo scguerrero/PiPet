@@ -52,11 +52,15 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = game_class/game.cc \
-		main.cc moc_game.cpp
-OBJECTS       = game.o \
+SOURCES       = start_class/start.cc \
+		game_class/game.cc \
+		main.cc moc_game.cpp \
+		moc_start.cpp
+OBJECTS       = start.o \
+		game.o \
 		main.o \
-		moc_game.o
+		moc_game.o \
+		moc_start.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -134,7 +138,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		pipet.pro game_class/game.h game_class/game.cc \
+		pipet.pro game_class/game.h \
+		start_class/start.h start_class/start.cc \
+		game_class/game.cc \
 		main.cc
 QMAKE_TARGET  = pipet
 DESTDIR       = 
@@ -319,8 +325,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents game_class/game.h $(DISTDIR)/
-	$(COPY_FILE) --parents game_class/game.cc main.cc $(DISTDIR)/
+	$(COPY_FILE) --parents game_class/game.h start_class/start.h $(DISTDIR)/
+	$(COPY_FILE) --parents start_class/start.cc game_class/game.cc main.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -352,13 +358,19 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_game.cpp
+compiler_moc_header_make_all: moc_game.cpp moc_start.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_game.cpp
+	-$(DEL_FILE) moc_game.cpp moc_start.cpp
 moc_game.cpp: game_class/game.h \
+		start_class/start.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include game_class/game.h -o moc_game.cpp
+
+moc_start.cpp: start_class/start.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include start_class/start.h -o moc_start.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -376,14 +388,22 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-game.o: game_class/game.cc game_class/game.h
+start.o: start_class/start.cc start_class/start.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o start.o start_class/start.cc
+
+game.o: game_class/game.cc game_class/game.h \
+		start_class/start.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game_class/game.cc
 
-main.o: main.cc game_class/game.h
+main.o: main.cc game_class/game.h \
+		start_class/start.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cc
 
 moc_game.o: moc_game.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_game.o moc_game.cpp
+
+moc_start.o: moc_start.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_start.o moc_start.cpp
 
 ####### Install
 

@@ -8,7 +8,7 @@
 #ifndef GAME_H
 #define GAME_H
 #include <QtWidgets>
-//#include "start.h"
+#include "../start_class/start.h"
 //#include "Create.h"
 //#include "Mode.h"
 //#include "Care.h"
@@ -24,7 +24,7 @@ public:
 private:
 	QVBoxLayout *layout; // This widget needs a top-level layout
 	QStackedWidget *pages; // This widget will hold all pages of the game 
-	//Start *start; // Starting page	
+	Start *page_start; // Starting page	
 signals:
 private slots:
 };

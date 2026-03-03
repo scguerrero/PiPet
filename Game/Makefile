@@ -52,29 +52,12 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = CareWidget.cpp \
-		CreateWidget.cpp \
-		ModeWidget.cpp \
-		TrainWidget.cpp \
-		main.cpp \
-		window.cpp moc_CareWidget.cpp \
-		moc_CreateWidget.cpp \
-		moc_ModeWidget.cpp \
-		moc_TrainWidget.cpp \
-		moc_window.cpp
-OBJECTS       = CareWidget.o \
-		CreateWidget.o \
-		ModeWidget.o \
-		TrainWidget.o \
+SOURCES       = game_class/game.cc \
+		main.cc moc_game.cpp
+OBJECTS       = game.o \
 		main.o \
-		window.o \
-		moc_CareWidget.o \
-		moc_CreateWidget.o \
-		moc_ModeWidget.o \
-		moc_TrainWidget.o \
-		moc_window.o
-DIST          = to_do \
-		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
+		moc_game.o
+DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/sanitize.conf \
@@ -131,6 +114,7 @@ DIST          = to_do \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -150,16 +134,8 @@ DIST          = to_do \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		pipet.pro CareWidget.h \
-		CreateWidget.h \
-		ModeWidget.h \
-		TrainWidget.h \
-		window.h CareWidget.cpp \
-		CreateWidget.cpp \
-		ModeWidget.cpp \
-		TrainWidget.cpp \
-		main.cpp \
-		window.cpp
+		pipet.pro game_class/game.h game_class/game.cc \
+		main.cc
 QMAKE_TARGET  = pipet
 DESTDIR       = 
 TARGET        = pipet
@@ -228,6 +204,7 @@ Makefile: pipet.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -306,6 +283,7 @@ Makefile: pipet.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -341,8 +319,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents CareWidget.h CreateWidget.h ModeWidget.h TrainWidget.h window.h $(DISTDIR)/
-	$(COPY_FILE) --parents CareWidget.cpp CreateWidget.cpp ModeWidget.cpp TrainWidget.cpp main.cpp window.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents game_class/game.h $(DISTDIR)/
+	$(COPY_FILE) --parents game_class/game.cc main.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -374,42 +352,13 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_CareWidget.cpp moc_CreateWidget.cpp moc_ModeWidget.cpp moc_TrainWidget.cpp moc_window.cpp
+compiler_moc_header_make_all: moc_game.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_CareWidget.cpp moc_CreateWidget.cpp moc_ModeWidget.cpp moc_TrainWidget.cpp moc_window.cpp
-moc_CareWidget.cpp: CareWidget.h \
+	-$(DEL_FILE) moc_game.cpp
+moc_game.cpp: game_class/game.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include CareWidget.h -o moc_CareWidget.cpp
-
-moc_CreateWidget.cpp: CreateWidget.h \
-		ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include CreateWidget.h -o moc_CreateWidget.cpp
-
-moc_ModeWidget.cpp: ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ModeWidget.h -o moc_ModeWidget.cpp
-
-moc_TrainWidget.cpp: TrainWidget.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include TrainWidget.h -o moc_TrainWidget.cpp
-
-moc_window.cpp: window.h \
-		CreateWidget.h \
-		ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include window.h -o moc_window.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include game_class/game.h -o moc_game.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -427,51 +376,14 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-CareWidget.o: CareWidget.cpp CareWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CareWidget.o CareWidget.cpp
+game.o: game_class/game.cc game_class/game.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game_class/game.cc
 
-CreateWidget.o: CreateWidget.cpp CreateWidget.h \
-		ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CreateWidget.o CreateWidget.cpp
+main.o: main.cc game_class/game.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cc
 
-ModeWidget.o: ModeWidget.cpp ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ModeWidget.o ModeWidget.cpp
-
-TrainWidget.o: TrainWidget.cpp TrainWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TrainWidget.o TrainWidget.cpp
-
-main.o: main.cpp window.h \
-		CreateWidget.h \
-		ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
-
-window.o: window.cpp window.h \
-		CreateWidget.h \
-		ModeWidget.h \
-		CareWidget.h \
-		TrainWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o window.o window.cpp
-
-moc_CareWidget.o: moc_CareWidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_CareWidget.o moc_CareWidget.cpp
-
-moc_CreateWidget.o: moc_CreateWidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_CreateWidget.o moc_CreateWidget.cpp
-
-moc_ModeWidget.o: moc_ModeWidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ModeWidget.o moc_ModeWidget.cpp
-
-moc_TrainWidget.o: moc_TrainWidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_TrainWidget.o moc_TrainWidget.cpp
-
-moc_window.o: moc_window.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_window.o moc_window.cpp
+moc_game.o: moc_game.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_game.o moc_game.cpp
 
 ####### Install
 

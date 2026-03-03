@@ -8,7 +8,12 @@
  */
 #ifndef CAREWIDGET_H
 #define CAREWIDGET_H
-#include <QtWidgets>
+//#include <QtWidgets>
+#include <QVBoxLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QProgressBar>
+#include <QPushButton>
 
 class CareWidget : public QWidget
 {

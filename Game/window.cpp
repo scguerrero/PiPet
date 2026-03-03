@@ -37,7 +37,7 @@ Window::Window(QWidget *parent)
     // window properties
     this->setLayout(top);
     this->setWindowTitle("PIPET");
-    this->setContentsMargins(70,70,70,70);
+    this->setContentsMargins(50,50,50,50);
 }
 
 void Window::openCreateWidget()

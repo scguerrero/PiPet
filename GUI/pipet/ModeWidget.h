@@ -13,7 +13,7 @@
 #include <QtWidgets>
 #include "CareWidget.h"
 #include "TrainWidget.h"
-//#include "BattleWidget.h"
+#include "battlewindow.h"
 //#include "GearWidget.h"
 
 class ModeWidget : public QWidget
@@ -38,8 +38,8 @@ private:
     QStackedWidget *mode_select;
     CareWidget *mode_care;
     TrainWidget *mode_train;
-    /*BattleWidget *mode_battle;
-    GearWidget *mode_gear;
+    BattleWindow *mode_battle;
+    /*GearWidget *mode_gear;
     */
 
     signals:
@@ -47,8 +47,8 @@ private:
         void goBack();// navigate back to index 0, the mode-select page
         void openCareWidget(); // open widget at index 1
         void openTrainWidget(); // index 2
-        /*void openBattleWidget(); // index 3
-        void openGearWidget(); // index 4
+        void openBattleWidget(); // index 3
+        /*void openGearWidget(); // index 4
         */
 
 };

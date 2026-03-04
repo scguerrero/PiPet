@@ -1,5 +1,5 @@
 /*
- * Start class implementation file.
+ * Start class implementation file. Page 0 of the game.
  * Author(s): Sasha C. Guerrero
  * Created: 3/3/2026
  * Last Edited: 3/3/2026

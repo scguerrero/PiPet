@@ -23,4 +23,4 @@ signals:
 private slots:
 };
 
-#endif // GAME_H
+#endif // START_H

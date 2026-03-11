@@ -1,29 +1,20 @@
 /*
- * Start class implementation file. Page 0 of the game.
+ * Start class implementation file. This is the first "page" players will see.
  * Author(s): Sasha C. Guerrero
- * Created: 3/3/2026
- * Last Edited: 3/3/2026
+ * Created: 3/6/2026
+ * Last Edited: 3/6/2026
  */
 #include "start.h"
 
-Start::Start(QWidget *parent)
-    : QWidget{parent}
-{
-	// Instantiate widgets
-	box = new QVBoxLayout();
-	title = new QLabel("PIPET");
-	b_start = new QPushButton("START");
-	b_quit = new QPushButton("QUIT");
+Start::Start(QWidget *parent) : QWidget{parent} {
+	layout = new QVBoxLayout(); // Verticaly-arrange widgets
+	title = new QLabel("PIPET"); // Title text
+	b_start = new QPushButton("START"); // Either go to "Create" page or "Mode" page
 
-	// Arrange widgets
-	box->addWidget(title);
-	box->addWidget(b_start);
-	box->addWidget(b_quit);
-	this->setLayout(box);
-    // when quit button is clicked, quit application
-    connect(b_quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
-    // when start button is clicked, add create widget to start_layout
-    //connect(start, SIGNAL(clicked()), this, SLOT(openCreateWidget()) );
-	
+	this->setLayout(layout); // Assign layout to Start
+	layout->addWidget(title); // Assign layout's children
+	layout->addWidget(b_start);
+
+	title->setAlignment(Qt::AlignHCenter); // Center-align title
+	title->setStyleSheet("font-size: 36px"); // Large font for title
 }
-

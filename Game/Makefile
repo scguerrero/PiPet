@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I. -I. -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -37,7 +37,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = pipet1.0.0
-DISTDIR = /home/sasha/Documents/piPet/Game/.tmp/pipet1.0.0
+DISTDIR = /home/sasha/Desktop/pipet/.tmp/pipet1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL -lpthread   
@@ -52,15 +52,19 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = start_class/start.cc \
+SOURCES       = main.cc \
 		game_class/game.cc \
-		main.cc moc_game.cpp \
-		moc_start.cpp
-OBJECTS       = start.o \
+		start_class/start.cc \
+		create_class/create.cc moc_game.cpp \
+		moc_start.cpp \
+		moc_create.cpp
+OBJECTS       = main.o \
 		game.o \
-		main.o \
+		start.o \
+		create.o \
 		moc_game.o \
-		moc_start.o
+		moc_start.o \
+		moc_create.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -139,9 +143,11 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		pipet.pro game_class/game.h \
-		start_class/start.h start_class/start.cc \
+		start_class/start.h \
+		create_class/create.h main.cc \
 		game_class/game.cc \
-		main.cc
+		start_class/start.cc \
+		create_class/create.cc
 QMAKE_TARGET  = pipet
 DESTDIR       = 
 TARGET        = pipet
@@ -325,8 +331,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents game_class/game.h start_class/start.h $(DISTDIR)/
-	$(COPY_FILE) --parents start_class/start.cc game_class/game.cc main.cc $(DISTDIR)/
+	$(COPY_FILE) --parents game_class/game.h start_class/start.h create_class/create.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cc game_class/game.cc start_class/start.cc create_class/create.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -358,19 +364,25 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_game.cpp moc_start.cpp
+compiler_moc_header_make_all: moc_game.cpp moc_start.cpp moc_create.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_game.cpp moc_start.cpp
+	-$(DEL_FILE) moc_game.cpp moc_start.cpp moc_create.cpp
 moc_game.cpp: game_class/game.h \
 		start_class/start.h \
+		create_class/create.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include game_class/game.h -o moc_game.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Desktop/pipet/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Desktop/pipet -I/home/sasha/Desktop/pipet -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include game_class/game.h -o moc_game.cpp
 
 moc_start.cpp: start_class/start.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Documents/piPet/Game/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Documents/piPet/Game -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include start_class/start.h -o moc_start.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Desktop/pipet/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Desktop/pipet -I/home/sasha/Desktop/pipet -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include start_class/start.h -o moc_start.cpp
+
+moc_create.cpp: create_class/create.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/sasha/Desktop/pipet/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/sasha/Desktop/pipet -I/home/sasha/Desktop/pipet -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include create_class/create.h -o moc_create.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -388,22 +400,30 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
+main.o: main.cc game_class/game.h \
+		start_class/start.h \
+		create_class/create.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cc
+
+game.o: game_class/game.cc game_class/game.h \
+		start_class/start.h \
+		create_class/create.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game_class/game.cc
+
 start.o: start_class/start.cc start_class/start.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o start.o start_class/start.cc
 
-game.o: game_class/game.cc game_class/game.h \
-		start_class/start.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game_class/game.cc
-
-main.o: main.cc game_class/game.h \
-		start_class/start.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cc
+create.o: create_class/create.cc create_class/create.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o create.o create_class/create.cc
 
 moc_game.o: moc_game.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_game.o moc_game.cpp
 
 moc_start.o: moc_start.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_start.o moc_start.cpp
+
+moc_create.o: moc_create.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_create.o moc_create.cpp
 
 ####### Install
 

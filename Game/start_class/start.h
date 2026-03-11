@@ -1,26 +1,22 @@
 /*
- * Start class specification file.
- * This is the first page the player sees in the game. They can start/close the game from here.
+ * Start class specification file. This is the first "page" players will see.
  * Author(s): Sasha C. Guerrero
- * Created: 3/3/2026
- * Last Edited: 3/3/2026
+ * Created: 3/6/2026
+ * Last Edited: 3/6/2026
  */
 
-#ifndef START_H
-#define START_H
-#include <QtWidgets>
+ #ifndef START_H
+ #define START_H
+ #include <QtWidgets>
 
-class Start : public QWidget
-{
-Q_OBJECT
-public:
-    explicit Start (QWidget *parent = nullptr);
-private:
-	QVBoxLayout *box; // Box will hold title and buttons
-	QLabel *title; // Title text
-	QPushButton *b_start, *b_quit; // Buttons are  prefixed with b_ to differentiate them from their corresponding pages
-signals:
-private slots:
+ class Start : public QWidget {
+ 	Q_OBJECT
+	public:
+		explicit Start(QWidget *parent = nullptr);
+		QPushButton *b_start; // either go to "Create" page or "Mode" page
+	private:
+		QVBoxLayout *layout; // vertically-arrange widgets
+		QLabel *title; // title text
 };
 
-#endif // START_H
+#endif

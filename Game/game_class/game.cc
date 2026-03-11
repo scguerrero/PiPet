@@ -2,31 +2,43 @@
  * Game class implementation file.
  * Author(s): Sasha C. Guerrero
  * Created: 2/9/2026
- * Last Edited: 3/3/2026
+ * Last Edited: 3/7/2026 
  */
 #include "game.h"
 
-Game::Game(QWidget *parent)
-    : QWidget{parent}
-{
-	// Instantiate widgets
+Game::Game(QWidget *parent) : QWidget{parent} {
 	layout = new QVBoxLayout();
 	pages = new QStackedWidget();
-	page_start = new Start(); // starting page
+	start = new Start();
+	create = new Create();
+	//mode = new Mode();
+	//care = new Care();
+	//train = new Train();
+	//battle = new Battle();
+	//gear = new Gear();
+	b_quit = new QPushButton("QUIT");
+
+	this->setWindowTitle("PIPET"); // The title of the non-fullscreened application window
+	this->setContentsMargins(30,30,30,30); // 30px margins
 	
-	// Arrange widgets
-	layout->addWidget(pages);
-	pages->addWidget(page_start);
-/*
-    // when quit button is clicked, quit application
-    connect(quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
-    // when start button is clicked, add create widget to start_layout
-    connect(start, SIGNAL(clicked()), this, SLOT(openCreateWidget()) );
-	*/
+	this->setLayout(layout); // Vertically-arrange widgets inside Game
+	layout->addWidget(pages); // Children of layout: pages and quit button
+	layout->addWidget(b_quit); // For testing purposes, we want the ability to quit any time
 	
-	// Game widget has these properties
-    this->setLayout(layout);
-	this->setWindowTitle("PIPET");
-    this->setContentsMargins(50,50,50,50);
+	pages->addWidget(start);// Children of pages: Start, Create, Mode, Care, Train, Battle, Gear
+	pages->addWidget(create);
+	//pages->addWidget(mode);
+	//pages->addWidget(care);
+	//pages->addWidget(train);
+	//pages->addWidget(battle);
+	//pages->addWidget(gear);
+	
+	connect(b_quit, SIGNAL( clicked() ), QApplication::instance(), SLOT( quit() )); // Terminate running program
+	if (new_game) { // For a new game, the first step is to create a pet
+		connect(start->b_start, SIGNAL( clicked() ), this, SLOT( open_create() ));
+	}
 }
 
+void Game::open_create() {
+	pages->setCurrentIndex(1);
+}

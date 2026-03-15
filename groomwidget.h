@@ -4,16 +4,19 @@
 #include <QtWidgets>
 #include "../../Player/Player.h"
 
-class GroomWidget : public QDialog
+class GroomWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit GroomWidget(Player *player, QWidget *parent = nullptr);
+    void updateHygieneDisplay();
+    QPushButton *backBtn;
+
+signals:
 
 private slots:
     void brush();
     void bathe();
-    void brushTeeth();
     void trimNails();
     void cleanEars();
 
@@ -26,16 +29,14 @@ private:
 
     QPushButton *brushBtn;
     QPushButton *batheBtn;
-    QPushButton *brushTeethBtn;
     QPushButton *trimBtn;
     QPushButton *cleanEarsBtn;
-    QPushButton *doneBtn;
 
     QLabel *hygieneDisplay; // shows current hygiene live
 
-    void updateHygieneDisplay();
     void applyGroomAction(int boost, const QString &message);
 
 };
 
 #endif // GROOMWIDGET_H
+

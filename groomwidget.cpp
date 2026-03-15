@@ -1,10 +1,8 @@
-#include "groomwidget.h"
+#include "GroomWidget.h"
 
 GroomWidget::GroomWidget(Player *player, QWidget *parent)
-    :QDialog{parent}, player(player)
+    :QWidget{parent}, player(player)
 {
-    setWindowTitle("Groom Your Pet");
-    setModal(true); // blocks CareWidget until closed
 
     layout       = new QVBoxLayout();
     actionsBox   = new QGroupBox("Grooming Actions");
@@ -12,39 +10,36 @@ GroomWidget::GroomWidget(Player *player, QWidget *parent)
 
     // Live hygiene label
     hygieneDisplay = new QLabel();
-    updateHygieneDisplay();
     hygieneDisplay->setAlignment(Qt::AlignCenter);
+    updateHygieneDisplay();
 
     // Buttons
-    brushBtn        = new QPushButton("Brush Fur");
+    brushBtn        = new QPushButton("Brush");
     batheBtn        = new QPushButton("Bathe");
-    brushTeethBtn   = new QPushButton("Brush Teeth");
     trimBtn         = new QPushButton("Trim Nails");
     cleanEarsBtn    = new QPushButton("Clean Ears");
-    doneBtn         = new QPushButton("Done");
-    doneBtn->setStyleSheet("background: darkslategreen; color: darkseagreen");
+    backBtn         = new QPushButton("Back");
+    backBtn->setStyleSheet("background: darkslategreen; color: darkseagreen");
 
     // Layout
     actionsGrid->addWidget(brushBtn,        0, 0, Qt::AlignCenter);
     actionsGrid->addWidget(batheBtn,        0, 1, Qt::AlignCenter);
-    actionsGrid->addWidget(brushTeethBtn,   1, 0, Qt::AlignCenter);
-    actionsGrid->addWidget(trimBtn,         1, 1, Qt::AlignCenter);
-    actionsGrid->addWidget(cleanEarsBtn,    2, 0, 1, 2,  Qt::AlignCenter);
+    actionsGrid->addWidget(trimBtn,         1, 0, Qt::AlignCenter);
+    actionsGrid->addWidget(cleanEarsBtn,    1, 1,  Qt::AlignCenter);
     actionsBox->setLayout(actionsGrid);
 
-    layout->addWidget(hygieneDisplay);
-    layout->addWidget(actionsBox);
-    layout->addWidget(doneBtn);
-    this->setLayout(layout);
-
     // Connect buttons
-    connect(brushBtn,       SIGNAL(clicked()), this, SLOT(brushFur()));
+    connect(brushBtn,       SIGNAL(clicked()), this, SLOT(brush()));
     connect(batheBtn,       SIGNAL(clicked()), this, SLOT(bathe()));
-    connect(brushTeethBtn,  SIGNAL(clicked()), this, SLOT(brushTeeth()));
     connect(trimBtn,        SIGNAL(clicked()), this, SLOT(trimNails()));
     connect(cleanEarsBtn,   SIGNAL(clicked()), this, SLOT(cleanEars()));
-    connect(doneBtn,        SIGNAL(clicked()), this, SLOT(accept())); // closes dialog
 
+
+    // Construction layout
+    layout->addWidget(hygieneDisplay);
+    layout->addWidget(actionsBox);
+    layout->addWidget(backBtn);
+    this->setLayout(layout);
 }
 
 void GroomWidget::updateHygieneDisplay()
@@ -67,8 +62,8 @@ void GroomWidget::applyGroomAction(int boost, const QString &message)
                                 .arg(pet.getHygiene()));
 }
 
-void GroomWidget::brush()    { applyGroomAction(5,  "Brushed fur!"); }
+void GroomWidget::brush()       { applyGroomAction(5,  "Brushed!"); }
 void GroomWidget::bathe()       { applyGroomAction(5, "Bath time!"); }
-void GroomWidget::brushTeeth()  { applyGroomAction(5, "Teeth Brushed!"); }
 void GroomWidget::trimNails()   { applyGroomAction(5,  "Nails trimmed!"); }
 void GroomWidget::cleanEars()   { applyGroomAction(5,  "Ears cleaned!"); }
+

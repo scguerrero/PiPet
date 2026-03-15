@@ -24,6 +24,9 @@ public:
 
 signals:
 
+    void affectionRequested(); // tell ModeWidget to open AffectionWidget
+    void hygieneRequested(); // tell ModeWidget to open GroomWidget
+
 private slots:
     void feedPet(); // feed
     void groomPet(); // groom
@@ -54,3 +57,4 @@ private:
 };
 
 #endif // CAREWIDGET_H
+

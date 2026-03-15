@@ -66,4 +66,3 @@ void GroomWidget::brush()       { applyGroomAction(5,  "Brushed!"); }
 void GroomWidget::bathe()       { applyGroomAction(5, "Bath time!"); }
 void GroomWidget::trimNails()   { applyGroomAction(5,  "Nails trimmed!"); }
 void GroomWidget::cleanEars()   { applyGroomAction(5,  "Ears cleaned!"); }
-

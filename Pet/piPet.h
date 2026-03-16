@@ -7,8 +7,6 @@
 
 #ifndef PIPET_H
 #define PIPET_H
-#include <string>
-using namespace std;
 
 // piPet class declaration
 class piPet
@@ -28,14 +26,14 @@ class piPet
 		int attack;
 		int defense;
 		int healthPoints;
-		double critRate;
+        //double critRate;
 		int critDmg;
 		int skillPoints;
 
 	public:
 		// Constructors (no arguments, with arguments) and destructor
 		piPet();
-		piPet(int, int, int, int, int, int, int, int, int, int, int, int, int, int);
+        piPet(int, int, int, int, int, int, int, int, int, int, int, int, int);
 		~piPet();
 
 		// Utilities
@@ -59,7 +57,7 @@ class piPet
 		bool setAttack(int);
 		bool setDefense(int);
 		bool setHealthPoints(int);
-		bool setCritRate(double);
+        //bool setCritRate(double);
 		bool setCritDmg(int);
 		bool setSkillPoints(int);
 
@@ -75,7 +73,7 @@ class piPet
 		int getAttack();
 		int getDefense();
 		int getHealthPoints();
-		double getCritRate();
+        //double getCritRate();
 		int getCritDmg();
 		int getSkillPoints();
 
@@ -91,7 +89,7 @@ class piPet
 		void increaseAttack(int);
 		void increaseDefense(int);
 		void increaseHealthPoints(int);
-		void increaseCritRate(double);
+        //void increaseCritRate(double);
 		void increaseCritDmg(int);
 		void increaseSkillPoints(int);
 

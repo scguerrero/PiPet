@@ -23,7 +23,7 @@ piPet::piPet()
 	attack = 100;
 	defense = 100;
 	healthPoints = 1000;
-	critRate = 0.10;
+    //critRate = 0.10;
 	critDmg = 100;
 	skillPoints= 0;
 }
@@ -31,7 +31,7 @@ piPet::piPet()
 //piPet constructor with arguments
 piPet::piPet(int hgr, int en, int str, int hyg, int intel,
 	int hap, int ageD, int ageG, int atk, int def,
-	int hp, int rate, int dmg, int sp)
+    int hp, int dmg, int sp)
 {
 	hunger = hgr;
 	energy = en;
@@ -44,7 +44,7 @@ piPet::piPet(int hgr, int en, int str, int hyg, int intel,
 	attack = atk;
 	defense = def;
 	healthPoints = hp;
-	critRate = rate;
+    //critRate = rate;
 	critDmg = dmg;
 	skillPoints = sp;
 }
@@ -63,12 +63,12 @@ void piPet::showCondition()
 }
 
 // Stats: the pet's battle attributes
-void piPet::showStats()
+/*void piPet::showStats()
 {
 	printf("----Stats----\n");
 	printf("ATK: %d\nDEF: %d\nHP: %d\n", attack, defense, healthPoints);
 	printf("CRIT Rate: %.0f%%\nCRIT Dmg: %d\nSP: %d\n", critRate*100, critDmg, skillPoints);
-}
+}*/
 
 // the pet's Battle Actions
 void piPet::basicAttack()
@@ -168,12 +168,12 @@ bool piPet::setHealthPoints(int h)
 	return true;
 }
 
-bool piPet::setCritRate(double c)
+/*bool piPet::setCritRate(double c)
 {
 	if (c < 0 || c > 1) return false;
 	critRate = c;
 	return true;
-}
+}*/
 
 bool piPet::setCritDmg(int c)
 {
@@ -224,8 +224,8 @@ int piPet::getDefense()
 int piPet::getHealthPoints()
 { return healthPoints; }
 
-double piPet::getCritRate()
-{ return critRate; }
+/*double piPet::getCritRate()
+{ return critRate; }*/
 
 int piPet::getCritDmg()
 { return critDmg; }
@@ -268,8 +268,8 @@ void piPet::increaseDefense(int amnt)
 void piPet::increaseHealthPoints(int amnt)
 { healthPoints += amnt; }
 
-void piPet::increaseCritRate(double amnt)
-{ critRate += amnt; }
+/*void piPet::increaseCritRate(double amnt)
+{ critRate += amnt; }*/
 
 void piPet::increaseCritDmg(int amnt)
 { critDmg += amnt; }

@@ -12,6 +12,7 @@
 #include "../mode_class/mode.h"
 #include "../care_class/care.h"
 #include "../train_class/train.h"
+#include "../battle_class/battle.h"
 
 class Game : public QWidget {
 	Q_OBJECT
@@ -26,8 +27,8 @@ class Game : public QWidget {
         Mode *mode; // page 2: Select a game mode
         Care *care; // page 3: Care for the pet
         Train *train; // page 4: Play mini-games to "train" the pet
-        /*Battle *battle; // page 5: Play single- or multi-player battle
-		Gear *gear; // page 6: Pet can equip gear that effect stats
+        Battle *battle; // page 5: Play single- or multi-player battle
+        /*Gear *gear; // page 6: Pet can equip gear that effect stats
 		*/
 		QPushButton *b_quit; // Close the running application
 	private slots:
@@ -35,7 +36,7 @@ class Game : public QWidget {
         void open_mode(); // go to page "Mode"
         void open_care(); // go to page "Care"
         void open_train(); // go to page "Train"
-//		void open_battle(); // go to page "Battle"
+        void open_battle(); // go to page "Battle"
 //		void open_gear(); // go to page "Gear"
 };
 

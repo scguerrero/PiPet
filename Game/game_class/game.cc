@@ -14,8 +14,8 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     mode = new Mode();
     care = new Care();
     train = new Train();
-	//battle = new Battle();
-	//gear = new Gear();
+    battle = new Battle();
+    //gear = new Gear();
 	b_quit = new QPushButton("QUIT");
 
 	this->setWindowTitle("PIPET"); // The title of the non-fullscreened application window
@@ -30,7 +30,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(mode); // index 2
     pages->addWidget(care); // 3
     pages->addWidget(train); // 4
-    //pages->addWidget(battle); // 5
+    pages->addWidget(battle); // 5
     //pages->addWidget(gear); // 6
 	
 	connect(b_quit, SIGNAL( clicked() ), QApplication::instance(), SLOT( quit() )); // Terminate running program
@@ -50,6 +50,8 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_train, SIGNAL( clicked() ), this, SLOT( open_train() )); // from Mode, go to Train
 
     connect(train->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() )); // from Train, go back to Mode
+
+    connect(mode->b_battle, SIGNAL( clicked() ), this, SLOT( open_battle() )); // from Mode, go to Battle
 }
 
 void Game::open_create() {
@@ -66,4 +68,8 @@ void Game::open_care() {
 
 void Game::open_train() {
     pages->setCurrentIndex(4);
+}
+
+void Game::open_battle() {
+    pages->setCurrentIndex(5);
 }

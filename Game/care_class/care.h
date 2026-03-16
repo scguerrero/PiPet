@@ -13,20 +13,20 @@
 #ifndef CARE_H
 #define CARE_H
 #include <QtWidgets>
-//#include "../../Player/Player.h"
+#include "../../Player/Player.h"
 
 class Care : public QWidget
 {
     Q_OBJECT
 public:
-    //explicit CareWidget(Player *player, QWidget *parent = nullptr);
-    //void updateStats(); // call this whenever widget becomes visible
+    //explicit Care(Player *player, QWidget *parent = nullptr);
+    void updateStats(); // call this whenever widget becomes visible
     explicit Care(QWidget *parent = nullptr);
     QPushButton  *b_back;
 signals:
 
-    //void affectionRequested(); // tell ModeWidget to open AffectionWidget
-    //void hygieneRequested(); // tell ModeWidget to open GroomWidget
+    void affectionRequested(); // tell ModeWidget to open AffectionWidget
+    void hygieneRequested(); // tell ModeWidget to open GroomWidget
 
 private slots:
     void feedPet(); // feed
@@ -35,6 +35,7 @@ private slots:
     void givePetAffection(); //affection
 
 private:
+    //piPet *pet;
     //Player *player; // pointer to player data
 
     QVBoxLayout *layout; // Pet's Condition and Care Actions go inside here

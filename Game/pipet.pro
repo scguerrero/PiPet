@@ -16,10 +16,15 @@ INCLUDEPATH += .
 
 # Input
 HEADERS += game_class/game.h start_class/start.h create_class/create.h \
+    battle_class/battle.h \
     care_class/care.h \
     mode_class/mode.h \
-    train_class/train.h
+    train_class/train.h \
+    ../Pet/piPet.h
 SOURCES += main.cc game_class/game.cc start_class/start.cc create_class/create.cc \
+    ../Pet/piPet.cpp \
+    ../Player/Player.cpp \
+    battle_class/battle.cc \
     care_class/care.cc \
     mode_class/mode.cc \
     train_class/train.cc

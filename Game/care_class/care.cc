@@ -11,6 +11,10 @@
 Care::Care(QWidget *parent)
     : QWidget{parent}
 {
+    // Initialize player
+    piPet pet;
+    Player player(pet);
+
     // Initialize grids, box, and layout
     layout = new QVBoxLayout();
     grid = new QGridLayout();

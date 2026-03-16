@@ -15,5 +15,9 @@ INCLUDEPATH += .
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += game_class/game.h start_class/start.h create_class/create.h
-SOURCES += main.cc game_class/game.cc start_class/start.cc create_class/create.cc
+HEADERS += game_class/game.h start_class/start.h create_class/create.h \
+    care_class/care.h \
+    mode_class/mode.h
+SOURCES += main.cc game_class/game.cc start_class/start.cc create_class/create.cc \
+    care_class/care.cc \
+    mode_class/mode.cc

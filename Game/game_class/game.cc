@@ -13,7 +13,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
 	create = new Create();
     mode = new Mode();
     care = new Care();
-	//train = new Train();
+    train = new Train();
 	//battle = new Battle();
 	//gear = new Gear();
 	b_quit = new QPushButton("QUIT");
@@ -29,7 +29,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(create); // index 1
     pages->addWidget(mode); // index 2
     pages->addWidget(care); // 3
-    //pages->addWidget(train); // 4
+    pages->addWidget(train); // 4
     //pages->addWidget(battle); // 5
     //pages->addWidget(gear); // 6
 	
@@ -46,6 +46,10 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_care, SIGNAL( clicked() ), this, SLOT( open_care() )); // from Mode, open Care widget
 
     connect(care->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() )); // from Care, go back to Mode widget
+
+    connect(mode->b_train, SIGNAL( clicked() ), this, SLOT( open_train() )); // from Mode, go to Train
+
+    connect(train->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() )); // from Train, go back to Mode
 }
 
 void Game::open_create() {
@@ -58,4 +62,8 @@ void Game::open_mode() {
 
 void Game::open_care() {
     pages->setCurrentIndex(3);
+}
+
+void Game::open_train() {
+    pages->setCurrentIndex(4);
 }

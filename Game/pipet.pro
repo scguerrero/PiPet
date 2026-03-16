@@ -17,7 +17,9 @@ INCLUDEPATH += .
 # Input
 HEADERS += game_class/game.h start_class/start.h create_class/create.h \
     care_class/care.h \
-    mode_class/mode.h
+    mode_class/mode.h \
+    train_class/train.h
 SOURCES += main.cc game_class/game.cc start_class/start.cc create_class/create.cc \
     care_class/care.cc \
-    mode_class/mode.cc
+    mode_class/mode.cc \
+    train_class/train.cc

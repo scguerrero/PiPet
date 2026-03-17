@@ -17,8 +17,7 @@ int main(int argc, char**argv)
     QApplication app(argc, argv); // Need a QApplication object to house all game components
     
     app.setStyleSheet( // Set colors/font of the game
-		R"(QWidget { font-size: 28px; font-family: monospace; background: navy;
-		    color: mistyrose; letter-spacing: 1px }
+        R"(QWidget { font-family: monospace; background: navy; color: mistyrose; letter-spacing: 1px }
 
         QGroupBox { border: 2px solid mistyrose; border-radius: 10px; margin-top: 35px }
         

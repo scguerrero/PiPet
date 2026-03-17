@@ -4,16 +4,29 @@
  * They can also view their pet's Condition, or wellness attributes.
  * Author(s): Sasha C. Guerrero
  * Created: 2/20/2026
- * Last Edited: 3/15/2026
+ * Last Edited: 3/17/2026
  */
 #include "care.h"
+#include "../../Player/Player.h"
 
 Care::Care(QWidget *parent)
     : QWidget{parent}
 {
-    // Initialize player
+    // Initialize pet and player
     piPet pet;
     Player player(pet);
+
+    // Top-level layout that will hold stacked widget
+    top_layout = new QVBoxLayout();
+    hub = new QWidget();
+    groom = new Groom(&player);
+    affection = new Affection(&player);
+    pages = new QStackedWidget();
+
+    top_layout->addWidget(pages);
+    pages->addWidget(hub);
+    pages->addWidget(groom);
+    pages->addWidget(affection);
 
     // Initialize grids, box, and layout
     layout = new QVBoxLayout();
@@ -55,9 +68,8 @@ Care::Care(QWidget *parent)
     layout->addWidget(conditionBox);
     layout->addWidget(careBox);
     layout->addWidget(b_back);
-    this->setLayout(layout);
 
-    // Add children to grid
+    // Add labels and bars to grid
     grid->addWidget(hunger_label, 0, 0, Qt::AlignLeft);
     grid->addWidget(energy_label, 1, 0, Qt::AlignLeft);
     grid->addWidget(strength_label, 2, 0, Qt::AlignLeft);
@@ -76,31 +88,44 @@ Care::Care(QWidget *parent)
     grid->addWidget(age_group, 7, 1, Qt::AlignLeft);
     conditionBox->setTitle("Condition");
 
-    // Add children to careGrid
+    // Add buttons to careGrid
     careGrid->addWidget(b_feed, 0, 0, Qt::AlignCenter);
     careGrid->addWidget(b_groom, 1, 0, Qt::AlignCenter);
     careGrid->addWidget(b_sleep, 0, 1, Qt::AlignCenter);
     careGrid->addWidget(b_affection, 1, 1, Qt::AlignCenter);
     careBox->setTitle("Care Actions");
+
+    hub->setLayout(layout);
+
+    this->setLayout(top_layout);
+
+    connect(b_groom, SIGNAL( clicked() ), this, SLOT( groomPet() )); // Open widget for grooming pet
+    connect(groom->backBtn, SIGNAL( clicked() ), this, SLOT( returnToHub() )); // Go back to hub after grooming
+
+    connect(b_affection, SIGNAL( clicked() ), this, SLOT( givePetAffection() )); // Open widget for giving affection to pet
+    connect(affection->backBtn, SIGNAL( clicked() ), this, SLOT( returnToHub() )); // Go back to hub after giving affection
 }
 
-
-void Care::feedPet()
-{
-    // increase hunger
+void Care::returnToHub() {
+    pages->setCurrentIndex(0);
 }
 
-void Care::groomPet()
+void Care::feedPet() // Increase hunger
 {
-    // increase hygiene
+    // index 1 of stacked widget
 }
 
-void Care::sendPetToSleep()
+void Care::groomPet() // Increase hygiene
 {
-    // increase energy
+    pages->setCurrentIndex(1); // index 2 of stacked widget
 }
 
-void Care::givePetAffection()
+void Care::sendPetToSleep() // Increase energy
 {
-    // increase affection
+    // index 3 of stacked widget
+}
+
+void Care::givePetAffection() // Increase happiness
+{
+    pages->setCurrentIndex(2); // index 4 of stacked widget
 }

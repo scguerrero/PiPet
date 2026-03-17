@@ -17,7 +17,9 @@ INCLUDEPATH += .
 # Input
 HEADERS += game_class/game.h start_class/start.h create_class/create.h \
     battle_class/battle.h \
+    care_class/affection.h \
     care_class/care.h \
+    care_class/groom.h \
     mode_class/mode.h \
     train_class/train.h \
     ../Pet/piPet.h
@@ -25,6 +27,8 @@ SOURCES += main.cc game_class/game.cc start_class/start.cc create_class/create.c
     ../Pet/piPet.cpp \
     ../Player/Player.cpp \
     battle_class/battle.cc \
+    care_class/affection.cc \
     care_class/care.cc \
+    care_class/groom.cc \
     mode_class/mode.cc \
     train_class/train.cc

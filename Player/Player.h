@@ -10,9 +10,10 @@ private:
     int streak;        // Consecutive days opened
     int goodDays;      // Days pet's condition > 80%
     int hours;         // Hours spent in game
-    piPet pet;         // Composed pet object
 
 public:
+    piPet pet; // Composed pet object
+
     // Constructor
     Player(const piPet& petInit);
 

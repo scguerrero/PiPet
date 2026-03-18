@@ -26,6 +26,14 @@ private slots:
     void onRestart();
 
 private:
+    QVBoxLayout *root;
+    QLabel *title;
+    QWidget *hpWidget; // hpgrid needs a widget!
+    QGridLayout *hpGrid;
+    QFrame *sep; // separator
+    QWidget *btnWidget; // btnRow needs a widget!
+    QHBoxLayout *btnRow;
+
     void playTurn(Move playerMove);
     Move cpuMove();
     void refreshUI();

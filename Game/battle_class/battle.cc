@@ -7,18 +7,22 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
 
     //auto *central = new QWidget(this);
     //setCentralWidget(central);
-    auto *root = new QVBoxLayout();
-    root->setSpacing(10);
-    root->setContentsMargins(24, 24, 24, 24);
+    root = new QVBoxLayout();
+    this->setLayout(root);
+    //root->setSpacing(10);
+    //root->setContentsMargins(24, 24, 24, 24);
 
     // Title
-    auto *title = new QLabel("piPetBattle", this);
+    title = new QLabel("piPetBattle", this);
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet("font-size: 22px; font-weight: bold; margin-bottom: 4px;");
     root->addWidget(title);
 
     // HP bars
-    auto *hpGrid = new QGridLayout();
+    hpWidget = new QWidget();
+    hpGrid = new QGridLayout();
+    hpWidget->setLayout(hpGrid);
+    root->addWidget(hpWidget);
 
     auto makeNameLabel = [&](const QString &text, Qt::Alignment align) {
         auto *l = new QLabel(text, this);
@@ -30,41 +34,41 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     hpGrid->addWidget(makeNameLabel("You",  Qt::AlignLeft),  0, 0);
     hpGrid->addWidget(makeNameLabel("CPU",  Qt::AlignRight), 0, 2);
 
-    playerBar = new QProgressBar(this);
+    playerBar = new QProgressBar();
     playerBar->setRange(0, maxHP); playerBar->setValue(maxHP);
     playerBar->setTextVisible(false);
     playerBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
 
-    cpuBar = new QProgressBar(this);
+    cpuBar = new QProgressBar();
     cpuBar->setRange(0, maxHP); cpuBar->setValue(maxHP);
     cpuBar->setTextVisible(false);
     cpuBar->setInvertedAppearance(true);
     cpuBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
 
     hpGrid->addWidget(playerBar, 1, 0);
-    hpGrid->addWidget(new QLabel("vs", this), 1, 1, Qt::AlignCenter);
+    hpGrid->addWidget(new QLabel("vs"), 1, 1, Qt::AlignCenter);
     hpGrid->addWidget(cpuBar,    1, 2);
     hpGrid->setColumnStretch(0, 1); hpGrid->setColumnStretch(2, 1);
 
-    playerHPLabel = new QLabel(this); playerHPLabel->setAlignment(Qt::AlignLeft);
-    cpuHPLabel    = new QLabel(this); cpuHPLabel->setAlignment(Qt::AlignRight);
+    playerHPLabel = new QLabel(); playerHPLabel->setAlignment(Qt::AlignLeft);
+    cpuHPLabel    = new QLabel(); cpuHPLabel->setAlignment(Qt::AlignRight);
     hpGrid->addWidget(playerHPLabel, 2, 0);
     hpGrid->addWidget(cpuHPLabel,    2, 2);
 
-    root->addLayout(hpGrid);
+    //root->addLayout(hpGrid);
 
-    auto *sep = new QFrame(this);
+    sep = new QFrame();
     sep->setFrameShape(QFrame::HLine); sep->setFrameShadow(QFrame::Sunken);
     root->addWidget(sep);
 
     // Result and log labels
-    resultLabel = new QLabel("Choose your move!", this);
+    resultLabel = new QLabel("Choose your move!");
     resultLabel->setAlignment(Qt::AlignCenter);
     resultLabel->setWordWrap(true);
     resultLabel->setStyleSheet("font-size: 14px; font-weight: bold;");
     root->addWidget(resultLabel);
 
-    logLabel = new QLabel("", this);
+    logLabel = new QLabel("");
     logLabel->setAlignment(Qt::AlignCenter);
     logLabel->setStyleSheet("font-size: 12px; color: #666; font-style: italic;");
     root->addWidget(logLabel);
@@ -72,8 +76,10 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     root->addStretch();
 
     // Buttons
-    auto *btnRow = new QHBoxLayout();
+    btnRow = new QHBoxLayout();
     btnRow->setSpacing(8);
+    btnWidget = new QWidget();
+    btnWidget->setLayout(btnRow);
 
     auto makeBtn = [&](const QString &text) {
         auto *b = new QPushButton(text, this);
@@ -92,7 +98,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     btnRow->addWidget(btnAttack);
     btnRow->addWidget(btnCharge);
     btnRow->addWidget(btnDefend);
-    root->addLayout(btnRow);
+    root->addWidget(btnWidget);
 
     btnRestart->setVisible(false);
     root->addWidget(btnRestart, 0, Qt::AlignCenter);

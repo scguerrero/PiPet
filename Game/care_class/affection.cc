@@ -10,6 +10,7 @@ Affection::Affection(Player *player, QWidget *parent)
     //live happiness display
     happinessDisplay = new QLabel();
     happinessDisplay->setAlignment(Qt::AlignCenter);
+    happinessDisplay->setWordWrap(true);
     updateHappinessDisplay();
 
     //Buttons

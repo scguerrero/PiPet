@@ -22,6 +22,7 @@ class Create : public QWidget {
 		QWidget *name, *species; // Child widgets of tabs
 
 		// name's child widgets
+        QScrollArea *scroll_name; // Enable scrolling if widgets don't fit in visible area of screen
 		QVBoxLayout *l_name; // subwidget layouts are prefixed by l_ to differentiate from top-level layout
 		QLabel *name_instruction; // Tell player to choose a name
 		QListWidget *name_list; // Name options for the pet
@@ -32,6 +33,7 @@ class Create : public QWidget {
 			"Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"};
 
 		// species's child widgets
+        QScrollArea *scroll_species; // Enable scrolling if widgets don't fit in visible area of screen
 		QVBoxLayout *l_species; // l_species's children: species_instruction, box_species, and box_choose
 		QLabel *species_instruction;
 //		QGroupBox *box_species; // box_species's children: grid_species

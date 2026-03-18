@@ -11,6 +11,7 @@ Groom::Groom(Player *player, QWidget *parent)
     // Live hygiene label
     hygieneDisplay = new QLabel();
     hygieneDisplay->setAlignment(Qt::AlignCenter);
+    hygieneDisplay->setWordWrap(true);
     updateHygieneDisplay();
 
     // Buttons

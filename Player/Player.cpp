@@ -1,9 +1,10 @@
 #include "Player.h"
 #include <iostream>
-#include <algorithm>
+//#include <algorithm>
+using namespace std;
 
 Player::Player(const piPet& petInit)
-    : pet(petInit), streak(0), goodDays(0), hours(0) {
+    : streak(0), goodDays(0), hours(0), pet(petInit) {
     startDate = std::time(nullptr);  // initialize with current system time
 }
 
@@ -45,5 +46,5 @@ double Player::getCareRating() const {
 void Player::celebratePetBirthday() {
     pet.moveUpAgeGroup(); // Assumes piPet has this method
     std::cout << "Happy Birthday to your pet!\n";
-    std::cout << "Pet age group: " << pet.getAgeGroup() << endl;
+    //std::cout << "Pet age group: " << pet.getAgeGroup() << endl;
 }

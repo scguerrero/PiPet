@@ -4,19 +4,37 @@
  * They can also view their pet's Condition, or wellness attributes.
  * Author(s): Sasha C. Guerrero
  * Created: 2/20/2026
- * Last Edited: 2/20/2026
+ * Last Edited: 3/17/2026
  */
-#include "CareWidget.h"
+#include "care.h"
+#include "../../Player/Player.h"
 
-CareWidget::CareWidget(QWidget *parent)
+Care::Care(QWidget *parent)
     : QWidget{parent}
 {
+    // Initialize pet and player
+    piPet pet;
+    Player player(pet);
+
+    // Top-level layout that will hold stacked widget
+    top_layout = new QVBoxLayout();
+    hub = new QWidget();
+    groom = new Groom(&player);
+    affection = new Affection(&player);
+    pages = new QStackedWidget();
+
+    top_layout->addWidget(pages);
+    pages->addWidget(hub);
+    pages->addWidget(groom);
+    pages->addWidget(affection);
+
     // Initialize grids, box, and layout
     layout = new QVBoxLayout();
     grid = new QGridLayout();
     careGrid = new QGridLayout();
     careBox = new QGroupBox();
     conditionBox = new QGroupBox();
+    b_back = new QPushButton("BACK");
 
     // Text labels
     hunger_label = new QLabel("Hunger");
@@ -39,19 +57,19 @@ CareWidget::CareWidget(QWidget *parent)
     happiness_bar = new QProgressBar();
 
     // Buttons for care actions
-    feed = new QPushButton("Feed");
-    groom = new QPushButton("Groom");
-    sleep = new QPushButton("Send to Sleep");
-    affection = new QPushButton("Give Affection");
+    b_feed = new QPushButton("Feed");
+    b_groom = new QPushButton("Groom");
+    b_sleep = new QPushButton("Send to Sleep");
+    b_affection = new QPushButton("Give Affection");
 
     // Add grids to layout
     conditionBox->setLayout(grid);
     careBox->setLayout(careGrid);
     layout->addWidget(conditionBox);
     layout->addWidget(careBox);
-    this->setLayout(layout);
+    layout->addWidget(b_back);
 
-    // Add children to grid
+    // Add labels and bars to grid
     grid->addWidget(hunger_label, 0, 0, Qt::AlignLeft);
     grid->addWidget(energy_label, 1, 0, Qt::AlignLeft);
     grid->addWidget(strength_label, 2, 0, Qt::AlignLeft);
@@ -70,32 +88,44 @@ CareWidget::CareWidget(QWidget *parent)
     grid->addWidget(age_group, 7, 1, Qt::AlignLeft);
     conditionBox->setTitle("Condition");
 
-    // Add children to careGrid
-    careGrid->addWidget(feed, 0, 0, Qt::AlignCenter);
-    careGrid->addWidget(groom, 1, 0, Qt::AlignCenter);
-    careGrid->addWidget(sleep, 0, 1, Qt::AlignCenter);
-    careGrid->addWidget(affection, 1, 1, Qt::AlignCenter);
+    // Add buttons to careGrid
+    careGrid->addWidget(b_feed, 0, 0, Qt::AlignCenter);
+    careGrid->addWidget(b_groom, 1, 0, Qt::AlignCenter);
+    careGrid->addWidget(b_sleep, 0, 1, Qt::AlignCenter);
+    careGrid->addWidget(b_affection, 1, 1, Qt::AlignCenter);
     careBox->setTitle("Care Actions");
+
+    hub->setLayout(layout);
+
+    this->setLayout(top_layout);
+
+    connect(b_groom, SIGNAL( clicked() ), this, SLOT( groomPet() )); // Open widget for grooming pet
+    connect(groom->backBtn, SIGNAL( clicked() ), this, SLOT( returnToHub() )); // Go back to hub after grooming
+
+    connect(b_affection, SIGNAL( clicked() ), this, SLOT( givePetAffection() )); // Open widget for giving affection to pet
+    connect(affection->backBtn, SIGNAL( clicked() ), this, SLOT( returnToHub() )); // Go back to hub after giving affection
 }
 
-
-void CareWidget::feedPet()
-{
-    // increase hunger
+void Care::returnToHub() {
+    pages->setCurrentIndex(0);
 }
 
-
-void CareWidget::groomPet()
+void Care::feedPet() // Increase hunger
 {
-    // increase hygiene
+    // index 1 of stacked widget
 }
 
-void CareWidget::sendPetToSleep()
+void Care::groomPet() // Increase hygiene
 {
-    // increase energy
+    pages->setCurrentIndex(1); // index 2 of stacked widget
 }
 
-void CareWidget::givePetAffection()
+void Care::sendPetToSleep() // Increase energy
 {
-    // increase affection
+    // index 3 of stacked widget
+}
+
+void Care::givePetAffection() // Increase happiness
+{
+    pages->setCurrentIndex(2); // index 4 of stacked widget
 }

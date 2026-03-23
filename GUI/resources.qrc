@@ -1,0 +1,38 @@
+<RCC>
+  <qresource prefix="/images">
+
+    <!-- Dog -->
+    <file>assets/images/dog_baby_idle.gif</file>
+#    <file>assets/images/dog_baby_angry.gif</file>
+#    <file>assets/images/dog_baby_sleepy.gif</file>
+    <file>assets/images/dog_teen_idle.gif</file>
+#    <file>assets/images/dog_teen_angry.gif</file>
+#    <file>assets/images/dog_teen_sleepy.gif</file>
+    <file>assets/images/dog_adult_idle.gif</file>
+#    <file>assets/images/dog_adult_angry.gif</file>
+#    <file>assets/images/dog_adult_sleepy.gif</file>
+
+    <!-- Axolotl -->
+    <file>assets/images/axolotl_baby_idle.gif</file>
+#    <file>assets/images/axolotl_baby_angry.gif</file>
+#    <file>assets/images/axolotl_baby_sleepy.gif</file>
+    <file>assets/images/axolotl_teen_idle.gif</file>
+#    <file>assets/images/axolotl_teen_angry.gif</file>
+#    <file>assets/images/axolotl_teen_sleepy.gif</file>
+    <file>assets/images/axolotl_adult_idle.gif</file>
+#    <file>assets/images/axolotl_adult_angry.gif</file>
+#    <file>assets/images/axolotl_adult_sleepy.gif</file>
+
+    <!-- Seal -->
+    <file>assets/images/seal_baby_idle.gif</file>
+#    <file>assets/images/seal_baby_angry.gif</file>
+#    <file>assets/images/seal_baby_sleepy.gif</file>
+    <file>assets/images/seal_teen_idle.gif</file>
+#    <file>assets/images/seal_teen_angry.gif</file>
+#    <file>assets/images/seal_teen_sleepy.gif</file>
+    <file>assets/images/seal_adult_idle.gif</file>
+#    <file>assets/images/seal_adult_angry.gif</file>
+#    <file>assets/images/seal_adult_sleepy.gif</file>
+
+  </qresource>
+</RCC>

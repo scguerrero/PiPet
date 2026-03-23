@@ -5,6 +5,8 @@
 TEMPLATE = app
 TARGET = pipet
 QT = core gui widgets
+RESOURCES += resources.qrc \
+    resources.qrc
 INCLUDEPATH += .
 
 # You can make your code fail to compile if you use deprecated APIs.
@@ -20,6 +22,7 @@ HEADERS += game_class/game.h start_class/start.h create_class/create.h \
     care_class/affection.h \
     care_class/care.h \
     care_class/groom.h \
+    character_class/character.h \
     mode_class/mode.h \
     train_class/train.h \
     ../Pet/piPet.h
@@ -30,5 +33,6 @@ SOURCES += main.cc game_class/game.cc start_class/start.cc create_class/create.c
     care_class/affection.cc \
     care_class/care.cc \
     care_class/groom.cc \
+    character_class/character.cpp \
     mode_class/mode.cc \
     train_class/train.cc

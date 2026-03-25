@@ -2,7 +2,7 @@
  * piPet.cpp is the piPet class implementation file.
  * Author: Sasha C. Guerrero
  * Created: 2/5/2026
- * Last Edited: 2/6/2026
+ * Last Edited: 3/25/2026
 */
 #include "piPet.h"
 #include <cstdio>
@@ -10,6 +10,7 @@
 using namespace std;
 
 // piPet default constructor with no arguments
+<<<<<<< HEAD
 piPet::piPet()
 {
     hunger = 50;
@@ -47,12 +48,35 @@ piPet::piPet(int hgr, int en, int str, int hyg, int intel,
     //critRate = rate;
     critDmg = dmg;
     skillPoints = sp;
+=======
+PiPet::PiPet() {}
+
+//piPet constructor with arguments
+PiPet::PiPet(QString name, QString age_group, int days_old, int hunger, int energy, int strength, int hygiene,
+            int intelligence, int happiness, int attack, int defense, int hit_points) {
+
+    // PiPet's name and age
+    m_name = name;
+    m_age_group = age_group; // Age groups: Baby, Teen, Adult
+    m_days_old = days_old; // How many days old is the PiPet
+
+    // The PiPet's Condition, or wellness attributes. Each attribute is out of 100.
+    m_hunger = hunger;
+    m_energy = energy;
+    m_strength = strength;
+    m_hygiene = hygiene;
+    m_intelligence = intelligence;
+    m_happiness = happiness;
+
+    // The PiPet's Stats, or battle attributes.
+    m_attack = attack;
+    m_defense = defense;
+    m_hit_points = hit_points; // "hit points" or HP
+>>>>>>> 277286c72284ea7e758520d31345a58bfaa48401
 }
 
 //piPet destructor
-piPet::~piPet()
-{
-}
+PiPet::~PiPet() {}
 
 // Condition: the pet's wellness attributes
 void piPet::showCondition()

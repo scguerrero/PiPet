@@ -12,41 +12,41 @@ using namespace std;
 // piPet default constructor with no arguments
 piPet::piPet()
 {
-	hunger = 50;
-	energy = 50;
-	strength = 50;
-	hygiene = 50;
-	intelligence = 50;
-	happiness = 50;
-	ageDays = 1;
-	ageGroup = 0;
-	attack = 100;
-	defense = 100;
-	healthPoints = 1000;
+    hunger = 50;
+    energy = 50;
+    strength = 50;
+    hygiene = 50;
+    intelligence = 50;
+    happiness = 50;
+    ageDays = 1;
+    ageGroup = 0;
+    attack = 100;
+    defense = 100;
+    healthPoints = 1000;
     //critRate = 0.10;
-	critDmg = 100;
-	skillPoints= 0;
+    critDmg = 100;
+    skillPoints= 0;
 }
 
 //piPet constructor with arguments
 piPet::piPet(int hgr, int en, int str, int hyg, int intel,
-	int hap, int ageD, int ageG, int atk, int def,
-    int hp, int dmg, int sp)
+             int hap, int ageD, int ageG, int atk, int def,
+             int hp, int dmg, int sp)
 {
-	hunger = hgr;
-	energy = en;
-	strength = str;
-	hygiene = hyg;
-	intelligence = intel;
-	happiness = hap;
-	ageDays = ageD;
-	ageGroup = ageG;
-	attack = atk;
-	defense = def;
-	healthPoints = hp;
+    hunger = hgr;
+    energy = en;
+    strength = str;
+    hygiene = hyg;
+    intelligence = intel;
+    happiness = hap;
+    ageDays = ageD;
+    ageGroup = ageG;
+    attack = atk;
+    defense = def;
+    healthPoints = hp;
     //critRate = rate;
-	critDmg = dmg;
-	skillPoints = sp;
+    critDmg = dmg;
+    skillPoints = sp;
 }
 
 //piPet destructor
@@ -57,17 +57,17 @@ piPet::~piPet()
 // Condition: the pet's wellness attributes
 void piPet::showCondition()
 {
-	printf("----Condition----\n");
-	printf("Hunger: %d\nEnergy: %d\nStrength: %d\nHygiene: %d\nIntelligence: %d\nHappiness: %d\nDays Old: %d\nAge Group: %d\n",
-		hunger, energy, strength, hygiene, intelligence, happiness, ageDays, ageGroup);
+    printf("----Condition----\n");
+    printf("Hunger: %d\nEnergy: %d\nStrength: %d\nHygiene: %d\nIntelligence: %d\nHappiness: %d\nDays Old: %d\nAge Group: %d\n",
+           hunger, energy, strength, hygiene, intelligence, happiness, ageDays, ageGroup);
 }
 
 // Stats: the pet's battle attributes
 /*void piPet::showStats()
 {
-	printf("----Stats----\n");
-	printf("ATK: %d\nDEF: %d\nHP: %d\n", attack, defense, healthPoints);
-	printf("CRIT Rate: %.0f%%\nCRIT Dmg: %d\nSP: %d\n", critRate*100, critDmg, skillPoints);
+    printf("----Stats----\n");
+    printf("ATK: %d\nDEF: %d\nHP: %d\n", attack, defense, healthPoints);
+    printf("CRIT Rate: %.0f%%\nCRIT Dmg: %d\nSP: %d\n", critRate*100, critDmg, skillPoints);
 }*/
 
 // the pet's Battle Actions
@@ -92,101 +92,101 @@ void piPet::defend()
 // Setters for Condition attributes
 bool piPet::setHunger(int h)
 {
-	if (h < 0 || h > 100) return false;
-	hunger = h;
-	return true;
+    if (h < 0 || h > 100) return false;
+    hunger = h;
+    return true;
 }
 
 bool piPet::setEnergy(int e)
 {
-	if (e < 0 || e > 100) return false;
-	energy = e;
-	return true;
+    if (e < 0 || e > 100) return false;
+    energy = e;
+    return true;
 }
 
 bool piPet::setStrength(int s)
 {
-	if (s < 0 || s > 100) return false;
-	strength = s;
-	return true;
+    if (s < 0 || s > 100) return false;
+    strength = s;
+    return true;
 }
 
 bool piPet::setHygiene(int h)
 {
-	if (h < 0 || h > 100) return false;
-	hygiene = h;
-	return true;
+    if (h < 0 || h > 100) return false;
+    hygiene = h;
+    return true;
 }
 
 bool piPet::setIntelligence(int i)
 {
-	if (i < 0 || i > 100) return false;
-	intelligence = i;
-	return true;
+    if (i < 0 || i > 100) return false;
+    intelligence = i;
+    return true;
 }
 
 bool piPet::setHappiness(int h)
 {
-	if (h < 0 || h > 100) return false;
-	happiness = h;
-	return true;
+    if (h < 0 || h > 100) return false;
+    happiness = h;
+    return true;
 }
 
 bool piPet::setAgeDays(int a)
 {
-	if (a < 0) return false;
-	ageDays = a;
-	return true;
+    if (a < 0) return false;
+    ageDays = a;
+    return true;
 }
 
 bool piPet::setAgeGroup(int a)
 {
-	if (a < 0 || a > 2) return false;
-	ageGroup = a;
-	return true;
+    if (a < 0 || a > 2) return false;
+    ageGroup = a;
+    return true;
 }
 
 // Setters for Stats attributes
 bool piPet::setAttack(int a)
 {
-	if (a < 0) return false;
-	attack = a;
-	return true;
+    if (a < 0) return false;
+    attack = a;
+    return true;
 }
 
 bool piPet::setDefense(int d)
 {
-	if (d < 0) return false;
-	defense = d;
-	return true;
+    if (d < 0) return false;
+    defense = d;
+    return true;
 }
 
 bool piPet::setHealthPoints(int h)
 {
-	if (h < 0) return false;
-	healthPoints = h;
-	return true;
+    if (h < 0) return false;
+    healthPoints = h;
+    return true;
 }
 
 /*bool piPet::setCritRate(double c)
 {
-	if (c < 0 || c > 1) return false;
-	critRate = c;
-	return true;
+    if (c < 0 || c > 1) return false;
+    critRate = c;
+    return true;
 }*/
 
 bool piPet::setCritDmg(int c)
 {
-	if (c < 0) return false;
-	critDmg = c;
-	return true;
+    if (c < 0) return false;
+    critDmg = c;
+    return true;
 }
 
 bool piPet::setSkillPoints(int s)
 {
-	if (s < 0 || s > 5) return false;
-	skillPoints = s;
-	return true;
+    if (s < 0 || s > 5) return false;
+    skillPoints = s;
+    return true;
 }
 
 // Getters for Condition attributes

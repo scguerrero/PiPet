@@ -17,6 +17,10 @@ class Create : public QWidget {
 		explicit Create(QWidget *parent = nullptr);
 		QPushButton *b_done; // For navigation to next page
 	private:
+        // The done button (b_done) won't be visible until a name and species is selected.
+        bool name_chosen = false; // Name hasn't been chosen yet
+        bool species_chosen = false; // Species hasn't been chosen yet
+
 		QVBoxLayout *layout; // Vertically-arrange widgets inside Create
 		QTabWidget *tabs; // Will hold name and species widgets
 		QWidget *name, *species; // Child widgets of tabs
@@ -35,12 +39,14 @@ class Create : public QWidget {
 		// species's child widgets
         QScrollArea *scroll_species; // Enable scrolling if widgets don't fit in visible area of screen
 		QVBoxLayout *l_species; // l_species's children: species_instruction, box_species, and box_choose
-		QLabel *species_instruction;
-//		QGroupBox *box_species; // box_species's children: grid_species
-//		QGridLayout *grid_species; // arrange widgets on a row/column grid
+        QLabel *species_instruction; // Text box giving instructions on how to choose a species
 		QGroupBox *box_buttons; // Radio buttons will go inside this box
-		QVBoxLayout *l_buttons;
+        QVBoxLayout *l_buttons; // Layout that will vertically-arrange buttons inside layout
 		QRadioButton *b_axolotl, *b_cat, *b_dog; // Player may choose 1 species only using radio buttons
+
+    public slots:
+        void updateNameFlag();
+        void updateSpeciesFlag();
 };
 
 #endif

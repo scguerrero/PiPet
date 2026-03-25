@@ -8,6 +8,8 @@
  * Last Edited: 3/10/2026
  */
 #include "create.h"
+#include <iostream>
+using namespace std;
 
 Create::Create(QWidget *parent) : QWidget{parent} {
 	// Name widget --------------------------------------------------------------
@@ -78,5 +80,25 @@ Create::Create(QWidget *parent) : QWidget{parent} {
 	// Populate main layout
 	this->setLayout(layout);
 	layout->addWidget(tabs);
-	layout->addWidget(b_done);
+    layout->addWidget(b_done);
+    /*b_done->setVisible(false);
+
+    // Connections
+    connect(name_list, SIGNAL( itemSelectionChanged() ), this, SLOT( updateNameFlag() )); // When a list item is chosen, update list flag to true
+    connect(box_buttons, SIGNAL( clicked() ), this, SLOT( updateSpeciesFlag() )); // When a radio button is clicked, update list flag to true
+
+    // Don't add done button until name and species have been selected
+    if (name_chosen && species_chosen) {
+        b_done->setVisible(true);
+    }*/
+}
+
+void Create::updateNameFlag() {
+    name_chosen = true;
+    cout << name_chosen << endl;
+}
+
+void Create::updateSpeciesFlag() {
+    species_chosen = true;
+    cout << species_chosen << endl;
 }

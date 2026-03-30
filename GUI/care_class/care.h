@@ -15,14 +15,16 @@
 #include <QtWidgets>
 #include "groom.h"
 #include "affection.h"
+#include "../../Player/Player.h"
 
 class Care : public QWidget
 {
     Q_OBJECT
 public:
     void updateStats(); // call this whenever widget becomes visible
-    explicit Care(QWidget *parent = nullptr);
-    // Care actions: feed pet, groom pet, send pet to sleep, give pet affection
+ Care(Player* player, QStackedWidget* stack, QWidget *parent = nullptr);
+
+// Care actions: feed pet, groom pet, send pet to sleep, give pet affection
     QPushButton *b_feed, *b_groom, *b_sleep, *b_affection, *b_back;
 signals:
 
@@ -37,6 +39,9 @@ private slots:
     void givePetAffection(); //affection
 
 private:
+    Player *player;            // pointer matches Mode
+    QStackedWidget *stack;
+
     QVBoxLayout *top_layout; // Top-level layout that will hold stacked widget
     QStackedWidget *pages; // Each page is a different Care widget
     Groom *groom; // Groom widget lets player manage pet's hygiene

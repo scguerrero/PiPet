@@ -20,6 +20,8 @@ class Create : public QWidget {
         // The done button (b_done) won't be visible until a name and species is selected.
         bool name_chosen = false; // Name hasn't been chosen yet
         bool species_chosen = false; // Species hasn't been chosen yet
+        QStackedWidget *stack; // Hide b_done inside stack until conditions are met
+        QWidget *placeholder; // First page of stack to hide b_done
 
 		QVBoxLayout *layout; // Vertically-arrange widgets inside Create
 		QTabWidget *tabs; // Will hold name and species widgets

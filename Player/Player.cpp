@@ -1,9 +1,8 @@
+/* Author: Luke Cerwin */
 #include "Player.h"
-#include <iostream>
-//#include <algorithm>
 using namespace std;
 
-Player::Player(const piPet& petInit)
+Player::Player(const PiPet& petInit)
     : streak(0), goodDays(0), hours(0), pet(petInit) {
     startDate = std::time(nullptr);  // initialize with current system time
 }
@@ -13,30 +12,21 @@ time_t Player::getStartDate() const { return startDate; }
 int Player::getStreak() const { return streak; }
 int Player::getGoodDays() const { return goodDays; }
 int Player::getHours() const { return hours; }
-piPet Player::getPet() const { return pet; }
+PiPet Player::getPet() const { return pet; }
 
 // Setters
 void Player::setStartDate(time_t t) { startDate = t; }
 void Player::setStreak(int s) { streak = s; }
 void Player::setGoodDays(int g) { goodDays = g; }
 void Player::setHours(int h) { hours = h; }
-void Player::setPet(const piPet& p) { pet = p; }
+void Player::setPet(const PiPet& p) { pet = p; }
 
 // Actions
-void Player::feedPet() {
-    pet.increaseHunger(10); // Example: assumes piPet has this method
-    std::cout << "Pet fed!\n";
-}
+void Player::feedPet() { pet.increase_hunger(10); }
 
-void Player::sendPetToSleep() {
-    pet.increaseEnergy(10); // Assumes piPet has a sleep() method
-    std::cout << "Pet is sleeping!\n";
-}
+void Player::sendPetToSleep() { pet.increase_energy(10); }
 
-void Player::groomPet() {
-    pet.increaseHygiene(10); // Assumes piPet has a groom() method
-    std::cout << "Pet groomed!\n";
-}
+void Player::groomPet() { pet.increase_hygiene(10); }
 
 double Player::getCareRating() const {
     if (streak == 0) return 0.0;
@@ -44,7 +34,9 @@ double Player::getCareRating() const {
 }
 
 void Player::celebratePetBirthday() {
-    pet.moveUpAgeGroup(); // Assumes piPet has this method
-    std::cout << "Happy Birthday to your pet!\n";
-    //std::cout << "Pet age group: " << pet.getAgeGroup() << endl;
+    // If the pet is a baby, it ages to a teen.
+    if (pet.age_group() == "Baby") pet.set_age_group("Teen");
+
+    // If the pet is a teen, it ages to an adult.
+    if (pet.age_group() == "Teen") pet.set_age_group("Adult");
 }

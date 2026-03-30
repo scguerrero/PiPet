@@ -1,8 +1,9 @@
+/* Author: Luke Cerwin */
 #ifndef PLAYER_H
 #define PLAYER_H
 
 #include <ctime>
-#include "../Pet/piPet.h"
+#include "../Pet/PiPet.h"
 
 class Player {
 private:
@@ -12,24 +13,24 @@ private:
     int hours;         // Hours spent in game
 
 public:
-    piPet pet; // Composed pet object
+    PiPet pet; // Composed pet object
 
     // Constructor
-    Player(const piPet& petInit);
+    Player(const PiPet& petInit);
 
     // Getters
     time_t getStartDate() const;
     int getStreak() const;
     int getGoodDays() const;
     int getHours() const;
-    piPet getPet() const;
+    PiPet getPet() const;
 
     // Setters
     void setStartDate(time_t t);
     void setStreak(int s);
     void setGoodDays(int g);
     void setHours(int h);
-    void setPet(const piPet& p);
+    void setPet(const PiPet& p);
 
     // Actions
     void feedPet();

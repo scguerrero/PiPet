@@ -13,7 +13,7 @@ Care::Care(QWidget *parent)
     : QWidget{parent}
 {
     // Initialize pet and player
-    piPet pet;
+    PiPet pet;
     Player player(pet);
 
     // Top-level layout that will hold stacked widget

@@ -43,21 +43,19 @@ Affection::Affection(Player *player, QWidget *parent)
 
 void Affection::updateHappinessDisplay()
 {
-    int happiness = player->pet.getHappiness();
-    happinessDisplay->setText(QString("Happiness: %1/100").arg(happiness));
+    happinessDisplay->setText(QString("Happiness: %1/100").arg(player->pet.happiness()));
 }
 
 void Affection::applyAffectionAction(int boost, const QString &message)
 {
-    int happiness = player->pet.getHappiness();
-    if (happiness >= 100){
+    if (player->pet.happiness() >= 100){
         happinessDisplay->setText("Your pet is already very happy!");
         return;
     }
-    player->pet.increaseHappiness(boost);
+    player->pet.increase_happiness(boost);
     updateHappinessDisplay();
     happinessDisplay->setText(QString("%1 | Happiness: %2/100")
-                                  .arg(message).arg(player->pet.getHappiness()));
+                                  .arg(message).arg(player->pet.happiness()));
 
 }
 

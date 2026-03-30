@@ -71,7 +71,13 @@ Create::Create(QWidget *parent) : QWidget{parent} {
 	// Create widget -----------------------------------------------------------
 	layout = new QVBoxLayout(); // Create widget's main layout
 	tabs = new QTabWidget(); // Tab widget holding name and species tabs
-	b_done = new QPushButton("DONE"); // Player will click 'DONE' after choosing pet's name and species 
+    b_done = new QPushButton("DONE"); // Player will click 'DONE' after choosing pet's name and species
+
+    // Done widget -------------------------------------------------------------
+    stack = new QStackedWidget();
+    placeholder = new QWidget();
+    stack->addWidget(placeholder);
+    stack->addWidget(b_done);
 
 	// Populate tab widget
     tabs->addTab(scroll_name, "Name");
@@ -81,24 +87,26 @@ Create::Create(QWidget *parent) : QWidget{parent} {
 	this->setLayout(layout);
 	layout->addWidget(tabs);
     layout->addWidget(b_done);
-    /*b_done->setVisible(false);
 
     // Connections
     connect(name_list, SIGNAL( itemSelectionChanged() ), this, SLOT( updateNameFlag() )); // When a list item is chosen, update list flag to true
     connect(box_buttons, SIGNAL( clicked() ), this, SLOT( updateSpeciesFlag() )); // When a radio button is clicked, update list flag to true
-
-    // Don't add done button until name and species have been selected
-    if (name_chosen && species_chosen) {
-        b_done->setVisible(true);
-    }*/
 }
 
 void Create::updateNameFlag() {
     name_chosen = true;
     cout << name_chosen << endl;
+    // Don't add done button until name and species have been selected
+    if (name_chosen && species_chosen) {
+        stack->setCurrentIndex(1);
+    }
 }
 
 void Create::updateSpeciesFlag() {
     species_chosen = true;
     cout << species_chosen << endl;
+    // Don't add done button until name and species have been selected
+    if (name_chosen && species_chosen) {
+        stack->setCurrentIndex(1);
+    }
 }

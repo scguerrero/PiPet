@@ -93,5 +93,11 @@ public:
     void increaseCritDmg(int);
     void increaseSkillPoints(int);
 
+    //
+    int clamp(int value, int min, int max);
+    void dailyDecay();
+    void updateHealth();
+    void tickDay();
+
 };
 #endif

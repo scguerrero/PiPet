@@ -6,37 +6,39 @@
 
 class Player {
 private:
-    time_t startDate;  // Time when object initialized
-    int streak;        // Consecutive days opened
-    int goodDays;      // Days pet's condition > 80%
-    int hours;         // Hours spent in game
+    time_t startDate;
+    int streak;
+    int goodDays;
+    int hours;
+
+    piPet* pet;   // store pointer to real pet
 
 public:
-    piPet pet; // Composed pet object
-
-    // Constructor
-    Player(const piPet& petInit);
+    Player(piPet* petInit);   // constructor takes pointer
 
     // Getters
     time_t getStartDate() const;
     int getStreak() const;
     int getGoodDays() const;
     int getHours() const;
-    piPet getPet() const;
+
+    piPet& getPet() const;     // return reference to real pet
+    piPet* getPetPtr() const;  // optional pointer getter
 
     // Setters
     void setStartDate(time_t t);
     void setStreak(int s);
     void setGoodDays(int g);
     void setHours(int h);
-    void setPet(const piPet& p);
+    void setPet(piPet* p);     // setter takes pointer
 
     // Actions
     void feedPet();
     void sendPetToSleep();
     void groomPet();
-    double getCareRating() const;  // goodDays / streak * 100
+    void givePetAffection();
+    double getCareRating() const;
     void celebratePetBirthday();
 };
 
-#endif
+#endif // PLAYER_H

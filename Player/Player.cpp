@@ -1,11 +1,10 @@
 #include "Player.h"
 #include <iostream>
-//#include <algorithm>
-using namespace std;
 
-Player::Player(const piPet& petInit)
-    : streak(0), goodDays(0), hours(0), pet(petInit) {
-    startDate = std::time(nullptr);  // initialize with current system time
+Player::Player(piPet* petInit)
+    : streak(0), goodDays(0), hours(0), pet(petInit)
+{
+    startDate = std::time(nullptr);
 }
 
 // Getters
@@ -13,29 +12,36 @@ time_t Player::getStartDate() const { return startDate; }
 int Player::getStreak() const { return streak; }
 int Player::getGoodDays() const { return goodDays; }
 int Player::getHours() const { return hours; }
-piPet Player::getPet() const { return pet; }
+
+piPet& Player::getPet() const { return *pet; }
+piPet* Player::getPetPtr() const { return pet; }
 
 // Setters
 void Player::setStartDate(time_t t) { startDate = t; }
 void Player::setStreak(int s) { streak = s; }
 void Player::setGoodDays(int g) { goodDays = g; }
 void Player::setHours(int h) { hours = h; }
-void Player::setPet(const piPet& p) { pet = p; }
+void Player::setPet(piPet* p) { pet = p; }
 
 // Actions
 void Player::feedPet() {
-    pet.increaseHunger(10); // Example: assumes piPet has this method
+    pet->increaseHunger(10);
     std::cout << "Pet fed!\n";
 }
 
 void Player::sendPetToSleep() {
-    pet.increaseEnergy(10); // Assumes piPet has a sleep() method
+    pet->increaseEnergy(10);
     std::cout << "Pet is sleeping!\n";
 }
 
 void Player::groomPet() {
-    pet.increaseHygiene(10); // Assumes piPet has a groom() method
+    pet->increaseHygiene(10);
     std::cout << "Pet groomed!\n";
+}
+
+void Player::givePetAffection() {
+    pet->increaseHappiness(10);
+    std::cout << "Pet is happy!\n";
 }
 
 double Player::getCareRating() const {
@@ -44,7 +50,6 @@ double Player::getCareRating() const {
 }
 
 void Player::celebratePetBirthday() {
-    pet.moveUpAgeGroup(); // Assumes piPet has this method
+    pet->moveUpAgeGroup();
     std::cout << "Happy Birthday to your pet!\n";
-    //std::cout << "Pet age group: " << pet.getAgeGroup() << endl;
 }

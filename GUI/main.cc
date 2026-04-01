@@ -12,8 +12,9 @@
 #include <QCoreApplication>
 
 int main(int argc, char**argv)
-{	
-	qputenv("QT_QPA_PLATFORM", "xcb"); // Necessary for Raspberry Pi Zero 2 W compatibility
+{
+    QCoreApplication::setLibraryPaths({"C:/Qt/6.11.0/mingw_64/plugins"});
+    //qputenv("QT_QPA_PLATFORM", "xcb"); // Necessary for Raspberry Pi Zero 2 W compatibility
     QApplication app(argc, argv); // Need a QApplication object to house all game components
     
     app.setStyleSheet( // Set colors/font of the game

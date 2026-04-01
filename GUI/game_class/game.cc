@@ -7,69 +7,55 @@
 #include "game.h"
 
 Game::Game(QWidget *parent) : QWidget{parent} {
-	layout = new QVBoxLayout();
-	pages = new QStackedWidget();
-	start = new Start();
-	create = new Create();
-    mode = new Mode();
-    care = new Care();
-    train = new Train();
+    layout = new QVBoxLayout();
+    pages = new QStackedWidget();
+    start = new Start();
+    create = new Create();
+
+    // Create a Player first, then pass it into Mode
+    piPet* pet = new piPet();
+    player = new Player(pet);
+    mode = new Mode(player);  // FIX: pass player into Mode
+
     battle = new Battle();
-    //gear = new Gear();
-	b_quit = new QPushButton("QUIT");
 
-	this->setWindowTitle("PIPET"); // The title of the non-fullscreened application window
-	this->setContentsMargins(30,30,30,30); // 30px margins
-	
-	this->setLayout(layout); // Vertically-arrange widgets inside Game
-	layout->addWidget(pages); // Children of layout: pages and quit button
-	layout->addWidget(b_quit); // For testing purposes, we want the ability to quit any time
-	
-	pages->addWidget(start);// Children of pages: Start, Create, Mode, Care, Train, Battle, Gear
-    pages->addWidget(create); // index 1
-    pages->addWidget(mode); // index 2
-    pages->addWidget(care); // 3
-    pages->addWidget(train); // 4
-    pages->addWidget(battle); // 5
-    //pages->addWidget(gear); // 6
-	
-	connect(b_quit, SIGNAL( clicked() ), QApplication::instance(), SLOT( quit() )); // Terminate running program
 
-    if (new_game) { // For a new game, the first step is to create a pet
-		connect(start->b_start, SIGNAL( clicked() ), this, SLOT( open_create() ));
-    } else { // When loading a previous game, send them to the mode-selection page
-        connect(start->b_start, SIGNAL( clicked() ), this, SLOT( open_mode() ));
+    b_quit = new QPushButton("QUIT");
+    this->setWindowTitle("PIPET");
+    this->setContentsMargins(30, 30, 30, 30);
+
+    this->setLayout(layout);
+    layout->addWidget(pages);
+    layout->addWidget(b_quit);
+
+    // FIX: Only add Start, Create, Mode, Battle as top-level pages
+    // Care/Train/Affection/Groom are handled INSIDE Mode's own QStackedWidget
+    pages->addWidget(start);   // index 0
+    pages->addWidget(create);  // index 1
+    pages->addWidget(mode);    // index 2
+    pages->addWidget(battle);  // index 3
+
+    connect(b_quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
+
+    if (new_game) {
+        connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
+    } else {
+        connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
     }
 
-    connect(create->b_done, SIGNAL( clicked() ), this, SLOT( open_mode() )); // Open Mode from Create
+    connect(create->b_done, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    connect(mode->b_care, SIGNAL( clicked() ), this, SLOT( open_care() )); // from Mode, open Care widget
-
-    connect(care->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() )); // from Care, go back to Mode widget
-
-    connect(mode->b_train, SIGNAL( clicked() ), this, SLOT( open_train() )); // from Mode, go to Train
-
-    connect(train->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() )); // from Train, go back to Mode
-
-    connect(mode->b_battle, SIGNAL( clicked() ), this, SLOT( open_battle() )); // from Mode, go to Battle
+    // FIX: Remove all mode->b_care / mode->b_train connects — Mode handles those internally
+    // Only wire Battle since it's a top-level page outside Mode
+    connect(mode, SIGNAL(battleRequested()), this, SLOT(open_battle()));
 }
 
 void Game::open_create() {
-	pages->setCurrentIndex(1);
+    pages->setCurrentIndex(1);
 }
-
 void Game::open_mode() {
     pages->setCurrentIndex(2);
 }
-
-void Game::open_care() {
-    pages->setCurrentIndex(3);
-}
-
-void Game::open_train() {
-    pages->setCurrentIndex(4);
-}
-
 void Game::open_battle() {
-    pages->setCurrentIndex(5);
+    pages->setCurrentIndex(3);
 }

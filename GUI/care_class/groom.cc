@@ -15,11 +15,11 @@ Groom::Groom(Player *player, QWidget *parent)
     updateHygieneDisplay();
 
     // Buttons
-    brushBtn        = new QPushButton("Brush");
-    batheBtn        = new QPushButton("Bathe");
-    trimBtn         = new QPushButton("Trim Nails");
-    cleanEarsBtn    = new QPushButton("Clean Ears");
-    backBtn         = new QPushButton("Back");
+    brushBtn        = new QPushButton("🪮 Brush");
+    batheBtn        = new QPushButton("🧼 Bathe");
+    trimBtn         = new QPushButton("💅 Trim Nails");
+    cleanEarsBtn    = new QPushButton("👂 Clean Ears");
+    backBtn         = new QPushButton("Back to menu");
 
     // Layout
     actionsGrid->addWidget(brushBtn,        0, 0, Qt::AlignCenter);
@@ -44,22 +44,24 @@ Groom::Groom(Player *player, QWidget *parent)
 
 void Groom::updateHygieneDisplay()
 {
-    int hygiene = player->pet.getHygiene();
+    int hygiene = player->getPet().getHygiene();
     hygieneDisplay->setText(QString("Hygiene: %1 / 100").arg(hygiene));
 }
 
 void Groom::applyGroomAction(int boost, const QString &message)
 {
-    int hygiene = player->pet.getHygiene();
-    if (hygiene >= 100) {
+    piPet &pet = player->getPet(); // reference to real pet
+
+    if (pet.getHygiene() >= 100) {
         hygieneDisplay->setText("Your pet is already clean!");
         return;
     }
-    player->pet.increaseHygiene(boost);
+    pet.increaseHygiene(boost);
     updateHygieneDisplay();
+
     hygieneDisplay->setText(QString("%1  |  Hygiene: %2 / 100")
                                 .arg(message)
-                                .arg(player->pet.getHygiene()));
+                                .arg(pet.getHygiene()));
 }
 
 void Groom::brush()       { applyGroomAction(5,  "Brushed!"); }

@@ -14,11 +14,11 @@ Affection::Affection(Player *player, QWidget *parent)
     updateHappinessDisplay();
 
     //Buttons
-    cuddleBtn   = new QPushButton("Cuddle");
-    playBtn     = new QPushButton("Play");
-    petsBtn     = new QPushButton("Give Pets");
-    treatBtn    = new QPushButton("Give Treat");
-    backBtn     = new QPushButton("Back");
+    cuddleBtn   = new QPushButton("🤗 Cuddle");
+    playBtn     = new QPushButton("🪀 Play");
+    petsBtn     = new QPushButton("🐾 Give Pets");
+    treatBtn    = new QPushButton("🦴 Give Treat");
+    backBtn     = new QPushButton("Back to menu");
 
     // grid Layout
     actionsGrid->addWidget(cuddleBtn,   0, 0, Qt::AlignCenter);
@@ -43,22 +43,27 @@ Affection::Affection(Player *player, QWidget *parent)
 
 void Affection::updateHappinessDisplay()
 {
-    int happiness = player->pet.getHappiness();
+    int happiness = player->getPet().getHappiness();
     happinessDisplay->setText(QString("Happiness: %1/100").arg(happiness));
 }
 
 void Affection::applyAffectionAction(int boost, const QString &message)
 {
-    int happiness = player->pet.getHappiness();
-    if (happiness >= 100){
+    piPet &pet = player->getPet();   // reference to real pet
+
+    if (pet.getHappiness() >= 100) {
         happinessDisplay->setText("Your pet is already very happy!");
         return;
     }
-    player->pet.increaseHappiness(boost);
-    updateHappinessDisplay();
-    happinessDisplay->setText(QString("%1 | Happiness: %2/100")
-                                  .arg(message).arg(player->pet.getHappiness()));
 
+    pet.increaseHappiness(boost);
+    updateHappinessDisplay();
+
+    happinessDisplay->setText(
+        QString("%1 | Happiness: %2/100")
+            .arg(message)
+            .arg(pet.getHappiness())
+        );
 }
 
 void Affection::cuddle()    { applyAffectionAction(10, "Cuddled!"); }

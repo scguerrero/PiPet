@@ -12,13 +12,13 @@ using namespace std;
 // piPet default constructor with no arguments
 piPet::piPet()
 {
-    hunger = 50;
-    energy = 50;
-    strength = 50;
-    hygiene = 50;
-    intelligence = 50;
-    happiness = 50;
-    ageDays = 1;
+    hunger = 0;
+    energy = 0;
+    strength = 0;
+    hygiene = 0;
+    intelligence = 0;
+    happiness = 0;
+    ageDays = 0;
     ageGroup = 0;
     attack = 100;
     defense = 100;
@@ -233,28 +233,42 @@ int piPet::getCritDmg()
 int piPet::getSkillPoints()
 { return skillPoints; }
 
+
+// adding a clamp to every stats so that there will be no overflow
+int piPet::clamp(int value, int min, int max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+}
+
 // Incrementers add amnt ("amount") to the corresponding variable
 
 void piPet::increaseHunger(int amnt)
-{ hunger += amnt; }
+{ hunger = clamp(hunger +  amnt, 0, 100); }
 
 void piPet::increaseEnergy(int amnt)
-{ energy += amnt; }
+{ energy = clamp(energy + amnt, 0, 100); }
 
 void piPet::increaseStrength(int amnt)
-{ strength += amnt; }
+{ strength = clamp(strength + amnt, 0, 100); }
 
 void piPet::increaseHygiene(int amnt)
-{ hygiene += amnt; }
+{ hygiene = clamp(hygiene + amnt, 0, 100); }
 
 void piPet::increaseIntelligence(int amnt)
-{ intelligence += amnt; }
+{ intelligence = clamp(intelligence + amnt, 0, 100); }
 
 void piPet::increaseHappiness(int amnt)
-{ happiness += amnt; }
+{ happiness = clamp(happiness + amnt, 0, 100); }
 
 void piPet::increaseAgeDays(int amnt)
-{ ageDays += amnt; }
+{ ageDays += amnt;
+
+  // Every 7 days -> age group increases
+    if (ageDays / 7 > ageGroup) {
+        moveUpAgeGroup();
+    }
+}
 
 void piPet::moveUpAgeGroup()
 { if (ageGroup < 3) ageGroup += 1; }
@@ -276,3 +290,29 @@ void piPet::increaseCritDmg(int amnt)
 
 void piPet::increaseSkillPoints(int amnt)
 { skillPoints += amnt; }
+
+// natural daily decay
+void piPet::dailyDecay(){
+    increaseHunger(-5);
+    increaseEnergy(-5);
+    increaseHygiene(-5);
+    increaseHappiness(-5);
+    increaseAgeDays(1);
+}
+
+//health consequesnces if stats drop too low
+void piPet::updateHealth()
+{
+    if (hunger < 20) increaseHealthPoints(-5);
+    if (hygiene < 20) increaseHealthPoints(-5);
+    if (happiness < 20) increaseHealthPoints(-5);
+
+    healthPoints = clamp(healthPoints, 0, 1000);
+}
+
+// updates everything each day
+void piPet::tickDay()
+{
+    dailyDecay();
+    updateHealth();
+}

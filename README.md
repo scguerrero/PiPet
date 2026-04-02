@@ -3,7 +3,7 @@ Senior capstone project by Luke C., Sasha G., Camden G., Tanya M., and Cesar R.
 
 ## Raspberry Pi Zero 2 W Pre-Compiled Binary
 PiPet is designed for 32-bit Raspberry Pi Bookworm OS. 
-Send `pipet` located in `/PreCompiledBinary' directory to the Pi.
+Send `pipet` located in `PreCompiledBinary/` directory to the Pi.
 ```
 # Use hostname -I to get the Pi's IP address.
 hostname -I

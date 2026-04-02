@@ -18,7 +18,9 @@ class Game : public QWidget {
 	Q_OBJECT
 	public:
         explicit Game (QWidget *parent = nullptr);
-	private:
+        PiPet *pet;
+        Player *player;
+    private:
         bool new_game = true;
 		QVBoxLayout *layout; // Vertically-arrange widgets inside Game
 		QStackedWidget *pages; // This holds each "page" of Game

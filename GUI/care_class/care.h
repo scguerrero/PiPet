@@ -1,20 +1,18 @@
 /*
- * CareWidget class specification file.
+ * Care class specification file.
  * In Care mode, the Player can feed, groom, and give affection to their pet.
  * They can also view their pet's Condition, or wellness attributes.
  * Author(s): Sasha C. Guerrero, Tanya Magurupira
  * Created: 2/19/2026
  * Last Edited: 3/17/2026
- *
- * Current Edits author: Tanya Magurupira
- * Goal: Making sure progress bar gets updates on the care stats of the pet
- * date: 3/13/2026
  */
 #ifndef CARE_H
 #define CARE_H
 #include <QtWidgets>
 #include "groom.h"
 #include "affection.h"
+#include "feed.h"
+#include "sleep.h"
 #include "../../Player/Player.h"
 
 class Care : public QWidget
@@ -22,9 +20,9 @@ class Care : public QWidget
     Q_OBJECT
 public:
     void updateStats(); // call this whenever widget becomes visible
- Care(Player* player, QStackedWidget* stack, QWidget *parent = nullptr);
+    Care(Player* player, QWidget *parent = nullptr);
 
-// Care actions: feed pet, groom pet, send pet to sleep, give pet affection
+    // Care actions: feed pet, groom pet, send pet to sleep, give pet affection
     QPushButton *b_feed, *b_groom, *b_sleep, *b_affection, *b_back;
 signals:
 
@@ -44,8 +42,11 @@ private:
 
     QVBoxLayout *top_layout; // Top-level layout that will hold stacked widget
     QStackedWidget *pages; // Each page is a different Care widget
+
     Groom *groom; // Groom widget lets player manage pet's hygiene
     Affection *affection; // Affection widget lets player give affection to pet
+    Feed *feed;
+    Sleep *sleep;
 
     QWidget *hub; // Menu of pet's stats and actions
     QVBoxLayout *layout; // Pet's Condition and Care Actions go inside here

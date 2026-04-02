@@ -2,15 +2,15 @@
  * CareWidget class implementation file.
  * In Care mode, the Player can feed, groom, and give affection to their pet.
  * They can also view their pet's Condition, or wellness attributes.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Sasha C. Guerrero, Tanya Magurupira
  * Created: 2/20/2026
  * Last Edited: 3/17/2026
  */
 #include "care.h"
 #include "../../Player/Player.h"
 
-Care::Care(Player* player, QStackedWidget* stack, QWidget *parent)
-    : QWidget(parent), player(player), stack(stack)
+Care::Care(Player* player, QWidget *parent)
+    : QWidget(parent), player(player)
 {
     // Top-level layout
     top_layout = new QVBoxLayout(this);
@@ -19,11 +19,15 @@ Care::Care(Player* player, QStackedWidget* stack, QWidget *parent)
     hub = new QWidget(this);
     groom = new Groom(player, this);
     affection = new Affection(player, this);
+    feed = new Feed(player, this);
+    sleep = new Sleep(player, this);
 
-    pages = new QStackedWidget(this);
+    pages = new QStackedWidget();
     pages->addWidget(hub);
     pages->addWidget(groom);
     pages->addWidget(affection);
+    pages->addWidget(feed);
+    pages->addWidget(sleep);
 
     // Main layout inside hub
     layout = new QVBoxLayout(hub);
@@ -44,7 +48,7 @@ Care::Care(Player* player, QStackedWidget* stack, QWidget *parent)
     age_days_label = new QLabel("Days Old", hub);
     age_group_label = new QLabel("Age Group", hub);
 
-    age_days = new QLabel("0", hub);
+    age_days = new QLabel("0", hub); // CALL PET'S MEMBER VARIABLES
     age_group = new QLabel("Baby", hub);
 
     // Progress bars (0-100)
@@ -104,11 +108,21 @@ Care::Care(Player* player, QStackedWidget* stack, QWidget *parent)
     // Final layout
     top_layout->addWidget(pages);
 
-    // Connections
+    // Navigation from Hub to Feed, Feed to Hub
+    connect(b_feed, SIGNAL(clicked()), this, SLOT(feedPet()));
+    connect(feed->backBtn, SIGNAL(clicked()), this, SLOT(returnToHub()));
+
+    // Navigation from Hub to Groom, Groom to Hub
     connect(b_groom, SIGNAL(clicked()), this, SLOT(groomPet()));
     connect(groom->backBtn, SIGNAL(clicked()), this, SLOT(returnToHub()));
+
+    // Navigation from Hub to Affection, Affection to Hub
     connect(b_affection, SIGNAL(clicked()), this, SLOT(givePetAffection()));
     connect(affection->backBtn, SIGNAL(clicked()), this, SLOT(returnToHub()));
+
+    // Navigation from Hub to Sleep, Sleep to Hub
+    connect(b_sleep, SIGNAL(clicked()), this, SLOT(sendPetToSleep()));
+    connect(sleep->backBtn, SIGNAL(clicked()), this, SLOT(returnToHub()));
 
     //load initial values
     updateStats();
@@ -117,64 +131,61 @@ Care::Care(Player* player, QStackedWidget* stack, QWidget *parent)
 void Care::updateStats(){
     // TODO: inmplement later
     //updateStats of the pet condition
-    piPet pet = player->getPet();
+    PiPet pet = player->getPet();
 
-    hunger_bar->setValue(pet.getHunger());
-    energy_bar->setValue(pet.getEnergy());
-    strength_bar->setValue(pet.getStrength());
-    hygiene_bar->setValue(pet.getHygiene());
-    intelligence_bar->setValue(pet.getIntelligence());
-    happiness_bar->setValue(pet.getHappiness());
+    hunger_bar->setValue(pet.hunger());
+    energy_bar->setValue(pet.energy());
+    strength_bar->setValue(pet.strength());
+    hygiene_bar->setValue(pet.hygiene());
+    intelligence_bar->setValue(pet.intelligence());
+    happiness_bar->setValue(pet.happiness());
 
-    age_days->setText(QString::number(pet.getAgeDays()));
-
-    //Map ageGroup int to a readable string
-    QStringList groups = {"Child", "Teen", "Adult"};
-    int g = pet.getAgeGroup();
-    age_group->setText((g >= 0 && g < groups.size()) ? groups[g] : "Unknown");
+    age_days->setText(QString::number(pet.days_old()));
+    age_group->setText(pet.age_group());
 }
 
 void Care::returnToHub() {
     pages->setCurrentIndex(0);
 }
 
-void Care::feedPet() // Increase hunger
-{
-    // index 1 of stacked widget
-    // increase hunger
-    piPet pet = player->getPet();
-    if (pet.getHunger() >= 100) return; // already full
-    player->feedPet();
-    updateStats();
-}
-
 void Care::groomPet() // Increase hygiene
 {
-    pages->setCurrentIndex(1); // index 2 of stacked widget
+    pages->setCurrentIndex(1); // index 1 of stacked widget
 
     // increase hygiene
-    piPet pet = player->getPet();
-    if (pet.getHygiene() >= 100) return; // already clean
+    PiPet pet = player->getPet();
+    if (pet.hygiene() >= 100) return; // already clean
     player->groomPet(); // player grooms the pet
-    updateStats();
-}
-
-void Care::sendPetToSleep() // Increase energy
-{
-    // index 3 of stacked widget
-    piPet pet = player->getPet();
-    if (pet.getEnergy() >= 100) return; // already rested
-    player->sendPetToSleep();
     updateStats();
 }
 
 void Care::givePetAffection() // Increase happiness
 {
-    pages->setCurrentIndex(2); // index 4 of stacked widget
+    pages->setCurrentIndex(2); // index 2 of stacked widget
 
     // increase affection
-    piPet pet = player->getPet();
-    if (pet.getHappiness() >= 100) return; //already max happiness
+    PiPet pet = player->getPet();
+    if (pet.happiness() >= 100) return; //already max happiness
     player->givePetAffection(); // player gives affection
+    updateStats();
+}
+
+void Care::feedPet() // Increase hunger
+{
+    pages->setCurrentIndex(3); // index 3 of stacked widget
+    // increase hunger
+    PiPet pet = player->getPet();
+    if (pet.hunger() >= 100) return; // already full
+    player->feedPet();
+    updateStats();
+}
+
+void Care::sendPetToSleep() // Increase energy
+{
+    pages->setCurrentIndex(4);// index 4 of stacked widget
+
+    PiPet pet = player->getPet();
+    if (pet.energy() >= 100) return; // already rested
+    player->sendPetToSleep();
     updateStats();
 }

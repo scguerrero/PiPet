@@ -1,3 +1,5 @@
+/* Author: Tanya Magurupira */
+
 #ifndef GROOM_H
 #define GROOM_H
 

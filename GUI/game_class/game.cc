@@ -7,16 +7,18 @@
 #include "game.h"
 
 Game::Game(QWidget *parent) : QWidget{parent} {
-	layout = new QVBoxLayout();
+
+    //Create a PiPet and a Player
+    pet = new PiPet();
+    player = new Player(*pet);
+
+    layout = new QVBoxLayout();
 	pages = new QStackedWidget();
 	start = new Start();
 	create = new Create();
-    //Create a player first, then pass it into Mode
-	piPet *pet = new piPet();
-	player = new Player(*pet);
-	mode = new Mode(player); // pass player into Mode
-    //care = new Care();
-    //train = new Train();
+    mode = new Mode();
+    care = new Care(player);
+    train = new Train();
     battle = new Battle();
     //gear = new Gear();
 	b_quit = new QPushButton("QUIT");
@@ -44,7 +46,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
         connect(start->b_start, SIGNAL( clicked() ), this, SLOT( open_mode() ));
     }
 
-   /* connect(create->b_done, SIGNAL( clicked() ), this, SLOT( open_mode() )); // Open Mode from Create
+    connect(create->b_done, SIGNAL( clicked() ), this, SLOT( open_mode() )); // Open Mode from Create
 
     connect(mode->b_care, SIGNAL( clicked() ), this, SLOT( open_care() )); // from Mode, open Care widget
 
@@ -55,8 +57,6 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(train->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() )); // from Train, go back to Mode
 
     connect(mode->b_battle, SIGNAL( clicked() ), this, SLOT( open_battle() )); // from Mode, go to Battle
-*/
-	connect(mode, SIGNAL(battleRequested()), this, SLOT(open_battle()));
 }
 
 void Game::open_create() {
@@ -71,9 +71,10 @@ void Game::open_care() {
     pages->setCurrentIndex(3);
 }
 
-/* void Game::open_train() {
+void Game::open_train() {
     pages->setCurrentIndex(4);
 }
- void Game::open_battle() {
+
+void Game::open_battle() {
     pages->setCurrentIndex(5);
- }*/
+}

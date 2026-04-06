@@ -38,7 +38,7 @@ PiPet::~PiPet() {}
 
 // Getters
 QString PiPet::name() { return m_name; }
-QString PiPet::age_group() { return m_name; }
+QString PiPet::age_group() { return m_age_group; }
 int PiPet::days_old() { return m_days_old; }
 int PiPet::hunger() { return m_hunger; }
 int PiPet::energy() { return m_energy; }

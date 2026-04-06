@@ -36,7 +36,7 @@ Care::Care(Player* player, QWidget *parent)
     careBox = new QGroupBox("Care Actions", hub);
     conditionBox = new QGroupBox("Condition", hub);
 
-    b_back = new QPushButton("BACK", hub);
+    b_back = new QPushButton("⬅️ BACK", hub);
 
     // Labels
     hunger_label = new QLabel("Hunger", hub);
@@ -126,6 +126,23 @@ Care::Care(Player* player, QWidget *parent)
 
     //load initial values
     updateStats();
+
+    this->setStyleSheet(R"(
+    QLabel {
+        background-color: transparent;
+    }
+    )");
+
+    b_back->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }
 
 void Care::updateStats(){

@@ -15,7 +15,7 @@ Train::Train(QWidget *parent)
     b_minigame1 = new QPushButton("Minigame 1");
     b_minigame2 = new QPushButton("Minigame 2");
     b_minigame3 = new QPushButton("Minigame 3");
-    b_back = new QPushButton("BACK");
+    b_back = new QPushButton("⬅️ BACK");
 
     // Add buttons to grid
     layout->addWidget(b_minigame1);
@@ -25,4 +25,15 @@ Train::Train(QWidget *parent)
 
     // Assign layout
     this->setLayout(layout);
+
+    b_back->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }

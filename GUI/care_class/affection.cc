@@ -18,7 +18,7 @@ Affection::Affection(Player *player, QWidget *parent)
     playBtn     = new QPushButton("Play");
     petsBtn     = new QPushButton("Give Pets");
     treatBtn    = new QPushButton("Give Treat");
-    backBtn     = new QPushButton("Back");
+    backBtn     = new QPushButton("⬅️ Back to Care Hub!");
 
     // grid Layout
     actionsGrid->addWidget(cuddleBtn,   0, 0, Qt::AlignCenter);
@@ -39,6 +39,16 @@ Affection::Affection(Player *player, QWidget *parent)
     layout->addWidget(backBtn);
     this->setLayout(layout);
 
+    backBtn->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }
 
 void Affection::updateHappinessDisplay()

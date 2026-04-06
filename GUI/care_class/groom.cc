@@ -20,7 +20,7 @@ Groom::Groom(Player *player, QWidget *parent)
     batheBtn        = new QPushButton("🧼 Bathe");
     trimBtn         = new QPushButton("💅 Trim Nails");
     cleanEarsBtn    = new QPushButton("👂 Clean Ears");
-    backBtn         = new QPushButton("Back to menu");
+    backBtn         = new QPushButton("⬅️ Back to Care Hub!");
 
     // Layout
     actionsGrid->addWidget(brushBtn,        0, 0, Qt::AlignCenter);
@@ -41,6 +41,17 @@ Groom::Groom(Player *player, QWidget *parent)
     layout->addWidget(actionsBox);
     layout->addWidget(backBtn);
     this->setLayout(layout);
+
+    backBtn->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }
 
 void Groom::updateHygieneDisplay()

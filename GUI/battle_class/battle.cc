@@ -3,14 +3,8 @@
 
 Battle::Battle(QWidget *parent) : QWidget(parent)
 {
-    //setWindowTitle("piPetBattle");
-
-    //auto *central = new QWidget(this);
-    //setCentralWidget(central);
     root = new QVBoxLayout();
     this->setLayout(root);
-    //root->setSpacing(10);
-    //root->setContentsMargins(24, 24, 24, 24);
 
     // Title
     title = new QLabel("piPetBattle", this);
@@ -55,7 +49,9 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     hpGrid->addWidget(playerHPLabel, 2, 0);
     hpGrid->addWidget(cpuHPLabel,    2, 2);
 
-    //root->addLayout(hpGrid);
+    // Adjust font size of HP labels
+    playerHPLabel->setStyleSheet("font-size: 14px");
+    cpuHPLabel->setStyleSheet("font-size: 14px");
 
     sep = new QFrame();
     sep->setFrameShape(QFrame::HLine); sep->setFrameShadow(QFrame::Sunken);
@@ -94,11 +90,13 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     btnCharge  = makeBtn("⚡ Charge");
     btnDefend  = makeBtn("🛡 Defend (5)");
     btnRestart = makeBtn("🔄 New Game");
+    btnBack = new QPushButton("⬅️ BACK");
 
     btnRow->addWidget(btnAttack);
     btnRow->addWidget(btnCharge);
     btnRow->addWidget(btnDefend);
     root->addWidget(btnWidget);
+    root->addWidget(btnBack);
 
     btnRestart->setVisible(false);
     root->addWidget(btnRestart, 0, Qt::AlignCenter);
@@ -109,6 +107,17 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     connect(btnRestart, &QPushButton::clicked, this, &Battle::onRestart);
 
     refreshUI();
+
+    btnBack->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }
 
 // Slots

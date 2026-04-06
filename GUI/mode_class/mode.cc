@@ -14,10 +14,10 @@ Mode::Mode(QWidget *parent) : QWidget{parent} {
     layout = new QVBoxLayout(); // Vertically-arrange widgets inside Mode
     this->setLayout(layout);
 
-    b_care = new QPushButton("Care"); // Buttons leading to corresponding widget
-    b_train = new QPushButton("Train");
-    b_battle = new QPushButton("Battle");
-    b_gear = new QPushButton("Gear");
+    b_care = new QPushButton("🧽 Care"); // Buttons leading to corresponding widget
+    b_train = new QPushButton("🥎 Train");
+    b_battle = new QPushButton("🥊 Battle");
+    b_gear = new QPushButton("🛡️ Gear");
 
     layout->addWidget(b_care); // Add buttons to layout
     layout->addWidget(b_train);

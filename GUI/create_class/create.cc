@@ -76,21 +76,43 @@ Create::Create(QWidget *parent) : QWidget{parent} {
 	// Populate tab widget
     tabs->addTab(scroll_name, "Name");
     tabs->addTab(scroll_species, "Species");
-	
+
+    // Gallery widget -----------------------------------------------------------
+    QWidget *gallery = new QWidget(); // Let player browse pictures of adoptable species
+    QHBoxLayout *row = new QHBoxLayout();
+    QPushButton *b_left = new QPushButton("⬅️");
+    QStackedWidget *pictures = new QStackedWidget();
+    QPushButton *b_right = new QPushButton("➡️");
+    gallery->setLayout(row);
+
+    // Add pictures to gallery
+    QLabel *axolotl = new QLabel();
+    QImage *img0 = new QImage(":/images/Sprites/pets/axolotl/axolotl_adult_idle.gif");
+    QPixmap pxmap = QPixmap::fromImage(*img0);
+    axolotl->setPixmap(pxmap.scaled(200, 200, Qt::KeepAspectRatio));
+    axolotl->setAlignment(Qt::AlignCenter);
+    pictures->addWidget(axolotl);
+
+    row->addWidget(b_left);
+    row->addWidget(pictures);
+    row->addWidget(b_right);
+
 	// Populate main layout
-	this->setLayout(layout);
-	layout->addWidget(tabs);
+    this->setLayout(layout);
+    layout->addWidget(gallery);
+    layout->addWidget(tabs);
     layout->addWidget(b_done);
-    /*b_done->setVisible(false);
 
-    // Connections
-    connect(name_list, SIGNAL( itemSelectionChanged() ), this, SLOT( updateNameFlag() )); // When a list item is chosen, update list flag to true
-    connect(box_buttons, SIGNAL( clicked() ), this, SLOT( updateSpeciesFlag() )); // When a radio button is clicked, update list flag to true
-
-    // Don't add done button until name and species have been selected
-    if (name_chosen && species_chosen) {
-        b_done->setVisible(true);
-    }*/
+    b_done->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }
 
 void Create::updateNameFlag() {

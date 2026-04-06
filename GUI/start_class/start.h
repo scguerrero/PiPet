@@ -13,7 +13,7 @@
  	Q_OBJECT
 	public:
 		explicit Start(QWidget *parent = nullptr);
-		QPushButton *b_start; // either go to "Create" page or "Mode" page
+        QPushButton *b_start; // either go to "Create" page or "Mode" page
 	private:
 		QVBoxLayout *layout; // vertically-arrange widgets
 		QLabel *title; // title text

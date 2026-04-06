@@ -18,7 +18,7 @@ class Battle : public QWidget
 
 public:
     explicit Battle(QWidget *parent = nullptr);
-
+    QPushButton *btnBack;
 private slots:
     void onAttack();
     void onCharge();

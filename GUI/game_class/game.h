@@ -1,6 +1,7 @@
 /*
  * Game class specification file. The game is structured as pages that can be navigated via buttons.
  * Author(s): Sasha C. Guerrero
+ * source: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
  * Created: 2/9/2026
  * Last Edited: 3/7/2026
  */
@@ -18,10 +19,16 @@ class Game : public QWidget {
 	Q_OBJECT
 	public:
         explicit Game (QWidget *parent = nullptr);
+        QJsonObject toJson() const; // Convert PiPet and Player to JSON
+        void read(const QJsonObject &json); // Read and load in JSON data
         PiPet *pet;
         Player *player;
+    public slots:
+        bool loadGame(); // Read data from JSON file
+        bool saveGame(); // Write data to JSON file
     private:
         bool new_game = true;
+        QVBoxLayout *top_layout; // Highest level layout
 		QVBoxLayout *layout; // Vertically-arrange widgets inside Game
 		QStackedWidget *pages; // This holds each "page" of Game
 		Start *start; // page 0: Title page
@@ -32,8 +39,14 @@ class Game : public QWidget {
         Battle *battle; // page 5: Play single- or multi-player battle
         /*Gear *gear; // page 6: Pet can equip gear that effect stats
 		*/
+
+        // Horizontal utility bar at bottom of screen
+        QHBoxLayout *utility_bar;
+        QPushButton *b_save; // Save the game
+        QPushButton *b_home; // Go back to "Start" page
 		QPushButton *b_quit; // Close the running application
 	private slots:
+        void open_start(); // go to page "Start"
 		void open_create(); // go to page "Create"
         void open_mode(); // go to page "Mode"
         void open_care(); // go to page "Care"

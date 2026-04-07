@@ -1,7 +1,7 @@
 /*
-    Clock is for keeping track of time elapsed in seconds.
-    Author(s): Sasha C. Guerrero
-*/
+ * Clock is for keeping track of time elapsed in seconds.
+ * Author(s): Sasha C. Guerrero
+ */
 
 #ifndef CLOCK_H
 #define CLOCK_H

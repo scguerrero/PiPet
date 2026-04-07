@@ -8,7 +8,6 @@
  * Last Edited: 3/10/2026
  */
 #include "create.h"
-#include <iostream>
 using namespace std;
 
 Create::Create(QWidget *parent) : QWidget{parent} {
@@ -80,19 +79,46 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     // Gallery widget -----------------------------------------------------------
     QWidget *gallery = new QWidget(); // Let player browse pictures of adoptable species
     QHBoxLayout *row = new QHBoxLayout();
-    QPushButton *b_left = new QPushButton("⬅️");
-    QStackedWidget *pictures = new QStackedWidget();
-    QPushButton *b_right = new QPushButton("➡️");
+    QPushButton *b_left = new QPushButton();
+    pictures = new QStackedWidget();
+    QPushButton *b_right = new QPushButton();
     gallery->setLayout(row);
 
-    // Add pictures to gallery
+    // Left and right icons
+    QIcon left_icon(":/images/Assets/left.png");
+    QIcon right_icon(":/images/Assets/right.png");
+    b_left->setIcon(left_icon);
+    b_right->setIcon(right_icon);
+
+    // Add axolotl to gallery
     QLabel *axolotl = new QLabel();
-    QImage *img0 = new QImage(":/images/Sprites/pets/axolotl/axolotl_adult_idle.gif");
-    QPixmap pxmap = QPixmap::fromImage(*img0);
-    axolotl->setPixmap(pxmap.scaled(200, 200, Qt::KeepAspectRatio));
+    QImage *img0 = new QImage(":/images/Sprites/pets/axolotl/axolotl_idle.gif");
+    QPixmap pxmap0 = QPixmap::fromImage(*img0);
+    axolotl->setPixmap(pxmap0.scaled(200, 200, Qt::KeepAspectRatio));
     axolotl->setAlignment(Qt::AlignCenter);
     pictures->addWidget(axolotl);
 
+    // Add dragondog to gallery
+    QLabel *dog = new QLabel();
+    QImage *img1 = new QImage(":/images/Sprites/pets/dragondog/dragondog_idle.gif");
+    QPixmap pxmap1 = QPixmap::fromImage(*img1);
+    dog->setPixmap(pxmap1.scaled(200, 200, Qt::KeepAspectRatio));
+    dog->setAlignment(Qt::AlignCenter);
+    pictures->addWidget(dog);
+
+    // Add seelcat to gallery
+    QLabel *cat = new QLabel();
+    QImage *img2 = new QImage(":/images/Sprites/pets/seelcat/seelcat_idle.gif");
+    QPixmap pxmap2 = QPixmap::fromImage(*img2);
+    cat->setPixmap(pxmap2.scaled(200, 200, Qt::KeepAspectRatio));
+    cat->setAlignment(Qt::AlignCenter);
+    pictures->addWidget(cat);
+
+    // Gallery navigation
+    connect(b_left, SIGNAL( clicked() ), this, SLOT( left_gallery()) );
+    connect(b_right, SIGNAL( clicked() ), this, SLOT( right_gallery()) );
+
+    // Gallery row
     row->addWidget(b_left);
     row->addWidget(pictures);
     row->addWidget(b_right);
@@ -115,12 +141,14 @@ Create::Create(QWidget *parent) : QWidget{parent} {
         )");
 }
 
-void Create::updateNameFlag() {
-    name_chosen = true;
-    cout << name_chosen << endl;
+void Create::left_gallery() {
+    int current = pictures->currentIndex();
+    if (current == 0) pictures->setCurrentIndex(2);
+    if (current > 0) pictures->setCurrentIndex(current-1);
 }
 
-void Create::updateSpeciesFlag() {
-    species_chosen = true;
-    cout << species_chosen << endl;
+void Create::right_gallery() {
+    int current = pictures->currentIndex();
+    if (current == 2) pictures->setCurrentIndex(0);
+    if (current < 2) pictures->setCurrentIndex(current+1);
 }

@@ -19,7 +19,11 @@ Feed::Feed(Player *player, QWidget *parent)
     boneBtn     = new QPushButton("🦴 Bone ");
     drinkBtn     = new QPushButton("🥤 A Drink");
     pizzaBtn    = new QPushButton("🍕 Eat pizza");
-    backBtn     = new QPushButton("⬅️ Back to Care Hub!");
+    backBtn     = new QPushButton("Back to Care Hub!");
+
+    //Icons for buttons
+    QIcon left_icon(":/images/Assets/left.png");
+    backBtn->setIcon(left_icon);
 
     // grid Layout
     actionsGrid->addWidget(appleBtn,   0, 0, Qt::AlignCenter);

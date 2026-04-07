@@ -36,7 +36,9 @@ Care::Care(Player* player, QWidget *parent)
     careBox = new QGroupBox("Care Actions", hub);
     conditionBox = new QGroupBox("Condition", hub);
 
-    b_back = new QPushButton("⬅️ BACK", hub);
+    b_back = new QPushButton("BACK", hub);
+    QIcon left_icon(":/images/Assets/left.png");
+    b_back->setIcon(left_icon);
 
     // Labels
     hunger_label = new QLabel("Hunger", hub);

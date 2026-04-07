@@ -66,7 +66,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
 
     logLabel = new QLabel("");
     logLabel->setAlignment(Qt::AlignCenter);
-    logLabel->setStyleSheet("font-size: 12px; color: #666; font-style: italic;");
+    logLabel->setStyleSheet("font-size: 12px; font-style: italic;");
     root->addWidget(logLabel);
 
     root->addStretch();
@@ -86,11 +86,24 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         return b;
     };
 
-    btnAttack  = makeBtn("⚔ Attack");
-    btnCharge  = makeBtn("⚡ Charge");
-    btnDefend  = makeBtn("🛡 Defend (5)");
-    btnRestart = makeBtn("🔄 New Game");
-    btnBack = new QPushButton("⬅️ BACK");
+    // Creating buttons
+    btnAttack  = makeBtn("Attack");
+    btnCharge  = makeBtn("Charge");
+    btnDefend  = makeBtn("Defend (5)");
+    btnRestart = makeBtn("New Game");
+    btnBack = new QPushButton("BACK");
+
+    // Putting icons on buttons
+    QIcon attack_icon(":/images/Assets/attack.png");
+    QIcon charge_icon(":/images/Assets/charge.png");
+    QIcon defend_icon(":/images/Assets/defend.png");
+    QIcon restart_icon(":/images/Assets/restart.png");
+    QIcon left_icon(":/images/Assets/left.png");
+    btnAttack->setIcon(attack_icon);
+    btnCharge->setIcon(charge_icon);
+    btnDefend->setIcon(defend_icon);
+    btnRestart->setIcon(restart_icon);
+    btnBack->setIcon(left_icon);
 
     btnRow->addWidget(btnAttack);
     btnRow->addWidget(btnCharge);
@@ -183,16 +196,16 @@ void Battle::playTurn(Move pm)
         btnDefend->setEnabled(playerDefends > 0);
 
         Move cm = cpuMove();
-        log = QString("You: [skipped]  |  CPU: %1").arg(cm == Move::Attack ? "Attack ⚔" : cm == Move::Charge ? "Charge ⚡" : "Defend 🛡");
+        log = QString("You: [skipped]  |  CPU: %1").arg(cm == Move::Attack ? "Attack " : cm == Move::Charge ? "Charge " : "Defend ");
 
         if (cm == Move::Attack) {
             playerHP -= cpuAtk;
-            result = QString("💫 You were stunned! CPU attacked freely for %1 damage.").arg(cpuAtk);
+            result = QString("You were stunned! CPU attacked freely for %1 damage.").arg(cpuAtk);
         } else if (cm == Move::Charge) {
             cpuAtk += chargeBonus;
-            result = QString("💫 You were stunned! CPU charged. CPU attack is now %1.").arg(cpuAtk);
+            result = QString("You were stunned! CPU charged. CPU attack is now %1.").arg(cpuAtk);
         } else {
-            result = "💫 You were stunned! CPU defended.";
+            result = "You were stunned! CPU defended.";
         }
 
         playerHP = qMax(0, playerHP);
@@ -206,17 +219,17 @@ void Battle::playTurn(Move pm)
     // CPU GETS TURN SKIPPED
     if (cpuSkip) {
         cpuSkip = false;
-        log = QString("You: %1  |  CPU: [skipped]").arg(pm == Move::Attack ? "Attack ⚔" : pm == Move::Charge ? "Charge ⚡" : "Defend 🛡");
+        log = QString("You: %1  |  CPU: [skipped]").arg(pm == Move::Attack ? "Attack " : pm == Move::Charge ? "Charge " : "Defend ");
 
         if (pm == Move::Attack) {
             cpuHP -= playerAtk;
-            result = QString("🏃 CPU was stunned! You attacked freely for %1 damage.").arg(playerAtk);
+            result = QString("CPU was stunned! You attacked freely for %1 damage.").arg(playerAtk);
         } else if (pm == Move::Charge) {
             playerAtk += chargeBonus;
-            result = QString("🏃 CPU was stunned! You charged. Your attack is now %1.").arg(playerAtk);
+            result = QString("CPU was stunned! You charged. Your attack is now %1.").arg(playerAtk);
         } else {
             playerDefends--;
-            result = "🏃 CPU was stunned! You defended.";
+            result = "CPU was stunned! You defended.";
         }
 
         cpuHP = qMax(0, cpuHP);
@@ -230,8 +243,8 @@ void Battle::playTurn(Move pm)
     // NORMAL TURN - Both choose
     Move cm = cpuMove();
     log = QString("You: %1  |  CPU: %2")
-              .arg(pm == Move::Attack ? "Attack ⚔" : pm == Move::Charge ? "Charge ⚡" : "Defend 🛡")
-              .arg(cm == Move::Attack ? "Attack ⚔" : cm == Move::Charge ? "Charge ⚡" : "Defend 🛡");
+              .arg(pm == Move::Attack ? "Attack " : pm == Move::Charge ? "Charge " : "Defend ")
+              .arg(cm == Move::Attack ? "Attack " : cm == Move::Charge ? "Charge " : "Defend ");
 
     if (pm == Move::Attack && cm == Move::Attack) {
         playerHP -= cpuAtk;
@@ -247,38 +260,38 @@ void Battle::playTurn(Move pm)
         btnAttack->setEnabled(false);
         btnCharge->setEnabled(false);
         btnDefend->setEnabled(false);
-        result = "🛡 CPU defended your attack! You lose your next turn.";
+        result = "CPU defended your attack! You lose your next turn.";
 
     } else if (pm == Move::Charge && cm == Move::Attack) {
         // CPU attacks into player's charge — player takes damage, no charge gained
         playerHP -= cpuAtk;
-        result = QString("💥 CPU attacked while you were charging! You take %1 damage and don't get the charge.").arg(cpuAtk);
+        result = QString("CPU attacked while you were charging! You take %1 damage and don't get the charge.").arg(cpuAtk);
 
     } else if (pm == Move::Charge && cm == Move::Defend) {
         // CPU defended player's charge — player still gets the charge
         playerAtk += chargeBonus;
-        result = QString("⚡ CPU defended but you still charge up! Your attack is now %1.").arg(playerAtk);
+        result = QString("CPU defended but you still charge up! Your attack is now %1.").arg(playerAtk);
 
     } else if (pm == Move::Charge && cm == Move::Charge) {
         // Both charge
         playerAtk += chargeBonus;
         cpuAtk    += chargeBonus;
-        result = QString("⚡ Both fighters charge up! Your attack: %1 | CPU attack: %2.").arg(playerAtk).arg(cpuAtk);
+        result = QString("Both fighters charge up! Your attack: %1 | CPU attack: %2.").arg(playerAtk).arg(cpuAtk);
 
     } else if (pm == Move::Defend && cm == Move::Attack) {
         playerDefends--;
         cpuSkip = true;
-        result = "🛡 You defended CPU's attack! CPU loses their next turn.";
+        result = "You defended CPU's attack! CPU loses their next turn.";
 
     } else if (pm == Move::Defend && cm == Move::Charge) {
         // Player defended but CPU charges — CPU gets the charge
         playerDefends--;
         cpuAtk += chargeBonus;
-        result = QString("🛡 You defended, but CPU charges anyway! CPU attack is now %1.").arg(cpuAtk);
+        result = QString("You defended, but CPU charges anyway! CPU attack is now %1.").arg(cpuAtk);
 
     } else { // pm == Defend && cm == Defend
         playerDefends--;
-        result = "🤝 Both players defend. Nothing happens.";
+        result = "Both players defend. Nothing happens.";
     }
 
     playerHP = qMax(0, playerHP);
@@ -296,7 +309,7 @@ void Battle::refreshUI()
     cpuBar->setValue(cpuHP);
     playerHPLabel->setText(QString("HP: %1  ATK: %2").arg(playerHP).arg(playerAtk));
     cpuHPLabel->setText(QString("ATK: %1  HP: %2").arg(cpuAtk).arg(cpuHP));
-    btnDefend->setText(QString("🛡 Defend (%1)").arg(playerDefends));
+    btnDefend->setText(QString("Defend (%1)").arg(playerDefends));
     btnDefend->setEnabled(playerDefends > 0);
 }
 
@@ -311,9 +324,9 @@ void Battle::endGame()
     btnRestart->setVisible(true);
 
     if (playerHP <= 0 && cpuHP <= 0)
-        resultLabel->setText("💥 Double KO — it's a draw!");
+        resultLabel->setText("Double KO — it's a draw!");
     else if (playerHP <= 0)
-        resultLabel->setText("💀 You were defeated! CPU wins.");
+        resultLabel->setText("You were defeated! CPU wins.");
     else
-        resultLabel->setText("🏆 You won!");
+        resultLabel->setText("You won!");
 }

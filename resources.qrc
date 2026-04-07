@@ -19,5 +19,15 @@
         <file>Sprites/pets/seelcat/seelcat_idle.gif</file>
         <file>Sprites/pets/seelcat/seelcat_sleep.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_idle.gif</file>
+        <file>Assets/home.png</file>
+        <file>Assets/quit.png</file>
+        <file>Assets/save.png</file>
+        <file>Assets/wifi.png</file>
+        <file>Assets/left.png</file>
+        <file>Assets/right.png</file>
+        <file>Assets/attack.png</file>
+        <file>Assets/charge.png</file>
+        <file>Assets/defend.png</file>
+        <file>Assets/restart.png</file>
     </qresource>
 </RCC>

@@ -9,9 +9,11 @@
 
 Game::Game(QWidget *parent) : QWidget{parent} {
 
-    //Create a PiPet and a Player
+    // Create a PiPet and a Player
     pet = new PiPet();
     player = new Player(*pet);
+
+    // Timer
 
     layout = new QVBoxLayout();
 	pages = new QStackedWidget();
@@ -26,24 +28,27 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     // Utility bar widgets
     utility_bar = new QHBoxLayout();
     b_save = new QPushButton("SAVE");
-    b_home = new QPushButton("🏠 HOME");
+    b_home = new QPushButton("HOME");
 	b_quit = new QPushButton("QUIT");
+
+    // Utility bar icons
+    QIcon save_icon(":/images/Assets/save.png");
+    QIcon home_icon(":/images/Assets/home.png");
+    QIcon quit_icon(":/images/Assets/quit.png");
+    b_save->setIcon(save_icon);
+    b_home->setIcon(home_icon);
+    b_quit->setIcon(quit_icon);
 
     // Arrange buttons inside utility bar
     utility_bar->addWidget(b_save);
     utility_bar->addWidget(b_home);
     utility_bar->addWidget(b_quit);
 
-    // Icons for buttons
-    b_save->setIcon(QIcon::fromTheme("document-save"));
-    b_quit->setIcon(QIcon::fromTheme("application-exit"));
-
 	this->setWindowTitle("PIPET"); // The title of the non-fullscreened application window
     this->setContentsMargins(15,15,15,15); // 30px margins
 	
 	this->setLayout(layout); // Vertically-arrange widgets inside Game
 	layout->addWidget(pages); // Children of layout: pages and quit button
-    //layout->addWidget(b_quit); // For testing purposes, we want the ability to quit any time
 
     top_layout = new QVBoxLayout();
     layout->addLayout(top_layout);
@@ -153,6 +158,10 @@ bool Game::saveGame() {
         qWarning("Couldn't open save file.");
         return false;
     }
+
+    QMessageBox msg(this);
+    msg.setText("Save successful!");
+    msg.exec();
 
     QJsonObject gameObject = toJson(); // Convert Player object to a JSON object
     saveFile.write(QJsonDocument(gameObject).toJson()); // Write JSON to file player.json

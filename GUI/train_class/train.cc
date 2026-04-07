@@ -15,13 +15,17 @@ Train::Train(QWidget *parent)
     b_minigame1 = new QPushButton("Minigame 1");
     b_minigame2 = new QPushButton("Minigame 2");
     b_minigame3 = new QPushButton("Minigame 3");
-    b_back = new QPushButton("⬅️ BACK");
+    b_back = new QPushButton("BACK");
 
     // Add buttons to grid
     layout->addWidget(b_minigame1);
     layout->addWidget(b_minigame2);
     layout->addWidget(b_minigame3);
     layout->addWidget(b_back);
+
+    // Icons for buttons
+    QIcon left_icon(":/images/Assets/left.png");
+    b_back->setIcon(left_icon);
 
     // Assign layout
     this->setLayout(layout);

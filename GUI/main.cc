@@ -83,14 +83,15 @@ int main(int argc, char**argv)
     }
 
     QScrollBar {
-        background-color: #8C1AA8;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
         border: 1px solid #FBA8FF;
         width: 20px;
         margin: 22px 0 22px 0;
     }
 
     QScrollBar::handle {
-        background: #B11DD6;
+        /*background: #B11DD6;*/
+        background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #B11DD6, stop: 1 #C974D6);
         border: 1px solid #FBA8FF;
         min-height: 20px;
     }
@@ -127,10 +128,10 @@ int main(int argc, char**argv)
     game.loadGame(); // Load in previously saved data
 
     // Enable fullscreen
-    //game.showFullScreen();
+    game.showFullScreen();
 
     // For testing only: limit to 480 x 640
-    game.setFixedSize(480,640);
+    //game.setFixedSize(480,640);
 
     // Open the game
     game.show();

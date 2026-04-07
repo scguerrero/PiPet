@@ -20,7 +20,11 @@ Groom::Groom(Player *player, QWidget *parent)
     batheBtn        = new QPushButton("🧼 Bathe");
     trimBtn         = new QPushButton("💅 Trim Nails");
     cleanEarsBtn    = new QPushButton("👂 Clean Ears");
-    backBtn         = new QPushButton("⬅️ Back to Care Hub!");
+    backBtn         = new QPushButton("Back to Care Hub!");
+
+    // Icons for buttons
+    QIcon left_icon(":/images/Assets/left.png");
+    backBtn->setIcon(left_icon);
 
     // Layout
     actionsGrid->addWidget(brushBtn,        0, 0, Qt::AlignCenter);

@@ -20,7 +20,11 @@ Sleep::Sleep(Player *player, QWidget *parent)
     wearPjsBtn     = new QPushButton("👖 Wear Pjs");
     readBookBtn     = new QPushButton("📖 Bed Time Story");
     tuckInBtn    = new QPushButton("🛌 Tuck Into Bed");
-    backBtn     = new QPushButton("⬅️ Back to Care Hub!");
+    backBtn     = new QPushButton("Back to Care Hub!");
+
+    //Icons for buttons
+    QIcon left_icon(":/images/Assets/left.png");
+    backBtn->setIcon(left_icon);
 
     // grid Layout
     actionsGrid->addWidget(brushTeethBtn,   0, 0, Qt::AlignCenter);

@@ -18,7 +18,11 @@ Affection::Affection(Player *player, QWidget *parent)
     playBtn     = new QPushButton("Play");
     petsBtn     = new QPushButton("Give Pets");
     treatBtn    = new QPushButton("Give Treat");
-    backBtn     = new QPushButton("⬅️ Back to Care Hub!");
+    backBtn     = new QPushButton("Back to Care Hub!");
+
+    //Icons for buttons
+    QIcon left_icon(":/images/Assets/left.png");
+    backBtn->setIcon(left_icon);
 
     // grid Layout
     actionsGrid->addWidget(cuddleBtn,   0, 0, Qt::AlignCenter);

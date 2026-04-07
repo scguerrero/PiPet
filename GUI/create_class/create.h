@@ -44,9 +44,11 @@ class Create : public QWidget {
         QVBoxLayout *l_buttons; // Layout that will vertically-arrange buttons inside layout
 		QRadioButton *b_axolotl, *b_cat, *b_dog; // Player may choose 1 species only using radio buttons
 
+        // Gallery widget
+        QStackedWidget *pictures;
     public slots:
-        void updateNameFlag();
-        void updateSpeciesFlag();
+        void left_gallery(); // Left button on gallery
+        void right_gallery(); // Right button on gallery
 };
 
 #endif

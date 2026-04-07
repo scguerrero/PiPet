@@ -1,4 +1,9 @@
-/* Tanya Magurupira */
+/*
+ * In "Feed" mode, the Player can feed various food items to their PiPet.
+ *
+ * Author(s): Tanya Magurupira
+ */
+
 #ifndef FEED_H
 #define FEED_H
 

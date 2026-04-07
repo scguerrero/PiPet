@@ -1,4 +1,9 @@
-/* Author: Tanya Magurupira */
+/*
+ * In "Sleep" mode, the Player can perform actions that increase the PiPet's energy.
+ *
+ * Author(s): Tanya Magurupira
+ */
+
 #ifndef SLEEP_H
 #define SLEEP_H
 

@@ -128,10 +128,10 @@ int main(int argc, char**argv)
     game.loadGame(); // Load in previously saved data
 
     // Enable fullscreen
-    game.showFullScreen();
+    //game.showFullScreen();
 
     // For testing only: limit to 480 x 640
-    //game.setFixedSize(480,640);
+    game.setFixedSize(480,640);
 
     // Open the game
     game.show();

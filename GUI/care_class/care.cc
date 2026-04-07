@@ -1,10 +1,8 @@
 /*
- * CareWidget class implementation file.
- * In Care mode, the Player can feed, groom, and give affection to their pet.
- * They can also view their pet's Condition, or wellness attributes.
+ * In "Care" mode, the Player can feed, groom, and give affection to their pet.
+ * They can also view their PiPet's Condition, or wellness attributes.
+ *
  * Author(s): Sasha C. Guerrero, Tanya Magurupira
- * Created: 2/20/2026
- * Last Edited: 3/17/2026
  */
 #include "care.h"
 #include "../../Player/Player.h"

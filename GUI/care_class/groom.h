@@ -1,4 +1,8 @@
-/* Author: Tanya Magurupira */
+/*
+ * In "Groom" mode, the Player can perform actions that increase the PiPet's hygiene.
+ *
+ * Author(s): Tanya Magurupira
+ */
 
 #ifndef GROOM_H
 #define GROOM_H

@@ -1,12 +1,11 @@
 /*
- * Create class specification file.
  * This page of the game is for the Player to create their piPet.
  * We create a tabbed view of the pages for choosing the pet's name and species.
  * Pet creation is only available for new savefiles.
+ *
  * Author(s): Sasha C. Guerrero
- * Created: 2/16/2026
- * Last Edited: 3/10/2026
  */
+
 #ifndef CREATE_H
 #define CREATE_H
 #include <QtWidgets>

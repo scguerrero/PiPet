@@ -1,3 +1,9 @@
+/*
+ * In single-player battle, the PiPet battles against the computer.
+ *
+ * Author(s): Camden Gugel
+ */
+
 #include "battle.h"
 #include <QFrame>
 

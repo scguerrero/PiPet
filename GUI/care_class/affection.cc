@@ -1,3 +1,9 @@
+/*
+ * In "Affection" mode, the Player can perform actions that increase the PiPet's happiness.
+ *
+ * Author(s): Tanya Magurupira
+ */
+
 #include "affection.h"
 
 Affection::Affection(Player *player, QWidget *parent)

@@ -1,4 +1,9 @@
-/* Author: Tanya Magurupira */
+/*
+ * In "Groom" mode, the Player can perform actions that increase the PiPet's hygiene.
+ *
+ * Author(s): Tanya Magurupira
+ */
+
 #include "groom.h"
 
 Groom::Groom(Player *player, QWidget *parent)

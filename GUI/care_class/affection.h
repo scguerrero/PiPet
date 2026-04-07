@@ -1,3 +1,9 @@
+/*
+ * In "Affection" mode, the Player can perform actions that increase the PiPet's happiness.
+ *
+ * Author(s): Tanya Magurupira
+ */
+
 #ifndef AFFECTION_H
 #define AFFECTION_H
 

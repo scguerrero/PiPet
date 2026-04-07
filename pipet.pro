@@ -17,6 +17,7 @@ QT = core gui widgets
 HEADERS += GUI/game_class/game.h \
     GUI/care_class/feed.h \
     GUI/care_class/sleep.h \
+    GUI/clock_class/clock.h \
     GUI/start_class/start.h \
     GUI/create_class/create.h \
     Pet/PiPet.h \
@@ -29,6 +30,7 @@ HEADERS += GUI/game_class/game.h \
 SOURCES += GUI/main.cc \
     GUI/care_class/feed.cc \
     GUI/care_class/sleep.cc \
+    GUI/clock_class/clock.cpp \
     GUI/game_class/game.cc \
     GUI/start_class/start.cc \
     GUI/create_class/create.cc \

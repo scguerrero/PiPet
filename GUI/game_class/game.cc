@@ -1,22 +1,33 @@
 /*
- * Game class implementation file.
+ * The PiPet program is structured as a stack of pages that can be navigated via buttons.
+ *
+ * Saving/loading data functions are based on this example from the Qt Documentation:
+ * https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
+ *
  * Author(s): Sasha C. Guerrero
- * Source: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
- * Created: 2/9/2026
- * Last Edited: 3/14/2026
  */
 #include "game.h"
 
 Game::Game(QWidget *parent) : QWidget{parent} {
+    // Set title of running program
+    this->setWindowTitle("PIPET");
 
-    // Create a PiPet and a Player
+    // Set margin size between the edges of the screen and the Qt widgets
+    this->setContentsMargins(15,15,15,15);
+
+    // Game has PiPet and Player objects
     pet = new PiPet();
     player = new Player(*pet);
 
-    // Timer
-
+    // Vertically-arrange widgets inside Game
     layout = new QVBoxLayout();
+    this->setLayout(layout);
+
+    // Game is structured as a "stack" of "pages" where each page is a different gamemode
 	pages = new QStackedWidget();
+    layout->addWidget(pages);
+
+    // The different gamemodes, or pages of the game
 	start = new Start();
 	create = new Create();
     mode = new Mode();
@@ -24,6 +35,15 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     train = new Train();
     battle = new Battle();
     //gear = new Gear();
+
+    // Add each gamemode to the pages widget
+    pages->addWidget(start);// page 0
+    pages->addWidget(create); // page 1
+    pages->addWidget(mode); // page 2
+    pages->addWidget(care); // page 3
+    pages->addWidget(train); // page 4
+    pages->addWidget(battle); // page 5
+    //pages->addWidget(gear); // page 6
 
     // Utility bar widgets
     utility_bar = new QHBoxLayout();
@@ -43,44 +63,25 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     utility_bar->addWidget(b_save);
     utility_bar->addWidget(b_home);
     utility_bar->addWidget(b_quit);
-
-	this->setWindowTitle("PIPET"); // The title of the non-fullscreened application window
-    this->setContentsMargins(15,15,15,15); // 30px margins
-	
-	this->setLayout(layout); // Vertically-arrange widgets inside Game
-	layout->addWidget(pages); // Children of layout: pages and quit button
-
-    top_layout = new QVBoxLayout();
-    layout->addLayout(top_layout);
     layout->addLayout(utility_bar);
 
-	pages->addWidget(start);// Children of pages: Start, Create, Mode, Care, Train, Battle, Gear
-    pages->addWidget(create); // index 1
-    pages->addWidget(mode); // index 2
-    pages->addWidget(care); // 3
-    pages->addWidget(train); // 4
-    pages->addWidget(battle); // 5
-    //pages->addWidget(gear); // 6
-	
-    if (new_game) { // For a new game, the first step is to create a pet
+    // For a new game, the first step is to create a pet
+    if (new_game) {
 		connect(start->b_start, SIGNAL( clicked() ), this, SLOT( open_create() ));
-    } else { // When loading a previous game, send them to the mode-selection page
+    // When loading a previous game, send them to the mode-selection page
+    } else {
         connect(start->b_start, SIGNAL( clicked() ), this, SLOT( open_mode() ));
     }
 
-    // The Save button writes current data to a JSON file
-    connect(b_save, SIGNAL(clicked()), this, SLOT(saveGame()));
-
-    // The Home button goes back to the Start page
-    connect(b_home, SIGNAL( clicked() ), this, SLOT( open_start() ));
-
-    // The Quit button terminates running program
-    connect(b_quit, SIGNAL( clicked() ), QApplication::instance(), SLOT( quit() ));
+    // Utility bar functionality
+    connect(b_save, SIGNAL(clicked()), this, SLOT(saveGame())); // The Save button writes current data to a JSON file
+    connect(b_home, SIGNAL( clicked() ), this, SLOT( open_start() )); // The Home button goes back to the Start page
+    connect(b_quit, SIGNAL( clicked() ), QApplication::instance(), SLOT( quit() )); // The Quit button terminates running program
 
     // Navigation from Mode to Create
     connect(create->b_done, SIGNAL( clicked() ), this, SLOT( open_mode() ));
 
-    // Navigation from Mode tot Care, Care to Mode
+    // Navigation from Mode to Care, Care to Mode
     connect(mode->b_care, SIGNAL( clicked() ), this, SLOT( open_care() ));
     connect(care->b_back, SIGNAL( clicked() ), this, SLOT( open_mode() ));
 
@@ -92,50 +93,29 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_battle, SIGNAL( clicked() ), this, SLOT( open_battle() ));
     connect(battle->btnBack, SIGNAL( clicked() ), this, SLOT( open_mode() ));
 
-    // Styling widgets
-    b_save->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF;
-        border-radius: 10px;
-        padding: 4px;
-        font: bold; }
-        QPushButton:pressed {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
-        }
-        )");
-    b_home->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF;
-        border-radius: 10px;
-        padding: 4px;
-        font: bold; }
-        QPushButton:pressed {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
-        }
-        )");
-    b_quit->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF;
-        border-radius: 10px;
-        padding: 4px;
-        font: bold; }
-        QPushButton:pressed {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
-        }
-        )");
+    // The utility bar buttons are a different color to distinguish them as important
+    setUtilityStyle(*b_save);
+    setUtilityStyle(*b_home);
+    setUtilityStyle(*b_quit);
 }
 
+// Write data from Player object to a JSON object
+// Saving/loading data based on example from Qt Documentation: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
 QJsonObject Game::toJson() const {
     QJsonObject json;
     json["Player"] = player->toJson();
     return json;
 }
 
+// Read data from JSON object to create a Player object
+// Saving/loading data based on example from Qt Documentation: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
 void Game::read(const QJsonObject &json) {
     if (const QJsonValue v = json["Player"]; v.isObject())
         *player = Player::fromJSON(v.toObject());
 }
 
+// Read data from JSON file "player.json"
+// Saving/loading data based on example from Qt Documentation: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
 bool Game::loadGame() {
     QFile loadFile("player.json"); // Filename
 
@@ -151,6 +131,8 @@ bool Game::loadGame() {
     return true;
 }
 
+// Write data to JSON file "player.json"
+// Saving/loading data based on example from Qt Documentation: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
 bool Game::saveGame() {
     QFile saveFile("player.json"); // Filename
 
@@ -168,26 +150,46 @@ bool Game::saveGame() {
     return true;
 }
 
+// The "Start" page is at index 0
 void Game::open_start() {
     pages->setCurrentIndex(0);
 }
 
+// The "Create" page is at index 1
 void Game::open_create() {
 	pages->setCurrentIndex(1);
 }
 
+// The "Mode" page is at index 2
 void Game::open_mode() {
     pages->setCurrentIndex(2);
 }
 
+// The "Care" page is at index 3
 void Game::open_care() {
     pages->setCurrentIndex(3);
 }
 
+// The "Train" page is at index 4
 void Game::open_train() {
     pages->setCurrentIndex(4);
 }
 
+// The "Battle" page is at index 5
 void Game::open_battle() {
     pages->setCurrentIndex(5);
+}
+
+// Assign special stylesheet to utility bar buttons to distinguish them as important
+void Game::setUtilityStyle(QPushButton &button) {
+    button.setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
+        border-radius: 10px;
+        padding: 4px;
+        font: bold; }
+        QPushButton:pressed {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
+        }
+        )");
 }

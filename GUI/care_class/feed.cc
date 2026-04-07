@@ -1,4 +1,9 @@
-/* Author: Tanya Magurupira */
+/*
+ * In "Feed" mode, the Player can feed various food items to their PiPet.
+ *
+ * Author(s): Tanya Magurupira
+ */
+
 #include "feed.h"
 
 Feed::Feed(Player *player, QWidget *parent)

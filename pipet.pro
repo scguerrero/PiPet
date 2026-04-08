@@ -20,7 +20,6 @@ HEADERS += \
     GUI/care_class/feed.h \
     GUI/care_class/sleep.h \
     GUI/care_class/groom.h \
-    GUI/care_class/affection.h \
     GUI/train_class/train.h \
     GUI/battle_class/battle.h \
     GUI/clock_class/clock.h \
@@ -37,7 +36,6 @@ SOURCES += \
     GUI/care_class/feed.cc \
     GUI/care_class/sleep.cc \
     GUI/care_class/groom.cc \
-    GUI/care_class/affection.cc \
     GUI/train_class/train.cc \
     GUI/battle_class/battle.cc \
     GUI/clock_class/clock.cpp \

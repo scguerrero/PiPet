@@ -1,159 +1,157 @@
 /*
- * create.cc
+ * create.cc - Pet creation screen.
+ * No tabs — gallery IS the species selector.
  * Author(s): Sasha C. Guerrero
- * Fixed: DONE button now starts disabled and only enables once both a name
- *        AND a species have been selected. Previously had no validation.
  */
 
 #include "create.h"
-using namespace std;
+#include <QPainter>
 
 Create::Create(QWidget *parent) : QWidget{parent} {
+    m_bg.load(":/images/Backgrounds/character_screen.jpg"); // character select background
 
-    // Name widget ---------------------------------------------------------------
-    name = new QWidget();
-    scroll_name = new QScrollArea();
-    scroll_name->setWidgetResizable(true);
-    l_name = new QVBoxLayout();
-    name_instruction = new QLabel("Your PiPet requires a name! Choose 1 name from the list.");
-    name_instruction->setWordWrap(true);
+    layout = new QVBoxLayout(this);
+    layout->setSpacing(8);
+    layout->setContentsMargins(16, 16, 16, 16);
 
-    name_list = new QListWidget();
+    // ── Gallery ───────────────────────────────────────────────────────────
+    QHBoxLayout *galleryRow = new QHBoxLayout();
+
+    b_left  = new QPushButton(this);
+    b_right = new QPushButton(this);
+    b_left->setIcon(QIcon(":/images/Assets/left.png"));
+    b_right->setIcon(QIcon(":/images/Assets/right.png"));
+    b_left->setFixedSize(44, 44);
+    b_right->setFixedSize(44, 44);
+
+    petImage = new QLabel(this);
+    petImage->setAlignment(Qt::AlignCenter);
+    petImage->setFixedSize(200, 200);
+
+    galleryRow->addWidget(b_left);
+    galleryRow->addWidget(petImage);
+    galleryRow->addWidget(b_right);
+    layout->addLayout(galleryRow);
+
+    // ── Pet name label ────────────────────────────────────────────────────
+    petName = new QLabel(this);
+    petName->setAlignment(Qt::AlignCenter);
+    petName->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,160); border-radius: 8px;"
+        "padding: 6px; color: #ffd700; font-size: 18px; font-weight: bold; }");
+    layout->addWidget(petName);
+
+    // ── Pet description ───────────────────────────────────────────────────
+    petDescription = new QLabel(this);
+    petDescription->setAlignment(Qt::AlignCenter);
+    petDescription->setWordWrap(true);
+    petDescription->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,140); border-radius: 8px;"
+        "padding: 6px; color: mistyrose; font-size: 14px; }");
+    layout->addWidget(petDescription);
+
+    // ── Hidden radio buttons (game.cc reads these to get species choice) ──
+    b_axolotl = new QRadioButton(this);
+    b_cat      = new QRadioButton(this);
+    b_dog      = new QRadioButton(this);
+    b_axolotl->hide();
+    b_cat->hide();
+    b_dog->hide();
+
+    // ── Name list ─────────────────────────────────────────────────────────
+    QLabel *nameHeader = new QLabel("Choose a name for your PiPet:", this);
+    nameHeader->setAlignment(Qt::AlignCenter);
+    nameHeader->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,140); border-radius: 6px;"
+        "padding: 4px; color: mistyrose; font-size: 15px; }");
+    layout->addWidget(nameHeader);
+
+    name_list = new QListWidget(this);
     name_list->setViewMode(QListView::ListMode);
     name_list->setFlow(QListView::TopToBottom);
+    name_list->setFixedHeight(140);
     for (int i = 0; i < 26; i++) {
-        QListWidgetItem *item = new QListWidgetItem();
-        item->setText(str_names[i]);
+        QListWidgetItem *item = new QListWidgetItem(str_names[i]);
         name_list->addItem(item);
     }
+    layout->addWidget(name_list);
 
-    name->setLayout(l_name);
-    l_name->addWidget(name_instruction);
-    l_name->addWidget(name_list);
-    scroll_name->setWidget(name);
-
-    // Species widget ------------------------------------------------------------
-    species = new QWidget();
-    scroll_species = new QScrollArea();
-    scroll_species->setWidgetResizable(true);
-    l_species = new QVBoxLayout();
-    species_instruction = new QLabel(R"(Your PiPet can be 1 of 3 species:
-        <ul>
-            <li><em>Electric Axolotl</em>: An amphibian with powers of electricity.</li>
-            <li><em>Seal Cat</em>: A semiaquatic cat with a powerful tailfin.</li>
-            <li><em>Dragon Dog</em>: A scaly, fire-breathing, and winged dog.</li>
-        </ul>)");
-    species_instruction->setTextFormat(Qt::RichText);
-    species_instruction->setWordWrap(true);
-    species->setLayout(l_species);
-    l_species->addWidget(species_instruction);
-    scroll_species->setWidget(species);
-
-    box_buttons = new QGroupBox("Choose 1");
-    l_buttons = new QVBoxLayout();
-    box_buttons->setLayout(l_buttons);
-    l_species->addWidget(box_buttons);
-
-    b_axolotl = new QRadioButton("Electric Axolotl");
-    b_cat     = new QRadioButton("Seal Cat");
-    b_dog     = new QRadioButton("Dragon Dog");
-    l_buttons->addWidget(b_axolotl);
-    l_buttons->addWidget(b_cat);
-    l_buttons->addWidget(b_dog);
-
-    // Create widget -------------------------------------------------------------
-    layout = new QVBoxLayout();
-    tabs   = new QTabWidget();
-    b_done = new QPushButton("DONE");
-
-    // FIX: start disabled — only enable once both name and species are chosen
+    // ── DONE button ───────────────────────────────────────────────────────
+    b_done = new QPushButton("DONE", this);
     b_done->setEnabled(false);
-    b_done->setToolTip("Choose a name and a species first!");
-
-    tabs->addTab(scroll_name,    "Name");
-    tabs->addTab(scroll_species, "Species");
-
-    // Gallery widget ------------------------------------------------------------
-    QWidget    *gallery = new QWidget();
-    QHBoxLayout *row    = new QHBoxLayout();
-    QPushButton *b_left = new QPushButton();
-    pictures            = new QStackedWidget();
-    QPushButton *b_right = new QPushButton();
-    gallery->setLayout(row);
-
-    QIcon left_icon(":/images/Assets/left.png");
-    QIcon right_icon(":/images/Assets/right.png");
-    b_left->setIcon(left_icon);
-    b_right->setIcon(right_icon);
-
-    // Axolotl
-    QLabel  *axolotl = new QLabel();
-    QImage  *img0    = new QImage(":/images/Sprites/pets/axolotl/axolotl_idle.gif");
-    QPixmap  pxmap0  = QPixmap::fromImage(*img0);
-    axolotl->setPixmap(pxmap0.scaled(200, 200, Qt::KeepAspectRatio));
-    axolotl->setAlignment(Qt::AlignCenter);
-    pictures->addWidget(axolotl);
-
-    // DragonDog
-    QLabel  *dog  = new QLabel();
-    QImage  *img1 = new QImage(":/images/Sprites/pets/dragondog/dragondog_idle.gif");
-    QPixmap  pxmap1 = QPixmap::fromImage(*img1);
-    dog->setPixmap(pxmap1.scaled(200, 200, Qt::KeepAspectRatio));
-    dog->setAlignment(Qt::AlignCenter);
-    pictures->addWidget(dog);
-
-    // SeelCat
-    QLabel  *cat  = new QLabel();
-    QImage  *img2 = new QImage(":/images/Sprites/pets/seelcat/seelcat_idle.gif");
-    QPixmap  pxmap2 = QPixmap::fromImage(*img2);
-    cat->setPixmap(pxmap2.scaled(200, 200, Qt::KeepAspectRatio));
-    cat->setAlignment(Qt::AlignCenter);
-    pictures->addWidget(cat);
-
-    connect(b_left,  SIGNAL(clicked()), this, SLOT(left_gallery()));
-    connect(b_right, SIGNAL(clicked()), this, SLOT(right_gallery()));
-
-    row->addWidget(b_left);
-    row->addWidget(pictures);
-    row->addWidget(b_right);
-
-    this->setLayout(layout);
-    layout->addWidget(gallery);
-    layout->addWidget(tabs);
+    b_done->setToolTip("Choose a name first!");
     layout->addWidget(b_done);
 
-    // Validation: check eligibility whenever name or species changes
+    // ── Connections ───────────────────────────────────────────────────────
+    connect(b_left,    SIGNAL(clicked()), this, SLOT(left_gallery()));
+    connect(b_right,   SIGNAL(clicked()), this, SLOT(right_gallery()));
     connect(name_list, SIGNAL(itemClicked(QListWidgetItem*)),
             this,      SLOT(checkDoneEligibility()));
-    connect(b_axolotl, SIGNAL(clicked()), this, SLOT(checkDoneEligibility()));
-    connect(b_cat,     SIGNAL(clicked()), this, SLOT(checkDoneEligibility()));
-    connect(b_dog,     SIGNAL(clicked()), this, SLOT(checkDoneEligibility()));
 
+    // ── Styles ────────────────────────────────────────────────────────────
     b_done->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF; border-radius: 10px; padding: 4px; font: bold; }
-        QPushButton:pressed { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB); }
-        QPushButton:disabled { background-color: #555; color: #999; }
+        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4850DB, stop:1 #4A71DB);
+            border: 2px inset #FBA8FF; border-radius: 10px;
+            padding: 6px; font: bold; color: mistyrose; }
+        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4A71DB, stop:1 #4850DB); }
+        QPushButton:disabled { background-color: #444; color: #888; }
     )");
+
+    QString btnStyle = R"(
+        QPushButton { background-color: rgba(0,0,0,140);
+            border: 2px inset #FBA8FF; border-radius: 8px; padding: 4px; }
+        QPushButton:pressed { background-color: rgba(72,80,219,180); }
+    )";
+    b_left->setStyleSheet(btnStyle);
+    b_right->setStyleSheet(btnStyle);
+
+    // Show first pet on load
+    updateGallery();
 }
 
-void Create::checkDoneEligibility() {
-    if (name_list->currentItem())   name_chosen    = true;
-    if (b_axolotl->isChecked() || b_cat->isChecked() || b_dog->isChecked())
-        species_chosen = true;
-    b_done->setEnabled(name_chosen && species_chosen);
-    if (name_chosen && species_chosen)
-        b_done->setToolTip(""); // clear the tooltip once ready
+void Create::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    QPainter painter(this);
+    if (!m_bg.isNull())
+        painter.drawPixmap(0, 0, width(), height(), m_bg);
+}
+
+void Create::updateGallery() {
+    QStringList imagePaths = {
+        ":/images/Sprites/pets/axolotl/axolotl_idle.gif",
+        ":/images/Sprites/pets/dragondog/dragondog_idle.gif",
+        ":/images/Sprites/pets/seelcat/seelcat_idle.gif"
+    };
+
+    QImage img(imagePaths[m_galleryIndex]);
+    QPixmap px = QPixmap::fromImage(img);
+    petImage->setPixmap(px.scaled(200, 200, Qt::KeepAspectRatio,
+                                  Qt::SmoothTransformation));
+
+    petName->setText(petNames[m_galleryIndex]);
+    petDescription->setText(petDescriptions[m_galleryIndex]);
+
+    b_axolotl->setChecked(m_galleryIndex == 0);
+    b_dog->setChecked    (m_galleryIndex == 1);
+    b_cat->setChecked    (m_galleryIndex == 2);
 }
 
 void Create::left_gallery() {
-    int current = pictures->currentIndex();
-    if (current == 0) pictures->setCurrentIndex(2);
-    else pictures->setCurrentIndex(current - 1);
+    m_galleryIndex = (m_galleryIndex == 0) ? 2 : m_galleryIndex - 1;
+    updateGallery();
 }
 
 void Create::right_gallery() {
-    int current = pictures->currentIndex();
-    if (current == 2) pictures->setCurrentIndex(0);
-    else pictures->setCurrentIndex(current + 1);
+    m_galleryIndex = (m_galleryIndex == 2) ? 0 : m_galleryIndex + 1;
+    updateGallery();
+}
+
+void Create::checkDoneEligibility() {
+    if (name_list->currentItem())
+        name_chosen = true;
+    b_done->setEnabled(name_chosen);
+    if (name_chosen)
+        b_done->setToolTip("");
 }

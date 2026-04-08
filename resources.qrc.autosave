@@ -39,5 +39,6 @@
         <file>Sprites/pets/icons/anger_mark_small.png</file>
         <file>Sprites/pets/icons/anger_mark_large.png</file>
         <file>Sprites/pets/icons/toothbrush.png</file>
+        <file>Assets/settings.png</file>
     </qresource>
 </RCC>

@@ -32,7 +32,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     cuddleBtn   = new QPushButton("🤗 Cuddle Pet");
     wearPjsBtn  = new QPushButton("👖 Wear Pjs");
     readBookBtn = new QPushButton("📖 Bed Time Story");
-    tuckInBtn   = new QPushButton("🛌 Tuck Into Bed");
+    tuckInBtn   = new QPushButton("🛌 Tuck In Bed");
     backBtn     = new QPushButton("Back to Care Hub!");
 
     backBtn->setIcon(QIcon(":/images/Assets/left.png"));

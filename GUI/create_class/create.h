@@ -1,10 +1,9 @@
 /*
- * create.h
+ * create.h - Pet creation screen.
+ * Gallery replaces the species tab entirely.
+ * Arrows cycle pet image + show name/description automatically.
+ * DONE button unlocks once a name is chosen (species auto-selected by gallery).
  * Author(s): Sasha C. Guerrero
- * Fixed: b_axolotl, b_cat, b_dog moved to public so game.cc can read
- *        which species the player chose in onCreateDone().
- *        Added name_list to public so game.cc can read the chosen name.
- *        Added validation: DONE button only activates once name AND species chosen.
  */
 
 #ifndef CREATE_H
@@ -17,29 +16,42 @@ public:
     explicit Create(QWidget *parent = nullptr);
     QPushButton *b_done;
 
-    // Made public so game.cc can read which species was chosen
+    // Public so game.cc can read which species is selected
     QRadioButton *b_axolotl, *b_cat, *b_dog;
 
-    // Made public so game.cc can read the chosen name
+    // Public so game.cc can read the chosen name
     QListWidget *name_list;
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 public slots:
     void left_gallery();
     void right_gallery();
-    void checkDoneEligibility(); // enables b_done only when both chosen
+    void checkDoneEligibility();
 
 private:
-    bool name_chosen    = false;
-    bool species_chosen = false;
+    QPixmap m_bg;
 
-    QVBoxLayout *layout;
-    QTabWidget  *tabs;
-    QWidget     *name, *species;
+    // Gallery index: 0=axolotl, 1=dragondog, 2=seelcat
+    int m_galleryIndex = 0;
 
-    QScrollArea  *scroll_name;
-    QVBoxLayout  *l_name;
-    QLabel       *name_instruction;
-    QStringList   str_names = {
+    void updateGallery(); // updates image, name, description, and auto-selects radio
+
+    // Gallery widgets
+    QLabel *petImage;
+    QLabel *petName;
+    QLabel *petDescription;
+    QPushButton *b_left;
+    QPushButton *b_right;
+
+    // Name list
+    QLabel      *name_instruction;
+    QScrollArea *scroll_name;
+    QWidget     *nameWidget;
+    QVBoxLayout *l_name;
+
+    QStringList str_names = {
         "Axolvyn","Brixlore","Cyphrel","Duskmourn",
         "Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
         "Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
@@ -47,13 +59,23 @@ private:
         "Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"
     };
 
-    QScrollArea *scroll_species;
-    QVBoxLayout *l_species;
-    QLabel      *species_instruction;
-    QGroupBox   *box_buttons;
-    QVBoxLayout *l_buttons;
+    // Pet info per index
+    QStringList petNames = {
+        "Electric Axolotl",
+        "Dragon Dog",
+        "Seel Cat"
+    };
 
-    QStackedWidget *pictures;
+    QStringList petDescriptions = {
+        "An amphibian with powers of electricity.\nStrong attack, agile in battle.",
+        "A scaly, fire-breathing, winged dog.\nBalanced attack and defense.",
+        "A semiaquatic cat with a powerful tailfin.\nStrong defense, resilient fighter."
+    };
+
+    QVBoxLayout *layout;
+
+    bool name_chosen    = false;
+    bool species_chosen = true; // always true — gallery auto-selects
 };
 
 #endif

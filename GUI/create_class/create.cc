@@ -1,20 +1,18 @@
 /*
- * create.cc - Pet creation screen.
- * No tabs — gallery IS the species selector.
+ * create.cc - Pet creation screen with animated GIF gallery.
  * Author(s): Sasha C. Guerrero
  */
-
 #include "create.h"
 #include <QPainter>
 
 Create::Create(QWidget *parent) : QWidget{parent} {
-    m_bg.load(":/images/Backgrounds/character_screen.jpg"); // character select background
+    m_bg.load(":/images/Backgrounds/character_screen.jpg");
 
     layout = new QVBoxLayout(this);
     layout->setSpacing(8);
     layout->setContentsMargins(16, 16, 16, 16);
 
-    // ── Gallery ───────────────────────────────────────────────────────────
+    // ── Gallery row ───────────────────────────────────────────────────────
     QHBoxLayout *galleryRow = new QHBoxLayout();
 
     b_left  = new QPushButton(this);
@@ -24,16 +22,20 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     b_left->setFixedSize(44, 44);
     b_right->setFixedSize(44, 44);
 
+    // petImage uses QMovie for animated GIF
+    // transparent background — no blue box
     petImage = new QLabel(this);
     petImage->setAlignment(Qt::AlignCenter);
-    petImage->setFixedSize(200, 200);
+    petImage->setFixedSize(180, 180);
+    petImage->setScaledContents(false);
+    petImage->setStyleSheet("QLabel { background-color: transparent; }");
 
-    galleryRow->addWidget(b_left);
-    galleryRow->addWidget(petImage);
-    galleryRow->addWidget(b_right);
+    galleryRow->addWidget(b_left,   0, Qt::AlignVCenter);
+    galleryRow->addWidget(petImage, 0, Qt::AlignCenter);
+    galleryRow->addWidget(b_right,  0, Qt::AlignVCenter);
     layout->addLayout(galleryRow);
 
-    // ── Pet name label ────────────────────────────────────────────────────
+    // ── Pet name ──────────────────────────────────────────────────────────
     petName = new QLabel(this);
     petName->setAlignment(Qt::AlignCenter);
     petName->setStyleSheet(
@@ -47,10 +49,10 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     petDescription->setWordWrap(true);
     petDescription->setStyleSheet(
         "QLabel { background-color: rgba(0,0,0,140); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 14px; }");
+        "padding: 6px; color: mistyrose; font-size: 13px; }");
     layout->addWidget(petDescription);
 
-    // ── Hidden radio buttons (game.cc reads these to get species choice) ──
+    // ── Hidden radio buttons (game.cc reads these) ────────────────────────
     b_axolotl = new QRadioButton(this);
     b_cat      = new QRadioButton(this);
     b_dog      = new QRadioButton(this);
@@ -58,22 +60,25 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     b_cat->hide();
     b_dog->hide();
 
-    // ── Name list ─────────────────────────────────────────────────────────
-    QLabel *nameHeader = new QLabel("Choose a name for your PiPet:", this);
+    // ── Name header ───────────────────────────────────────────────────────
+    nameHeader = new QLabel("Choose a name for your PiPet:", this);
     nameHeader->setAlignment(Qt::AlignCenter);
     nameHeader->setStyleSheet(
         "QLabel { background-color: rgba(0,0,0,140); border-radius: 6px;"
-        "padding: 4px; color: mistyrose; font-size: 15px; }");
+        "padding: 4px; color: mistyrose; font-size: 14px; }");
     layout->addWidget(nameHeader);
 
+    // ── Name list ─────────────────────────────────────────────────────────
     name_list = new QListWidget(this);
     name_list->setViewMode(QListView::ListMode);
     name_list->setFlow(QListView::TopToBottom);
-    name_list->setFixedHeight(140);
-    for (int i = 0; i < 26; i++) {
-        QListWidgetItem *item = new QListWidgetItem(str_names[i]);
-        name_list->addItem(item);
-    }
+    name_list->setFixedHeight(130);
+    name_list->setStyleSheet(
+        "QListWidget { background-color: rgba(0,0,0,150);"
+        "border: 2px solid #FBA8FF; border-radius: 6px; color: mistyrose; }"
+        "QListWidget::item:selected { background-color: rgba(72,80,219,200); }");
+    for (int i = 0; i < 26; i++)
+        name_list->addItem(new QListWidgetItem(str_names[i]));
     layout->addWidget(name_list);
 
     // ── DONE button ───────────────────────────────────────────────────────
@@ -88,7 +93,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     connect(name_list, SIGNAL(itemClicked(QListWidgetItem*)),
             this,      SLOT(checkDoneEligibility()));
 
-    // ── Styles ────────────────────────────────────────────────────────────
+    // ── Button styles ─────────────────────────────────────────────────────
     b_done->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
@@ -99,15 +104,14 @@ Create::Create(QWidget *parent) : QWidget{parent} {
         QPushButton:disabled { background-color: #444; color: #888; }
     )");
 
-    QString btnStyle = R"(
+    QString arrowStyle = R"(
         QPushButton { background-color: rgba(0,0,0,140);
             border: 2px inset #FBA8FF; border-radius: 8px; padding: 4px; }
         QPushButton:pressed { background-color: rgba(72,80,219,180); }
     )";
-    b_left->setStyleSheet(btnStyle);
-    b_right->setStyleSheet(btnStyle);
+    b_left->setStyleSheet(arrowStyle);
+    b_right->setStyleSheet(arrowStyle);
 
-    // Show first pet on load
     updateGallery();
 }
 
@@ -119,20 +123,26 @@ void Create::paintEvent(QPaintEvent *event) {
 }
 
 void Create::updateGallery() {
-    QStringList imagePaths = {
-        ":/images/Sprites/pets/axolotl/axolotl_idle.gif",
-        ":/images/Sprites/pets/dragondog/dragondog_idle.gif",
-        ":/images/Sprites/pets/seelcat/seelcat_idle.gif"
-    };
+    // Stop and clear old movie
+    if (currentMovie) {
+        currentMovie->stop();
+        delete currentMovie;
+        currentMovie = nullptr;
+    }
 
-    QImage img(imagePaths[m_galleryIndex]);
-    QPixmap px = QPixmap::fromImage(img);
-    petImage->setPixmap(px.scaled(200, 200, Qt::KeepAspectRatio,
-                                  Qt::SmoothTransformation));
+    // Load new animated GIF via QMovie
+    currentMovie = new QMovie(gifPaths[m_galleryIndex], QByteArray(), this);
+
+    // Scale GIF to fit 180x180 keeping aspect ratio
+    currentMovie->setScaledSize(QSize(180, 180));
+
+    petImage->setMovie(currentMovie);
+    currentMovie->start();
 
     petName->setText(petNames[m_galleryIndex]);
     petDescription->setText(petDescriptions[m_galleryIndex]);
 
+    // Auto-select radio button
     b_axolotl->setChecked(m_galleryIndex == 0);
     b_dog->setChecked    (m_galleryIndex == 1);
     b_cat->setChecked    (m_galleryIndex == 2);
@@ -149,9 +159,7 @@ void Create::right_gallery() {
 }
 
 void Create::checkDoneEligibility() {
-    if (name_list->currentItem())
-        name_chosen = true;
+    if (name_list->currentItem()) name_chosen = true;
     b_done->setEnabled(name_chosen);
-    if (name_chosen)
-        b_done->setToolTip("");
+    if (name_chosen) b_done->setToolTip("");
 }

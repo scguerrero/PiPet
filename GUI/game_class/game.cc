@@ -20,8 +20,6 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     start  = new Start();
     create = new Create();
     mode   = new Mode(player);
-    // Care needs petType — starts with default DragonDog,
-    // rebuilt in onCreateDone() once the player makes a choice
     care   = new Care(player, currentPetType);
     train  = new Train();
     battle = new Battle();
@@ -38,35 +36,45 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     b_save = new QPushButton("SAVE");
     b_home = new QPushButton("HOME");
     b_quit = new QPushButton("QUIT");
-
     b_save->setIcon(QIcon(":/images/Assets/save.png"));
     b_home->setIcon(QIcon(":/images/Assets/home.png"));
     b_quit->setIcon(QIcon(":/images/Assets/quit.png"));
-
     utility_bar->addWidget(b_save);
     utility_bar->addWidget(b_home);
     utility_bar->addWidget(b_quit);
     layout->addLayout(utility_bar);
 
-    // Navigation
+    // Start navigation
     if (new_game)
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
     else
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    connect(b_save, SIGNAL(clicked()), this,                     SLOT(saveGame()));
-    connect(b_home, SIGNAL(clicked()), this,                     SLOT(open_start()));
+    connect(b_save, SIGNAL(clicked()), this, SLOT(saveGame()));
+    connect(b_home, SIGNAL(clicked()), this, SLOT(open_start()));
     connect(b_quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
 
     connect(create->b_done, SIGNAL(clicked()), this, SLOT(onCreateDone()));
 
-    connect(mode->b_care,    SIGNAL(clicked()), this, SLOT(open_care()));
-    connect(care->b_back,    SIGNAL(clicked()), this, SLOT(open_mode()));
+    // Mode bubble clicks → go directly to care sub-screen
+    connect(mode->feedBubble,  &QLabel::linkActivated, this, &Game::open_feed);
+    connect(mode->groomBubble, &QLabel::linkActivated, this, &Game::open_groom);
+    connect(mode->sleepBubble, &QLabel::linkActivated, this, &Game::open_sleep);
 
+    // Since QLabel doesn't emit clicked(), we use mousePressEvent via eventFilter
+    mode->feedBubble->installEventFilter(this);
+    mode->groomBubble->installEventFilter(this);
+    mode->sleepBubble->installEventFilter(this);
+
+    // Mode other buttons
     connect(mode->b_train,   SIGNAL(clicked()), this, SLOT(open_train()));
-    connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
-
     connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
+
+    // Care back buttons → return to Mode via signal
+    connect(care, SIGNAL(requestReturnToMode()), this, SLOT(open_mode()));
+
+    // Train / Battle back
+    connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
     connect(battle->btnBack, SIGNAL(clicked()), this, SLOT(open_mode()));
 
     setUtilityStyle(*b_save);
@@ -74,8 +82,17 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     setUtilityStyle(*b_quit);
 }
 
+// Event filter catches bubble label taps/clicks
+bool Game::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonRelease) {
+        if (obj == mode->feedBubble)  { open_feed();  return true; }
+        if (obj == mode->groomBubble) { open_groom(); return true; }
+        if (obj == mode->sleepBubble) { open_sleep(); return true; }
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
 void Game::onCreateDone() {
-    // Read species selection
     if (create->b_axolotl->isChecked())
         currentPetType = Character::ElectricAxolotl;
     else if (create->b_cat->isChecked())
@@ -83,24 +100,22 @@ void Game::onCreateDone() {
     else
         currentPetType = Character::DragonDog;
 
-    // Set pet name
     QListWidgetItem *item = create->name_list->currentItem();
-    if (item)
-        player->pet.set_name(item->text());
+    if (item) player->pet.set_name(item->text());
 
-    // Tell Mode which pet to show
     mode->setPetType(currentPetType);
 
-    // Rebuild Care with the correct petType now that we know it
-    // Remove old care page, replace with new one that has the right pet
     pages->removeWidget(care);
     delete care;
     care = new Care(player, currentPetType);
     pages->insertWidget(3, care);
 
-    // Reconnect care navigation
-    connect(mode->b_care,  SIGNAL(clicked()), this, SLOT(open_care()));
-    connect(care->b_back,  SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(care, SIGNAL(requestReturnToMode()), this, SLOT(open_mode()));
+
+    // Re-install event filter on new mode bubbles
+    mode->feedBubble->installEventFilter(this);
+    mode->groomBubble->installEventFilter(this);
+    mode->sleepBubble->installEventFilter(this);
 
     open_mode();
 }
@@ -110,10 +125,14 @@ void Game::open_mode() {
     pages->setCurrentIndex(2);
 }
 
-void Game::open_care() {
-    care->updateStats();
-    pages->setCurrentIndex(3);
-}
+void Game::open_care()  { care->updateStats(); pages->setCurrentIndex(3); }
+void Game::open_feed()  { care->updateStats(); care->goToFeed();  pages->setCurrentIndex(3); }
+void Game::open_groom() { care->updateStats(); care->goToGroom(); pages->setCurrentIndex(3); }
+void Game::open_sleep() { care->updateStats(); care->goToSleep(); pages->setCurrentIndex(3); }
+void Game::open_start() { pages->setCurrentIndex(0); }
+void Game::open_create(){ pages->setCurrentIndex(1); }
+void Game::open_train() { pages->setCurrentIndex(4); }
+void Game::open_battle(){ pages->setCurrentIndex(5); }
 
 QJsonObject Game::toJson() const {
     QJsonObject json;
@@ -128,10 +147,7 @@ void Game::read(const QJsonObject &json) {
 
 bool Game::loadGame() {
     QFile loadFile("player.json");
-    if (!loadFile.open(QIODevice::ReadOnly)) {
-        qWarning("Couldn't open save file.");
-        return false;
-    }
+    if (!loadFile.open(QIODevice::ReadOnly)) { qWarning("Couldn't open save file."); return false; }
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
     read(loadDoc.object());
@@ -140,21 +156,13 @@ bool Game::loadGame() {
 
 bool Game::saveGame() {
     QFile saveFile("player.json");
-    if (!saveFile.open(QIODevice::WriteOnly)) {
-        qWarning("Couldn't open save file.");
-        return false;
-    }
+    if (!saveFile.open(QIODevice::WriteOnly)) { qWarning("Couldn't open save file."); return false; }
     QMessageBox msg(this);
     msg.setText("Save successful!");
     msg.exec();
     saveFile.write(QJsonDocument(toJson()).toJson());
     return true;
 }
-
-void Game::open_start()  { pages->setCurrentIndex(0); }
-void Game::open_create() { pages->setCurrentIndex(1); }
-void Game::open_train()  { pages->setCurrentIndex(4); }
-void Game::open_battle() { pages->setCurrentIndex(5); }
 
 void Game::setUtilityStyle(QPushButton &button) {
     button.setStyleSheet(R"(

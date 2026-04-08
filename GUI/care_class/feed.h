@@ -73,7 +73,7 @@ private:
     FoodItem *appleItem;
     FoodItem *boneItem;
     FoodItem *drinkItem;
-    FoodItem *burgerItem;
+    FoodItem *pizzaItem;
     void placeIcons();
 
     QLabel *hungerDisplay;

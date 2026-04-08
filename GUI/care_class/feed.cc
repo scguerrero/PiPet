@@ -66,15 +66,15 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     hungerDisplay->setFixedWidth(300);
     updateHungerDisplay();
 
-    appleItem = new FoodItem(":/images/Sprites/pets/icons/burger.png",   "Apple", 10, this);
+    appleItem = new FoodItem(":/images/Sprites/pets/icons/apple.png",   "Apple", 10, this);
     boneItem  = new FoodItem(":/images/Sprites/pets/icons/dogtreat.png", "Bone",  10, this);
-    drinkItem = new FoodItem(":/images/Sprites/pets/icons/fish.png",     "Drink",  5, this);
-    burgerItem = new FoodItem(":/images/Sprites/pets/icons/burger.png",   "burger",  5, this);
+    drinkItem = new FoodItem(":/images/Sprites/pets/icons/water.png",     "Drink",  5, this);
+    pizzaItem = new FoodItem(":/images/Sprites/pets/icons/pizza.png",   "Pizza",  5, this);
 
     connect(appleItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
     connect(boneItem,  &FoodItem::dropped, this, &Feed::onFoodDropped);
     connect(drinkItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
-    connect(burgerItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
+    connect(pizzaItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
 
     backBtn = new QPushButton("Back to Care Hub!", this);
     backBtn->setIcon(QIcon(":/images/Assets/left.png"));
@@ -107,7 +107,7 @@ void Feed::placeIcons() {
     int totalW = 4 * iconW + 3 * spacing;
     int startX = (w - totalW) / 2;
     int y = h - 115;
-    QList<FoodItem*> icons = {appleItem, boneItem, drinkItem, burgerItem};
+    QList<FoodItem*> icons = {appleItem, boneItem, drinkItem, pizzaItem};
     for (int i = 0; i < icons.size(); i++) {
         int x = startX + i * (iconW + spacing);
         icons[i]->move(x, y);

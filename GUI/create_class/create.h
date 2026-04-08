@@ -1,26 +1,22 @@
 /*
  * create.h - Pet creation screen.
- * Gallery replaces the species tab entirely.
- * Arrows cycle pet image + show name/description automatically.
- * DONE button unlocks once a name is chosen (species auto-selected by gallery).
+ * Gallery shows animated GIF, no blue box, character_screen.jpg background.
  * Author(s): Sasha C. Guerrero
  */
-
 #ifndef CREATE_H
 #define CREATE_H
 #include <QtWidgets>
+#include <QMovie>
+#include <QPaintEvent>
+#include <QPixmap>
 
 class Create : public QWidget {
     Q_OBJECT
 public:
     explicit Create(QWidget *parent = nullptr);
-    QPushButton *b_done;
-
-    // Public so game.cc can read which species is selected
+    QPushButton  *b_done;
     QRadioButton *b_axolotl, *b_cat, *b_dog;
-
-    // Public so game.cc can read the chosen name
-    QListWidget *name_list;
+    QListWidget  *name_list;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -32,34 +28,23 @@ public slots:
 
 private:
     QPixmap m_bg;
+    int     m_galleryIndex = 0;
 
-    // Gallery index: 0=axolotl, 1=dragondog, 2=seelcat
-    int m_galleryIndex = 0;
+    void updateGallery();
 
-    void updateGallery(); // updates image, name, description, and auto-selects radio
+    // Gallery — uses QLabel + QMovie for animated GIF
+    QLabel       *petImage;
+    QMovie       *currentMovie = nullptr;
+    QLabel       *petName;
+    QLabel       *petDescription;
+    QPushButton  *b_left;
+    QPushButton  *b_right;
 
-    // Gallery widgets
-    QLabel *petImage;
-    QLabel *petName;
-    QLabel *petDescription;
-    QPushButton *b_left;
-    QPushButton *b_right;
+    QLabel      *nameHeader;
+    QVBoxLayout *layout;
 
-    // Name list
-    QLabel      *name_instruction;
-    QScrollArea *scroll_name;
-    QWidget     *nameWidget;
-    QVBoxLayout *l_name;
+    bool name_chosen = false;
 
-    QStringList str_names = {
-        "Axolvyn","Brixlore","Cyphrel","Duskmourn",
-        "Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
-        "Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
-        "Quilvash","Runethis","Spectrivon","Thalvex","Umbryss",
-        "Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"
-    };
-
-    // Pet info per index
     QStringList petNames = {
         "Electric Axolotl",
         "Dragon Dog",
@@ -72,10 +57,19 @@ private:
         "A semiaquatic cat with a powerful tailfin.\nStrong defense, resilient fighter."
     };
 
-    QVBoxLayout *layout;
+    QStringList gifPaths = {
+        ":/images/Sprites/pets/axolotl/axolotl_idle.gif",
+        ":/images/Sprites/pets/dragondog/dragondog_idle.gif",
+        ":/images/Sprites/pets/seelcat/seelcat_idle.gif"
+    };
 
-    bool name_chosen    = false;
-    bool species_chosen = true; // always true — gallery auto-selects
+    QStringList str_names = {
+        "Axolvyn","Brixlore","Cyphrel","Duskmourn",
+        "Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
+        "Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
+        "Quilvash","Runethis","Spectrivon","Thalvex","Umbryss",
+        "Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"
+    };
 };
 
 #endif

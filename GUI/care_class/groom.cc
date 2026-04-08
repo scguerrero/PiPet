@@ -1,11 +1,10 @@
 /*
  * groom.cc - Groom screen two-spot drag mechanic.
+ * Fixed: bottomSpot() was calculating outside visible area.
  * Author(s): Tanya Magurupira
  */
 #include "groom.h"
 #include <QPainter>
-
-// ── GroomTool ─────────────────────────────────────────────────────────────
 
 GroomTool::GroomTool(const QString &iconPath, const QString &name,
                      QWidget *parent)
@@ -45,8 +44,6 @@ void GroomTool::mouseReleaseEvent(QMouseEvent *e) {
     }
 }
 
-// ── Groom ─────────────────────────────────────────────────────────────────
-
 Groom::Groom(Player *player, QWidget *parent)
     : QWidget{parent}, player(player)
 {
@@ -72,10 +69,14 @@ Groom::Groom(Player *player, QWidget *parent)
         "padding: 4px; color: #ffd700; font-size: 13px; }");
     hintLabel->setFixedWidth(300);
 
-    brushTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",       "Brush",       this);
-    batheTool = new GroomTool(":/images/Sprites/pets/icons/soap.png",       "Bathe",       this);
-    trimTool  = new GroomTool(":/images/Sprites/pets/icons/showerhead.png", "Trim Nails",  this);
-    teethTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",       "Brush Teeth", this);
+    brushTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",
+                              "Brush",       this);
+    batheTool = new GroomTool(":/images/Sprites/pets/icons/soap.png",
+                              "Bathe",       this);
+    trimTool  = new GroomTool(":/images/Sprites/pets/icons/showerhead.png",
+                              "Trim Nails",  this);
+    teethTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",
+                              "Brush Teeth", this);
 
     connect(brushTool, &GroomTool::dropped, this, &Groom::onToolDropped);
     connect(batheTool, &GroomTool::dropped, this, &Groom::onToolDropped);
@@ -102,9 +103,14 @@ void Groom::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
     int petSize = 150;
-    character->setGeometry((w - petSize) / 2, 55, petSize, petSize);
-    hygieneDisplay->setGeometry((w - 300) / 2, 55 + petSize + 6,  300, 38);
-    hintLabel->setGeometry     ((w - 300) / 2, 55 + petSize + 50, 300, 30);
+
+    // Center character in upper half of screen
+    int petX = (w - petSize) / 2;
+    int petY = 40;
+    character->setGeometry(petX, petY, petSize, petSize);
+
+    hygieneDisplay->setGeometry((w - 300) / 2, petY + petSize + 6,  300, 38);
+    hintLabel->setGeometry     ((w - 300) / 2, petY + petSize + 50, 300, 30);
     backBtn->setGeometry((w - 220) / 2, h - 55, 220, 40);
     placeTools();
 }
@@ -115,6 +121,7 @@ void Groom::placeTools() {
     int totalW = 4 * iconW + 3 * spacing;
     int startX = (w - totalW) / 2;
     int y = h - 115;
+
     QList<GroomTool*> tools = {brushTool, batheTool, trimTool, teethTool};
     for (int i = 0; i < tools.size(); i++) {
         int x = startX + i * (iconW + spacing);
@@ -131,34 +138,45 @@ void Groom::paintEvent(QPaintEvent *e) {
     if (!m_bg.isNull())
         p.drawPixmap(0, 0, width(), height(), m_bg);
 
-    // Top spot
+    // ── Top spot ──────────────────────────────────────────────────────────
     QRect ts = topSpot();
-    QColor tc = topDone ? QColor(80, 255, 120, 200) : QColor(255, 220, 50, 140);
+    QColor tc = topDone ? QColor(80, 255, 120, 200)
+                        : QColor(255, 220, 50,  160);
     p.setPen(QPen(tc, 4, Qt::DashLine));
-    p.setBrush(QColor(tc.red(), tc.green(), tc.blue(), 55));
+    p.setBrush(QColor(tc.red(), tc.green(), tc.blue(), 60));
     p.drawEllipse(ts);
-    p.setPen(QColor(255, 255, 200, 220));
-    p.setFont(QFont("monospace", 11, QFont::Bold));
+    p.setPen(QColor(255, 255, 200, 230));
+    p.setFont(QFont("monospace", 12, QFont::Bold));
     p.drawText(ts, Qt::AlignCenter, topDone ? "✓" : "1");
 
-    // Bottom spot
+    // ── Bottom spot ───────────────────────────────────────────────────────
     QRect bs = bottomSpot();
-    QColor bc = bottomDone ? QColor(80, 255, 120, 200) : QColor(255, 220, 50, 140);
+    QColor bc = bottomDone ? QColor(80, 255, 120, 200)
+                           : QColor(255, 220, 50,  160);
     p.setPen(QPen(bc, 4, Qt::DashLine));
-    p.setBrush(QColor(bc.red(), bc.green(), bc.blue(), 55));
+    p.setBrush(QColor(bc.red(), bc.green(), bc.blue(), 60));
     p.drawEllipse(bs);
-    p.setPen(QColor(255, 255, 200, 220));
+    p.setPen(QColor(255, 255, 200, 230));
     p.drawText(bs, Qt::AlignCenter, bottomDone ? "✓" : "2");
 }
 
+// FIX: spots are now calculated relative to character geometry,
+// ensuring both are always within the visible widget area
 QRect Groom::topSpot() const {
     QRect pet = character->geometry();
-    return QRect(pet.center().x() - 26, pet.top() + 22 - 26, 52, 52);
+    // Spot 1 — upper quarter of character (head area)
+    int cx = pet.center().x();
+    int cy = pet.top() + (pet.height() / 4);
+    return QRect(cx - 28, cy - 28, 56, 56);
 }
 
 QRect Groom::bottomSpot() const {
     QRect pet = character->geometry();
-    return QRect(pet.center().x() - 26, pet.bottom() - 22 - 26, 52, 52);
+    // Spot 2 — lower quarter of character (body area)
+    // FIX: was pet.bottom() - 22 which could go below visible area
+    int cx = pet.center().x();
+    int cy = pet.top() + (pet.height() * 3 / 4);
+    return QRect(cx - 28, cy - 28, 56, 56);
 }
 
 void Groom::onToolDropped(GroomTool *tool, QPoint globalPos) {
@@ -170,12 +188,12 @@ void Groom::onToolDropped(GroomTool *tool, QPoint globalPos) {
     }
     activeTool = tool;
 
-    if (topSpot().contains(local) && !topDone) {
+    if (!topDone && topSpot().contains(local)) {
         topDone = true;
-        hintLabel->setText("Spot 1 done! Now hit spot 2!");
-    } else if (bottomSpot().contains(local) && !bottomDone) {
+        hintLabel->setText("Spot 1 done!  Now hit Spot 2!");
+    } else if (!bottomDone && bottomSpot().contains(local)) {
         bottomDone = true;
-        hintLabel->setText("Spot 2 done! Now hit spot 1!");
+        hintLabel->setText("Spot 2 done!  Now hit Spot 1!");
     }
 
     if (topDone && bottomDone) {

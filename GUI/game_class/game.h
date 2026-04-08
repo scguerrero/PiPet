@@ -2,7 +2,6 @@
  * game.h - Top-level game widget.
  * Author(s): Sasha C. Guerrero
  */
-
 #ifndef GAME_H
 #define GAME_H
 #include "../start_class/start.h"
@@ -17,10 +16,8 @@ class Game : public QWidget {
     Q_OBJECT
 public:
     explicit Game(QWidget *parent = nullptr);
-
     QJsonObject toJson() const;
     void read(const QJsonObject &json);
-
     PiPet  *pet;
     Player *player;
 
@@ -31,20 +28,17 @@ public slots:
 
 private:
     bool new_game = true;
-
-    // Stores which pet type the player chose on the Create screen
     Character::PetType currentPetType = Character::DragonDog;
 
-    QVBoxLayout    *top_layout;
     QVBoxLayout    *layout;
     QStackedWidget *pages;
 
-    Start  *start;   // page 0
-    Create *create;  // page 1
-    Mode   *mode;    // page 2
-    Care   *care;    // page 3
-    Train  *train;   // page 4
-    Battle *battle;  // page 5
+    Start  *start;
+    Create *create;
+    Mode   *mode;
+    Care   *care;
+    Train  *train;
+    Battle *battle;
 
     QHBoxLayout *utility_bar;
     QPushButton *b_save, *b_home, *b_quit;
@@ -54,9 +48,15 @@ private slots:
     void open_create();
     void open_mode();
     void open_care();
+    void open_feed();    // bubble → feed directly
+    void open_groom();   // bubble → groom directly
+    void open_sleep();   // bubble → sleep directly
     void open_train();
     void open_battle();
     void onCreateDone();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 #endif

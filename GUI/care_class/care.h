@@ -1,7 +1,7 @@
 /*
  * care.h - Care hub.
- * Removed: Give Affection tab
- * Added: Character GIF display on hub
+ * Back buttons on sub-screens emit requestReturnToMode signal
+ * so game.cc navigates back to the Mode screen directly.
  * Author(s): Sasha C. Guerrero, Tanya Magurupira
  */
 #ifndef CARE_H
@@ -18,17 +18,20 @@ class Care : public QWidget
     Q_OBJECT
 public:
     void updateStats();
-
-    // petType needed so the hub can show the character GIF
     Care(Player* player, Character::PetType petType, QWidget *parent = nullptr);
 
-    QPushButton *b_feed, *b_groom, *b_sleep, *b_back;
+    QPushButton *b_back; // kept for game.cc compatibility
+
+    void goToFeed();
+    void goToGroom();
+    void goToSleep();
+
+signals:
+    // Emitted when any sub-screen's back button is pressed
+    void requestReturnToMode();
 
 private slots:
-    void returnToHub();
-    void feedPet();
-    void groomPet();
-    void sendPetToSleep();
+    void returnToMode(); // calls emit requestReturnToMode()
 
 private:
     Player             *player;
@@ -41,22 +44,7 @@ private:
     Feed  *feed;
     Sleep *sleep;
 
-    QWidget     *hub;
-    QVBoxLayout *layout;
-    QGridLayout *grid;
-    QGridLayout *careGrid;
-    QGroupBox   *careBox;
-    QGroupBox   *conditionBox;
-
-    // Character GIF on hub
-    Character *character;
-
-    QLabel *hunger_label, *energy_label, *strength_label, *hygiene_label,
-           *intelligence_label, *happiness_label, *age_days_label,
-           *age_group_label, *age_days, *age_group;
-
-    QProgressBar *hunger_bar, *energy_bar, *strength_bar, *hygiene_bar,
-                 *intelligence_bar, *happiness_bar;
+    QWidget *hub;
 };
 
 #endif // CARE_H

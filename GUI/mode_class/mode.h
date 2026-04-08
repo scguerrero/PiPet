@@ -1,49 +1,81 @@
 /*
- * Mode class specification file.
- * From here the Player can select which game mode they want to play:
- *     Care mode for feeding and grooming the pet,
- *     Train mode for choosing a mini-game,
- *     Battle mode for playing single-player games versus a bot opponent, and
- *     Gear mode for choosing equipment/accessories for the pet.
- *
+ * mode.h - Mode hub screen.
+ * Clock moved to About/Settings page.
  * Author(s): Sasha C. Guerrero
  */
-
 #ifndef MODE_H
 #define MODE_H
 #include <QtWidgets>
+#include <QPaintEvent>
+#include <QPixmap>
 #include "../clock_class/clock.h"
+#include "../character_class/character.h"
+#include "../../Player/Player.h"
 
 class Mode : public QWidget
 {
     Q_OBJECT
-    public:
-        // Constructor
-        explicit Mode(QWidget *parent = nullptr);
+public:
+    explicit Mode(Player *player, QWidget *parent = nullptr);
 
-        // Timekeeper tracks time elapsed in seconds
-        Clock *timekeeper;
+    void setPetType(Character::PetType type);
+    void refreshDisplay();
 
-        // Show current time and elapsed time of the game session
-        QLabel *clock_time; // Display system clock time
-        QLabel *elapsed_time; // Display seconds elapsed during game session
+    // Navigation buttons
+    QPushButton *b_care, *b_train, *b_battle, *b_gear;
 
-        // Time utilities
-        QTime *time; // Get system clock time
-        QTimer *timer; // Count time in milliseconds
+    // Bubble labels — public so game.cc can install event filters
+    QLabel *feedBubble;
+    QLabel *groomBubble;
+    QLabel *sleepBubble;
 
-        // Buttons for Care, Train, Battle, and Gear gamemodes
-        QPushButton *b_care, *b_train, *b_battle, *b_gear;
+protected:
+    void paintEvent (QPaintEvent *e) override;
+    void resizeEvent(QResizeEvent *e) override;
 
-    public slots:
-        // Update current clock time and time elapsed every 1 second
-        void updateClock();
+public slots:
+    void updateClock();
+    void openAbout();
 
-    private:
-        // Vertically-arrange widgets inside Mode
-        QVBoxLayout *layout;
+private:
+    Player    *player;
+    Character *character;
+    Character::PetType petType = Character::DragonDog;
 
+    QPixmap m_bg;
+    QPixmap m_kitchenPx, m_bathroomPx, m_bedroomPx;
 
+    // Pet name above character
+    QLabel *petNameLabel;
+
+    // Anger mark
+    QLabel  *angerMark;
+    QPixmap  m_angerPx;
+
+    // Settings button top-right
+    QPushButton *b_settings;
+
+    // Stat bars
+    QGroupBox    *statsBox;
+    QGridLayout  *statsGrid;
+    QLabel       *hunger_label, *energy_label, *happiness_label;
+    QProgressBar *hunger_bar,   *energy_bar,   *happiness_bar;
+
+    // Clock — kept private, used only in About page
+    Clock  *timekeeper;
+    QTimer *timer;
+    QTime  *time;
+
+    // Stat decay
+    static constexpr int DECAY_INTERVAL_SECS = 10;
+    int secondsSinceDecay = 0;
+
+    void decayStats();
+    void updateStatBars();
+    void updateIndicators();
+    void layoutWidgets();
+    void drawBubble(QPainter &p, QRect rect,
+                    const QPixmap &bg, const QString &label);
 };
 
 #endif

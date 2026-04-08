@@ -1,24 +1,47 @@
 <RCC>
     <qresource prefix="/images">
         <file>Assets/logo.png</file>
+        <file>Assets/settings.png</file>
+
+        <!-- Backgrounds -->
+        <file>Backgrounds/title_screen.jpg</file>
+        <file>Backgrounds/character_screen.jpg</file>
+        <file>Backgrounds/main.jpg</file>
+        <file>Backgrounds/kitchen_16bit.jpg</file>
+        <file>Backgrounds/bedroom_16bit.jpg</file>
+        <file>Backgrounds/bathroom_16bit.jpg</file>
+
+        <!-- Axolotl sprites -->
         <file>Sprites/pets/axolotl/axolotl_adult_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_teen_idle.gif</file>
         <file>Sprites/pets/axolotl/electric_axolotl_sleep.gif</file>
+
+        <!-- DragonDog sprites -->
         <file>Sprites/pets/dragondog/dragondog_adult_idle.gif</file>
         <file>Sprites/pets/dragondog/dragondog_idle.gif</file>
         <file>Sprites/pets/dragondog/purpledragondog_idle.gif</file>
         <file>Sprites/pets/dragondog/purpledragondog_sleep.gif</file>
-        <file>Sprites/pets/icons/burger.png</file>
+
+        <!-- Icons -->
         <file>Sprites/pets/icons/comb.png</file>
         <file>Sprites/pets/icons/dogtreat.png</file>
         <file>Sprites/pets/icons/fish.png</file>
         <file>Sprites/pets/icons/showerhead.png</file>
         <file>Sprites/pets/icons/soap.png</file>
+        <file>Sprites/pets/icons/anger_mark_small.png</file>
+        <file>Sprites/pets/icons/pizza.png</file>
+        <file>Sprites/pets/icons/apple.png</file>
+        <file>Sprites/pets/icons/toothbrush.png</file>
+        <file>Sprites/pets/icons/drink.png</file>
+
+        <!-- SeelCat sprites -->
         <file>Sprites/pets/seelcat/seelcat_adult_idle.gif</file>
         <file>Sprites/pets/seelcat/seelcat_idle.gif</file>
         <file>Sprites/pets/seelcat/seelcat_sleep.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_idle.gif</file>
+
+        <!-- UI Assets -->
         <file>Assets/home.png</file>
         <file>Assets/quit.png</file>
         <file>Assets/save.png</file>

@@ -6,42 +6,38 @@ TEMPLATE = app
 TARGET = pipet
 QT = core gui widgets
 
-# You can make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# Please consult the documentation of the deprecated API in order to know
-# how to port your code away from it.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+RESOURCES += \
+    resources.qrc
 
 # Input
-HEADERS += GUI/game_class/game.h \
-    GUI/care_class/feed.h \
-    GUI/care_class/sleep.h \
-    GUI/clock_class/clock.h \
+HEADERS += \
+    GUI/game_class/game.h \
     GUI/start_class/start.h \
     GUI/create_class/create.h \
-    Pet/PiPet.h \
-    GUI/battle_class/battle.h \
-    GUI/care_class/affection.h \
-    GUI/care_class/care.h \
-    GUI/care_class/groom.h \
     GUI/mode_class/mode.h \
-    GUI/train_class/train.h
-SOURCES += GUI/main.cc \
-    GUI/care_class/feed.cc \
-    GUI/care_class/sleep.cc \
-    GUI/clock_class/clock.cpp \
+    GUI/character_class/character.h \
+    GUI/care_class/care.h \
+    GUI/care_class/feed.h \
+    GUI/care_class/sleep.h \
+    GUI/care_class/groom.h \
+    GUI/train_class/train.h \
+    GUI/battle_class/battle.h \
+    GUI/clock_class/clock.h \
+    Pet/PiPet.h
+
+SOURCES += \
+    GUI/main.cc \
     GUI/game_class/game.cc \
     GUI/start_class/start.cc \
     GUI/create_class/create.cc \
-    Pet/PiPet.cpp \
-    Player/Player.cpp \
-    GUI/battle_class/battle.cc \
-    GUI/care_class/affection.cc \
-    GUI/care_class/care.cc \
-    GUI/care_class/groom.cc \
     GUI/mode_class/mode.cc \
-    GUI/train_class/train.cc
-
-RESOURCES += \
-    resources.qrc
+    GUI/character_class/character.cpp \
+    GUI/care_class/care.cc \
+    GUI/care_class/feed.cc \
+    GUI/care_class/sleep.cc \
+    GUI/care_class/groom.cc \
+    GUI/train_class/train.cc \
+    GUI/battle_class/battle.cc \
+    GUI/clock_class/clock.cpp \
+    Pet/PiPet.cpp \
+    Player/Player.cpp

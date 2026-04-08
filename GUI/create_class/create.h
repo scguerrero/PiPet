@@ -1,53 +1,75 @@
 /*
- * This page of the game is for the Player to create their piPet.
- * We create a tabbed view of the pages for choosing the pet's name and species.
- * Pet creation is only available for new savefiles.
- *
+ * create.h - Pet creation screen.
+ * Gallery shows animated GIF, no blue box, character_screen.jpg background.
  * Author(s): Sasha C. Guerrero
  */
-
 #ifndef CREATE_H
 #define CREATE_H
 #include <QtWidgets>
+#include <QMovie>
+#include <QPaintEvent>
+#include <QPixmap>
 
 class Create : public QWidget {
-	Q_OBJECT
-	public:
-		explicit Create(QWidget *parent = nullptr);
-		QPushButton *b_done; // For navigation to next page
-	private:
-        // The done button (b_done) won't be visible until a name and species is selected.
-        bool name_chosen = false; // Name hasn't been chosen yet
-        bool species_chosen = false; // Species hasn't been chosen yet
+    Q_OBJECT
+public:
+    explicit Create(QWidget *parent = nullptr);
+    QPushButton  *b_done;
+    QRadioButton *b_axolotl, *b_cat, *b_dog;
+    QListWidget  *name_list;
 
-		QVBoxLayout *layout; // Vertically-arrange widgets inside Create
-		QTabWidget *tabs; // Will hold name and species widgets
-		QWidget *name, *species; // Child widgets of tabs
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
-		// name's child widgets
-        QScrollArea *scroll_name; // Enable scrolling if widgets don't fit in visible area of screen
-		QVBoxLayout *l_name; // subwidget layouts are prefixed by l_ to differentiate from top-level layout
-		QLabel *name_instruction; // Tell player to choose a name
-		QListWidget *name_list; // Name options for the pet
-		QStringList str_names = {"Axolvyn","Brixlore","Cyphrel","Duskmourn",
-			"Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
-			"Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
-			"Quilvash","Runethis","Spectrivon","Thalvex","Umbryss",
-			"Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"};
+public slots:
+    void left_gallery();
+    void right_gallery();
+    void checkDoneEligibility();
 
-		// species's child widgets
-        QScrollArea *scroll_species; // Enable scrolling if widgets don't fit in visible area of screen
-		QVBoxLayout *l_species; // l_species's children: species_instruction, box_species, and box_choose
-        QLabel *species_instruction; // Text box giving instructions on how to choose a species
-		QGroupBox *box_buttons; // Radio buttons will go inside this box
-        QVBoxLayout *l_buttons; // Layout that will vertically-arrange buttons inside layout
-		QRadioButton *b_axolotl, *b_cat, *b_dog; // Player may choose 1 species only using radio buttons
+private:
+    QPixmap m_bg;
+    int     m_galleryIndex = 0;
 
-        // Gallery widget
-        QStackedWidget *pictures;
-    public slots:
-        void left_gallery(); // Left button on gallery
-        void right_gallery(); // Right button on gallery
+    void updateGallery();
+
+    // Gallery — uses QLabel + QMovie for animated GIF
+    QLabel       *petImage;
+    QMovie       *currentMovie = nullptr;
+    QLabel       *petName;
+    QLabel       *petDescription;
+    QPushButton  *b_left;
+    QPushButton  *b_right;
+
+    QLabel      *nameHeader;
+    QVBoxLayout *layout;
+
+    bool name_chosen = false;
+
+    QStringList petNames = {
+        "Electric Axolotl",
+        "Dragon Dog",
+        "Seel Cat"
+    };
+
+    QStringList petDescriptions = {
+        "An amphibian with powers of electricity.\nStrong attack, agile in battle.",
+        "A scaly, fire-breathing, winged dog.\nBalanced attack and defense.",
+        "A semiaquatic cat with a powerful tailfin.\nStrong defense, resilient fighter."
+    };
+
+    QStringList gifPaths = {
+        ":/images/Sprites/pets/axolotl/axolotl_idle.gif",
+        ":/images/Sprites/pets/dragondog/dragondog_idle.gif",
+        ":/images/Sprites/pets/seelcat/seelcat_idle.gif"
+    };
+
+    QStringList str_names = {
+        "Axolvyn","Brixlore","Cyphrel","Duskmourn",
+        "Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
+        "Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
+        "Quilvash","Runethis","Spectrivon","Thalvex","Umbryss",
+        "Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"
+    };
 };
 
 #endif

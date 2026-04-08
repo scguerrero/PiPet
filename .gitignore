@@ -3,3 +3,5 @@ build/
 .qmake.stash
 .qtcreator/
 moc_*
+Makefile
+qrc_resources.cpp

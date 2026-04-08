@@ -24,7 +24,7 @@ GroomTool::GroomTool(const QString &iconPath, const QString &name,
 void GroomTool::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_offset   = e->position().toPoint();
+        m_offset   = e->globalPos();
         raise();
     }
 }
@@ -32,7 +32,7 @@ void GroomTool::mousePressEvent(QMouseEvent *e) {
 void GroomTool::mouseMoveEvent(QMouseEvent *e) {
     if (m_dragging) {
         QPoint newPos = parentWidget()->mapFromGlobal(
-                            e->globalPosition().toPoint()) - m_offset;
+                            e->globalPos()) - m_offset;
         move(newPos);
     }
 }
@@ -40,7 +40,7 @@ void GroomTool::mouseMoveEvent(QMouseEvent *e) {
 void GroomTool::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
-        emit dropped(this, e->globalPosition().toPoint());
+        emit dropped(this, e->globalPos());
     }
 }
 

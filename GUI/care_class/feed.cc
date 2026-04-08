@@ -26,7 +26,7 @@ FoodItem::FoodItem(const QString &iconPath, const QString &name,
 void FoodItem::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_offset   = e->position().toPoint(); // Qt6 — no deprecated globalPos()
+        m_offset   = e->globalPos(); // Qt6 — no deprecated globalPos()
         raise();
     }
 }
@@ -34,7 +34,7 @@ void FoodItem::mousePressEvent(QMouseEvent *e) {
 void FoodItem::mouseMoveEvent(QMouseEvent *e) {
     if (m_dragging) {
         QPoint newPos = parentWidget()->mapFromGlobal(
-                            e->globalPosition().toPoint()) - m_offset;
+                            e->globalPos() ) - m_offset;
         move(newPos);
     }
 }
@@ -42,7 +42,7 @@ void FoodItem::mouseMoveEvent(QMouseEvent *e) {
 void FoodItem::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
-        emit dropped(this, e->globalPosition().toPoint());
+        emit dropped(this, e->globalPos() );
     }
 }
 

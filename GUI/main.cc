@@ -108,8 +108,8 @@ int main(int argc, char**argv)
 
     Game game;
     game.loadGame();
-    game.setFixedSize(480, 640);
-    game.show();
+    //game.setFixedSize(480, 640);
+    game.showFullScreen();
 
     return app.exec();
 }

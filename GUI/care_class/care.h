@@ -1,64 +1,62 @@
 /*
- * In "Care" mode, the Player can feed, groom, and give affection to their pet.
- * They can also view their PiPet's Condition, or wellness attributes.
- *
+ * care.h - Care hub.
+ * Removed: Give Affection tab
+ * Added: Character GIF display on hub
  * Author(s): Sasha C. Guerrero, Tanya Magurupira
  */
 #ifndef CARE_H
 #define CARE_H
 #include <QtWidgets>
 #include "groom.h"
-#include "affection.h"
 #include "feed.h"
 #include "sleep.h"
 #include "../../Player/Player.h"
+#include "../character_class/character.h"
 
 class Care : public QWidget
 {
     Q_OBJECT
 public:
-    void updateStats(); // call this whenever widget becomes visible
-    Care(Player* player, QWidget *parent = nullptr);
+    void updateStats();
 
-    // Care actions: feed pet, groom pet, send pet to sleep, give pet affection
-    QPushButton *b_feed, *b_groom, *b_sleep, *b_affection, *b_back;
-signals:
+    // petType needed so the hub can show the character GIF
+    Care(Player* player, Character::PetType petType, QWidget *parent = nullptr);
 
-    void affectionRequested(); // tell ModeWidget to open AffectionWidget
-    void hygieneRequested(); // tell ModeWidget to open GroomWidget
+    QPushButton *b_feed, *b_groom, *b_sleep, *b_back;
 
 private slots:
-    void returnToHub(); // hub menu
-    void feedPet(); // feed
-    void groomPet(); // groom
-    void sendPetToSleep(); // sleep
-    void givePetAffection(); //affection
+    void returnToHub();
+    void feedPet();
+    void groomPet();
+    void sendPetToSleep();
 
 private:
-    Player *player;            // pointer matches Mode
-    QStackedWidget *stack;
+    Player             *player;
+    Character::PetType  petType;
 
-    QVBoxLayout *top_layout; // Top-level layout that will hold stacked widget
-    QStackedWidget *pages; // Each page is a different Care widget
+    QVBoxLayout    *top_layout;
+    QStackedWidget *pages;
 
-    Groom *groom; // Groom widget lets player manage pet's hygiene
-    Affection *affection; // Affection widget lets player give affection to pet
-    Feed *feed;
+    Groom *groom;
+    Feed  *feed;
     Sleep *sleep;
 
-    QWidget *hub; // Menu of pet's stats and actions
-    QVBoxLayout *layout; // Pet's Condition and Care Actions go inside here
-    QGridLayout *grid; // Text labels and progress bars for pet's condition will go inside grid
-    QGridLayout *careGrid; // Care actions will go inside careGrid
-    QGroupBox *careBox; // careGrid will go inside careBox
-    QGroupBox *conditionBox; // Condition will go inside conditionBox
+    QWidget     *hub;
+    QVBoxLayout *layout;
+    QGridLayout *grid;
+    QGridLayout *careGrid;
+    QGroupBox   *careBox;
+    QGroupBox   *conditionBox;
 
-    // Text labels for the pet's hunger, energy, strength, hygiene, intelligence, happiness, days old, and age group.
-    QLabel *hunger_label, *energy_label, *strength_label, *hygiene_label, *intelligence_label,
-        *happiness_label, *age_days_label, *age_group_label, *age_days, *age_group;
+    // Character GIF on hub
+    Character *character;
 
-    // Progress bars corresponding to the pet's attributes above.
-    QProgressBar *hunger_bar, *energy_bar, *strength_bar, *hygiene_bar, *intelligence_bar, *happiness_bar;
+    QLabel *hunger_label, *energy_label, *strength_label, *hygiene_label,
+           *intelligence_label, *happiness_label, *age_days_label,
+           *age_group_label, *age_days, *age_group;
+
+    QProgressBar *hunger_bar, *energy_bar, *strength_bar, *hygiene_bar,
+                 *intelligence_bar, *happiness_bar;
 };
 
 #endif // CARE_H

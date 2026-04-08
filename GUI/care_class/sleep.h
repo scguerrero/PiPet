@@ -1,5 +1,6 @@
 /*
- * sleep.h - Sleep screen header.
+ * sleep.h - Sleep screen with character GIF.
+ * Cuddle replaces Brush Teeth.
  * Author(s): Tanya Magurupira
  */
 #ifndef SLEEP_H
@@ -9,12 +10,14 @@
 #include <QPixmap>
 #include <QPaintEvent>
 #include "../../Player/Player.h"
+#include "../character_class/character.h"
 
 class Sleep : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Sleep(Player *player, QWidget *parent = nullptr);
+    explicit Sleep(Player *player, Character::PetType petType,
+                   QWidget *parent = nullptr);
     void updateSleepDisplay();
     QPushButton *backBtn;
 
@@ -22,20 +25,22 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private slots:
-    void brushTeeth();
+    void cuddle();
     void wearPjs();
     void readBook();
     void tuckIn();
 
 private:
-    Player  *player;
-    QPixmap  m_bg;
+    Player             *player;
+    Character::PetType  petType;
+    QPixmap             m_bg;
+    Character          *character;
 
     QVBoxLayout *layout;
     QGroupBox   *actionsBox;
     QGridLayout *actionsGrid;
 
-    QPushButton *brushTeethBtn;
+    QPushButton *cuddleBtn;
     QPushButton *wearPjsBtn;
     QPushButton *readBookBtn;
     QPushButton *tuckInBtn;

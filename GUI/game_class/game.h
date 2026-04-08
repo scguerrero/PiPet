@@ -32,6 +32,9 @@ public slots:
 private:
     bool new_game = true;
 
+    // Stores which pet type the player chose on the Create screen
+    Character::PetType currentPetType = Character::DragonDog;
+
     QVBoxLayout    *top_layout;
     QVBoxLayout    *layout;
     QStackedWidget *pages;
@@ -53,7 +56,7 @@ private slots:
     void open_care();
     void open_train();
     void open_battle();
-    void onCreateDone(); // reads species + name, tells Mode which GIF to show
+    void onCreateDone();
 };
 
 #endif

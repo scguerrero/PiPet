@@ -19,8 +19,10 @@ Game::Game(QWidget *parent) : QWidget{parent} {
 
     start  = new Start();
     create = new Create();
-    mode   = new Mode(player);  // Mode needs player to decay stats + drive GIF
-    care   = new Care(player);
+    mode   = new Mode(player);
+    // Care needs petType — starts with default DragonDog,
+    // rebuilt in onCreateDone() once the player makes a choice
+    care   = new Care(player, currentPetType);
     train  = new Train();
     battle = new Battle();
 
@@ -46,69 +48,68 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     utility_bar->addWidget(b_quit);
     layout->addLayout(utility_bar);
 
-    // Start → Create (new game) or Mode (returning player)
+    // Navigation
     if (new_game)
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
     else
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    // Utility bar
-    connect(b_save, SIGNAL(clicked()), this,                    SLOT(saveGame()));
-    connect(b_home, SIGNAL(clicked()), this,                    SLOT(open_start()));
+    connect(b_save, SIGNAL(clicked()), this,                     SLOT(saveGame()));
+    connect(b_home, SIGNAL(clicked()), this,                     SLOT(open_start()));
     connect(b_quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
 
-    // Create DONE → onCreateDone (reads species + name, then goes to Mode)
     connect(create->b_done, SIGNAL(clicked()), this, SLOT(onCreateDone()));
 
-    // Mode ↔ Care
-    connect(mode->b_care,  SIGNAL(clicked()), this, SLOT(open_care()));
-    connect(care->b_back,  SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(mode->b_care,    SIGNAL(clicked()), this, SLOT(open_care()));
+    connect(care->b_back,    SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    // Mode ↔ Train
-    connect(mode->b_train, SIGNAL(clicked()), this, SLOT(open_train()));
-    connect(train->b_back, SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(mode->b_train,   SIGNAL(clicked()), this, SLOT(open_train()));
+    connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    // Mode ↔ Battle
     connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
     connect(battle->btnBack, SIGNAL(clicked()), this, SLOT(open_mode()));
-
-    // Gear button — placeholder until Gear page is built
-    // connect(mode->b_gear, SIGNAL(clicked()), this, SLOT(open_gear()));
 
     setUtilityStyle(*b_save);
     setUtilityStyle(*b_home);
     setUtilityStyle(*b_quit);
 }
 
-// Reads which species and name the player chose, then navigates to Mode.
 void Game::onCreateDone() {
-    // Determine chosen pet type from radio buttons
-    Character::PetType chosen = Character::DragonDog; // default
+    // Read species selection
     if (create->b_axolotl->isChecked())
-        chosen = Character::ElectricAxolotl;
+        currentPetType = Character::ElectricAxolotl;
     else if (create->b_cat->isChecked())
-        chosen = Character::SeelCat;
-    else if (create->b_dog->isChecked())
-        chosen = Character::DragonDog;
+        currentPetType = Character::SeelCat;
+    else
+        currentPetType = Character::DragonDog;
 
-    // Tell Mode which GIF set to use
-    mode->setPetType(chosen);
-
-    // Set pet name from the name list
+    // Set pet name
     QListWidgetItem *item = create->name_list->currentItem();
     if (item)
         player->pet.set_name(item->text());
 
+    // Tell Mode which pet to show
+    mode->setPetType(currentPetType);
+
+    // Rebuild Care with the correct petType now that we know it
+    // Remove old care page, replace with new one that has the right pet
+    pages->removeWidget(care);
+    delete care;
+    care = new Care(player, currentPetType);
+    pages->insertWidget(3, care);
+
+    // Reconnect care navigation
+    connect(mode->b_care,  SIGNAL(clicked()), this, SLOT(open_care()));
+    connect(care->b_back,  SIGNAL(clicked()), this, SLOT(open_mode()));
+
     open_mode();
 }
 
-// Refresh Mode stats + GIF every time we return to it
 void Game::open_mode() {
     mode->refreshDisplay();
     pages->setCurrentIndex(2);
 }
 
-// Refresh Care stat bars every time we enter Care
 void Game::open_care() {
     care->updateStats();
     pages->setCurrentIndex(3);
@@ -157,8 +158,10 @@ void Game::open_battle() { pages->setCurrentIndex(5); }
 
 void Game::setUtilityStyle(QPushButton &button) {
     button.setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF; border-radius: 10px; padding: 4px; font: bold; }
-        QPushButton:pressed { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB); }
-    )");
+        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4850DB, stop:1 #4A71DB);
+            border: 2px inset #FBA8FF; border-radius: 10px;
+            padding: 4px; font: bold; }
+        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4A71DB, stop:1 #4850DB); })");
 }

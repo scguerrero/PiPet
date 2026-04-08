@@ -1,5 +1,6 @@
 /*
- * feed.h - Feed screen header.
+ * feed.h - Feed screen with drag-and-drop food onto character GIF.
+ * Uses standard QWidget mouse events — same as rest of codebase.
  * Author(s): Tanya Magurupira
  */
 #ifndef FEED_H
@@ -8,40 +9,78 @@
 #include <QtWidgets>
 #include <QPixmap>
 #include <QPaintEvent>
+#include <QMouseEvent>
+#include <QTimer>
 #include "../../Player/Player.h"
+#include "../character_class/character.h"
 
+struct Crumb {
+    QPointF pos;
+    QPointF vel;
+    int     life;
+};
+
+// ── Draggable food icon ───────────────────────────────────────────────────
+class FoodItem : public QLabel {
+    Q_OBJECT
+public:
+    FoodItem(const QString &iconPath, const QString &name,
+             int boost, QWidget *parent = nullptr);
+
+    QString foodName;
+    int     hungerBoost;
+    QPoint  homePos;
+
+protected:
+    void mousePressEvent  (QMouseEvent *e) override;
+    void mouseMoveEvent   (QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+
+signals:
+    void dropped(FoodItem *self, QPoint globalPos);
+
+private:
+    QPoint m_offset;
+    bool   m_dragging = false;
+};
+
+// ── Feed widget ───────────────────────────────────────────────────────────
 class Feed : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Feed(Player *player, QWidget *parent = nullptr);
+    explicit Feed(Player *player, Character::PetType petType,
+                  QWidget *parent = nullptr);
     void updateHungerDisplay();
     QPushButton *backBtn;
 
 protected:
-    void paintEvent(QPaintEvent *event) override; // draws background
+    void paintEvent (QPaintEvent *e) override;
+    void resizeEvent(QResizeEvent *e) override;
 
 private slots:
-    void apple();
-    void bone();
-    void drink();
-    void pizza();
+    void onFoodDropped(FoodItem *icon, QPoint globalPos);
+    void tickCrumbs();
 
 private:
-    Player  *player;
-    QPixmap  m_bg;  // background image
+    Player             *player;
+    Character::PetType  petType;
+    QPixmap             m_bg;
 
-    QVBoxLayout *layout;
-    QGroupBox   *actionsBox;
-    QGridLayout *actionsGrid;
+    Character *character;
+    QRect      characterHitbox() const;
 
-    QPushButton *appleBtn;
-    QPushButton *boneBtn;
-    QPushButton *drinkBtn;
-    QPushButton *pizzaBtn;
+    FoodItem *appleItem;
+    FoodItem *boneItem;
+    FoodItem *drinkItem;
+    FoodItem *pizzaItem;
+    void placeIcons();
 
     QLabel *hungerDisplay;
 
+    QList<Crumb> m_crumbs;
+    QTimer      *m_crumbTimer;
+    void spawnCrumbs(QPoint center);
     void applyHungerAction(int boost, const QString &message);
 };
 

@@ -1,26 +1,25 @@
 /*
- * In "Feed" mode, the Player can feed various food items to their PiPet.
- *
+ * feed.h - Feed screen header.
  * Author(s): Tanya Magurupira
  */
-
 #ifndef FEED_H
 #define FEED_H
 
 #include <QtWidgets>
+#include <QPixmap>
+#include <QPaintEvent>
 #include "../../Player/Player.h"
 
 class Feed : public QWidget
 {
     Q_OBJECT
 public:
-
-public:
     explicit Feed(Player *player, QWidget *parent = nullptr);
     void updateHungerDisplay();
     QPushButton *backBtn;
 
-signals:
+protected:
+    void paintEvent(QPaintEvent *event) override; // draws background
 
 private slots:
     void apple();
@@ -29,10 +28,11 @@ private slots:
     void pizza();
 
 private:
-    Player *player;
+    Player  *player;
+    QPixmap  m_bg;  // background image
 
     QVBoxLayout *layout;
-    QGroupBox *actionsBox;
+    QGroupBox   *actionsBox;
     QGridLayout *actionsGrid;
 
     QPushButton *appleBtn;
@@ -40,10 +40,9 @@ private:
     QPushButton *drinkBtn;
     QPushButton *pizzaBtn;
 
-    QLabel *hungerDisplay; // shows current happiness live
+    QLabel *hungerDisplay;
 
     void applyHungerAction(int boost, const QString &message);
-
 };
 
 #endif // FEED_H

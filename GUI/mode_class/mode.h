@@ -1,49 +1,62 @@
 /*
- * Mode class specification file.
- * From here the Player can select which game mode they want to play:
- *     Care mode for feeding and grooming the pet,
- *     Train mode for choosing a mini-game,
- *     Battle mode for playing single-player games versus a bot opponent, and
- *     Gear mode for choosing equipment/accessories for the pet.
+ * mode.h - Mode hub screen.
+ * Shows character GIF, live stat bars, clock, and mode navigation buttons.
+ * Stats decay every 10 seconds. Emotion switches automatically from stats.
  *
- * Author(s): Sasha C. Guerrero
+ * Author(s): Sasha C. Guerrero, [Your name]
  */
 
 #ifndef MODE_H
 #define MODE_H
 #include <QtWidgets>
 #include "../clock_class/clock.h"
+#include "../character_class/character.h"
+#include "../../Player/Player.h"
 
 class Mode : public QWidget
 {
     Q_OBJECT
-    public:
-        // Constructor
-        explicit Mode(QWidget *parent = nullptr);
+public:
+    explicit Mode(Player *player, QWidget *parent = nullptr);
 
-        // Timekeeper tracks time elapsed in seconds
-        Clock *timekeeper;
+    // Called from game.cc after player picks species on Create screen
+    void setPetType(Character::PetType type);
 
-        // Show current time and elapsed time of the game session
-        QLabel *clock_time; // Display system clock time
-        QLabel *elapsed_time; // Display seconds elapsed during game session
+    // Call whenever Mode becomes visible to refresh stats + GIF
+    void refreshDisplay();
 
-        // Time utilities
-        QTime *time; // Get system clock time
-        QTimer *timer; // Count time in milliseconds
+    // Navigation buttons
+    QPushButton *b_care, *b_train, *b_battle, *b_gear;
 
-        // Buttons for Care, Train, Battle, and Gear gamemodes
-        QPushButton *b_care, *b_train, *b_battle, *b_gear;
+    // Clock (kept public to match original interface)
+    Clock  *timekeeper;
+    QLabel *clock_time;
+    QLabel *elapsed_time;
+    QTime  *time;
+    QTimer *timer;
 
-    public slots:
-        // Update current clock time and time elapsed every 1 second
-        void updateClock();
+public slots:
+    void updateClock(); // fires every second
 
-    private:
-        // Vertically-arrange widgets inside Mode
-        QVBoxLayout *layout;
+private:
+    Player    *player;
+    Character *character;
+    Character::PetType petType = Character::DragonDog;
 
+    QVBoxLayout *layout;
 
+    // Stat bars shown on hub
+    QGroupBox    *statsBox;
+    QGridLayout  *statsGrid;
+    QLabel       *hunger_label, *energy_label, *happiness_label;
+    QProgressBar *hunger_bar,   *energy_bar,   *happiness_bar;
+
+    // Stat decay
+    static constexpr int DECAY_INTERVAL_SECS = 10;
+    int secondsSinceDecay = 0;
+
+    void decayStats();
+    void updateStatBars();
 };
 
 #endif

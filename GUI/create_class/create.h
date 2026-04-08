@@ -1,9 +1,10 @@
 /*
- * This page of the game is for the Player to create their piPet.
- * We create a tabbed view of the pages for choosing the pet's name and species.
- * Pet creation is only available for new savefiles.
- *
+ * create.h
  * Author(s): Sasha C. Guerrero
+ * Fixed: b_axolotl, b_cat, b_dog moved to public so game.cc can read
+ *        which species the player chose in onCreateDone().
+ *        Added name_list to public so game.cc can read the chosen name.
+ *        Added validation: DONE button only activates once name AND species chosen.
  */
 
 #ifndef CREATE_H
@@ -11,43 +12,48 @@
 #include <QtWidgets>
 
 class Create : public QWidget {
-	Q_OBJECT
-	public:
-		explicit Create(QWidget *parent = nullptr);
-		QPushButton *b_done; // For navigation to next page
-	private:
-        // The done button (b_done) won't be visible until a name and species is selected.
-        bool name_chosen = false; // Name hasn't been chosen yet
-        bool species_chosen = false; // Species hasn't been chosen yet
+    Q_OBJECT
+public:
+    explicit Create(QWidget *parent = nullptr);
+    QPushButton *b_done;
 
-		QVBoxLayout *layout; // Vertically-arrange widgets inside Create
-		QTabWidget *tabs; // Will hold name and species widgets
-		QWidget *name, *species; // Child widgets of tabs
+    // Made public so game.cc can read which species was chosen
+    QRadioButton *b_axolotl, *b_cat, *b_dog;
 
-		// name's child widgets
-        QScrollArea *scroll_name; // Enable scrolling if widgets don't fit in visible area of screen
-		QVBoxLayout *l_name; // subwidget layouts are prefixed by l_ to differentiate from top-level layout
-		QLabel *name_instruction; // Tell player to choose a name
-		QListWidget *name_list; // Name options for the pet
-		QStringList str_names = {"Axolvyn","Brixlore","Cyphrel","Duskmourn",
-			"Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
-			"Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
-			"Quilvash","Runethis","Spectrivon","Thalvex","Umbryss",
-			"Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"};
+    // Made public so game.cc can read the chosen name
+    QListWidget *name_list;
 
-		// species's child widgets
-        QScrollArea *scroll_species; // Enable scrolling if widgets don't fit in visible area of screen
-		QVBoxLayout *l_species; // l_species's children: species_instruction, box_species, and box_choose
-        QLabel *species_instruction; // Text box giving instructions on how to choose a species
-		QGroupBox *box_buttons; // Radio buttons will go inside this box
-        QVBoxLayout *l_buttons; // Layout that will vertically-arrange buttons inside layout
-		QRadioButton *b_axolotl, *b_cat, *b_dog; // Player may choose 1 species only using radio buttons
+public slots:
+    void left_gallery();
+    void right_gallery();
+    void checkDoneEligibility(); // enables b_done only when both chosen
 
-        // Gallery widget
-        QStackedWidget *pictures;
-    public slots:
-        void left_gallery(); // Left button on gallery
-        void right_gallery(); // Right button on gallery
+private:
+    bool name_chosen    = false;
+    bool species_chosen = false;
+
+    QVBoxLayout *layout;
+    QTabWidget  *tabs;
+    QWidget     *name, *species;
+
+    QScrollArea  *scroll_name;
+    QVBoxLayout  *l_name;
+    QLabel       *name_instruction;
+    QStringList   str_names = {
+        "Axolvyn","Brixlore","Cyphrel","Duskmourn",
+        "Eclynth","Frostael","Glimmvex","Hexalon","Irisvane","Jorethis",
+        "Kryndel","Lumivex","Myrthalon","Noctrel","Ombryx","Pyxelorn",
+        "Quilvash","Runethis","Spectrivon","Thalvex","Umbryss",
+        "Vexlorin","Wyrmvael","Xyndrel","Ysolthex","Zyndarix"
+    };
+
+    QScrollArea *scroll_species;
+    QVBoxLayout *l_species;
+    QLabel      *species_instruction;
+    QGroupBox   *box_buttons;
+    QVBoxLayout *l_buttons;
+
+    QStackedWidget *pictures;
 };
 
 #endif

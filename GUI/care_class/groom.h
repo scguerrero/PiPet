@@ -1,13 +1,13 @@
 /*
- * In "Groom" mode, the Player can perform actions that increase the PiPet's hygiene.
- *
+ * groom.h - Groom screen header.
  * Author(s): Tanya Magurupira
  */
-
 #ifndef GROOM_H
 #define GROOM_H
 
 #include <QtWidgets>
+#include <QPixmap>
+#include <QPaintEvent>
 #include "../../Player/Player.h"
 
 class Groom : public QWidget
@@ -18,7 +18,8 @@ public:
     void updateHygieneDisplay();
     QPushButton *backBtn;
 
-signals:
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 private slots:
     void brush();
@@ -27,10 +28,11 @@ private slots:
     void cleanEars();
 
 private:
-    Player *player;
+    Player  *player;
+    QPixmap  m_bg;
 
     QVBoxLayout *layout;
-    QGroupBox *actionsBox;
+    QGroupBox   *actionsBox;
     QGridLayout *actionsGrid;
 
     QPushButton *brushBtn;
@@ -38,10 +40,9 @@ private:
     QPushButton *trimBtn;
     QPushButton *cleanEarsBtn;
 
-    QLabel *hygieneDisplay; // shows current hygiene live
+    QLabel *hygieneDisplay;
 
     void applyGroomAction(int boost, const QString &message);
-
 };
 
 #endif // GROOM_H

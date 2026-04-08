@@ -1,26 +1,25 @@
 /*
- * In "Sleep" mode, the Player can perform actions that increase the PiPet's energy.
- *
+ * sleep.h - Sleep screen header.
  * Author(s): Tanya Magurupira
  */
-
 #ifndef SLEEP_H
 #define SLEEP_H
 
 #include <QtWidgets>
+#include <QPixmap>
+#include <QPaintEvent>
 #include "../../Player/Player.h"
 
 class Sleep : public QWidget
 {
     Q_OBJECT
 public:
-
-public:
     explicit Sleep(Player *player, QWidget *parent = nullptr);
     void updateSleepDisplay();
     QPushButton *backBtn;
 
-signals:
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 private slots:
     void brushTeeth();
@@ -29,10 +28,11 @@ private slots:
     void tuckIn();
 
 private:
-    Player *player;
+    Player  *player;
+    QPixmap  m_bg;
 
     QVBoxLayout *layout;
-    QGroupBox *actionsBox;
+    QGroupBox   *actionsBox;
     QGridLayout *actionsGrid;
 
     QPushButton *brushTeethBtn;
@@ -40,10 +40,9 @@ private:
     QPushButton *readBookBtn;
     QPushButton *tuckInBtn;
 
-    QLabel *sleepDisplay; // shows current sleep live
+    QLabel *sleepDisplay;
 
     void applySleepAction(int boost, const QString &message);
-
 };
 
 #endif // SLEEP_H

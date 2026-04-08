@@ -1,13 +1,13 @@
 /*
- * In "Affection" mode, the Player can perform actions that increase the PiPet's happiness.
- *
+ * affection.h - Affection screen header.
  * Author(s): Tanya Magurupira
  */
-
 #ifndef AFFECTION_H
 #define AFFECTION_H
 
 #include <QtWidgets>
+#include <QPixmap>
+#include <QPaintEvent>
 #include "../../Player/Player.h"
 
 class Affection : public QWidget
@@ -18,7 +18,8 @@ public:
     void updateHappinessDisplay();
     QPushButton *backBtn;
 
-signals:
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 private slots:
     void cuddle();
@@ -27,10 +28,11 @@ private slots:
     void giveTreat();
 
 private:
-    Player *player;
+    Player  *player;
+    QPixmap  m_bg;
 
     QVBoxLayout *layout;
-    QGroupBox *actionsBox;
+    QGroupBox   *actionsBox;
     QGridLayout *actionsGrid;
 
     QPushButton *cuddleBtn;
@@ -38,10 +40,9 @@ private:
     QPushButton *petsBtn;
     QPushButton *treatBtn;
 
-    QLabel *happinessDisplay; // shows current happiness live
+    QLabel *happinessDisplay;
 
     void applyAffectionAction(int boost, const QString &message);
-
 };
 
 #endif // AFFECTION_H

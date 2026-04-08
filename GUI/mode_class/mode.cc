@@ -1,62 +1,113 @@
 /*
- * Mode class specification file.
- * From here the Player can select which game mode they want to play:
- *     Care mode for feeding and grooming the pet,
- *     Train mode for choosing a mini-game,
- *     Battle mode for playing single-player games versus a bot opponent, and
- *     Gear mode for choosing equipment/accessories for the pet.
- *
- * Author(s): Sasha C. Guerrero
+ * mode.cc - Mode hub implementation.
+ * Author(s): Sasha C. Guerrero, [Your name]
  */
 
 #include "mode.h"
 
-Mode::Mode(QWidget *parent) : QWidget{parent} {
-    // Vertically-arrange widgets inside Mode
+Mode::Mode(Player *player, QWidget *parent)
+    : QWidget{parent}, player(player)
+{
     layout = new QVBoxLayout();
     this->setLayout(layout);
 
-    // Timekeeper tracks time elapsed in seconds
-    timekeeper = new Clock();
-
-    // Show current time and elapsed time of the game session
-    clock_time = new QLabel(); // Display system clock time
-    elapsed_time = new QLabel(); // Display seconds elapsed during game session
-
-    // Add time labels to layout
+    // ── Clock ──────────────────────────────────────────────────────────────
+    timekeeper   = new Clock();
+    time         = new QTime();
+    timer        = new QTimer();
+    clock_time   = new QLabel(time->currentTime().toString("hh:mm:ss AP"));
+    elapsed_time = new QLabel("Time played: 0s");
+    clock_time->setAlignment(Qt::AlignCenter);
+    elapsed_time->setAlignment(Qt::AlignCenter);
     layout->addWidget(clock_time);
     layout->addWidget(elapsed_time);
 
-    // Time utilities
-    time = new QTime(); // Get system clock time
-    timer = new QTimer(); // Count time in milliseconds
+    // ── Character GIF ──────────────────────────────────────────────────────
+    character = new Character(this);
+    character->setFixedSize(200, 200);
+    layout->addWidget(character, 0, Qt::AlignCenter);
 
-    // Set initial values for system clock and elapsed time
-    clock_time->setText(time->currentTime().toString("hh:mm:ss AP")); // hour-minute-second AM, PM format
-    elapsed_time->setText( QString::number(timekeeper->elapsed_time()) );
+    // ── Stat bars ──────────────────────────────────────────────────────────
+    statsBox  = new QGroupBox("Condition", this);
+    statsGrid = new QGridLayout();
+    statsBox->setLayout(statsGrid);
 
-    // Update clock_time and elapsed_time every 1 second
-    connect(timer, SIGNAL( timeout() ), this, SLOT( updateClock() ));
-    timer->start(1000); // 1000ms = 1s intervals
+    hunger_label    = new QLabel("Hunger");
+    energy_label    = new QLabel("Energy");
+    happiness_label = new QLabel("Happiness");
+    hunger_bar      = new QProgressBar();
+    energy_bar      = new QProgressBar();
+    happiness_bar   = new QProgressBar();
 
-    // Buttons lead to their corresponding gamemode
-    b_care = new QPushButton("Care");
-    b_train = new QPushButton("Train");
+    for (QProgressBar *bar : {hunger_bar, energy_bar, happiness_bar}) {
+        bar->setRange(0, 100);
+        bar->setTextVisible(true);
+    }
+
+    statsGrid->addWidget(hunger_label,    0, 0);
+    statsGrid->addWidget(hunger_bar,      0, 1);
+    statsGrid->addWidget(energy_label,    1, 0);
+    statsGrid->addWidget(energy_bar,      1, 1);
+    statsGrid->addWidget(happiness_label, 2, 0);
+    statsGrid->addWidget(happiness_bar,   2, 1);
+    layout->addWidget(statsBox);
+
+    // ── Mode buttons ───────────────────────────────────────────────────────
+    b_care   = new QPushButton("Care");
+    b_train  = new QPushButton("Train");
     b_battle = new QPushButton("Battle");
-    b_gear = new QPushButton("Gear");
-
-    // Add buttons to layout
+    b_gear   = new QPushButton("Gear");
     layout->addWidget(b_care);
     layout->addWidget(b_train);
     layout->addWidget(b_battle);
     layout->addWidget(b_gear);
+
+    // ── Timer ──────────────────────────────────────────────────────────────
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateClock()));
+    timer->start(1000);
+
+    refreshDisplay();
+}
+
+void Mode::setPetType(Character::PetType type) {
+    petType = type;
+    character->setPetType(type);
+    refreshDisplay();
+}
+
+void Mode::refreshDisplay() {
+    updateStatBars();
+    character->syncWithPlayer(*player, petType);
 }
 
 void Mode::updateClock() {
-    // Update current time on clock
-    clock_time->setText( time->currentTime().toString("hh:mm:ss AP") );
+    clock_time->setText(time->currentTime().toString("hh:mm:ss AP"));
 
-    // Update elapsed time in seconds
     timekeeper->increment_elapsed_time(1);
-    elapsed_time->setText( QString::number(timekeeper->elapsed_time()) );
+    elapsed_time->setText(QString("Time played: %1s")
+                              .arg(timekeeper->elapsed_time()));
+
+    secondsSinceDecay++;
+    if (secondsSinceDecay >= DECAY_INTERVAL_SECS) {
+        secondsSinceDecay = 0;
+        decayStats();
+    }
+}
+
+void Mode::decayStats() {
+    PiPet pet = player->getPet();
+    pet.set_hunger   (qMax(0, pet.hunger()    - 1));
+    pet.set_energy   (qMax(0, pet.energy()    - 1));
+    pet.set_happiness(qMax(0, pet.happiness() - 1));
+    player->setPet(pet);
+
+    updateStatBars();
+    character->syncWithPlayer(*player, petType);
+}
+
+void Mode::updateStatBars() {
+    PiPet pet = player->getPet();
+    hunger_bar->setValue(pet.hunger());
+    energy_bar->setValue(pet.energy());
+    happiness_bar->setValue(pet.happiness());
 }

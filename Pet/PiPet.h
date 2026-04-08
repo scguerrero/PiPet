@@ -3,22 +3,20 @@
  * Author: Sasha C. Guerrero
  * Created: 2/4/2026
  * Last Edited: 3/25/2026
+ * Fixed: m_days_old now initialized to 0 (was uninitialized garbage memory)
 */
 
 #ifndef PIPET_H
 #define PIPET_H
 #include <QtWidgets>
 
-// PiPet class declaration
 class PiPet
 {
 private:
-    // PiPet's name and age
     QString m_name = "Rasbaire";
-    QString m_age_group = "Baby"; // Age groups: Baby, Teen, Adult
-    int m_days_old; // The PiPet is initially 0 days old
+    QString m_age_group = "Baby";
+    int m_days_old = 0;       // FIX: was uninitialized
 
-    // The PiPet's Condition, or wellness attributes. Each attribute is out of 100.
     int m_hunger = 50;
     int m_energy = 50;
     int m_strength = 50;
@@ -26,19 +24,13 @@ private:
     int m_intelligence = 50;
     int m_happiness = 50;
 
-    // The PiPet's Stats, or battle attributes.
     int m_attack = 10;
     int m_defense = 10;
-    int m_hit_points = 100; // "hit points" or HP
+    int m_hit_points = 100;
 
 public:
-    // Default constructor
     PiPet();
-
-    // Constructor with arguments
     PiPet(QString, QString, int, int, int, int, int, int, int, int, int, int);
-
-    // Default destructor
     ~PiPet();
 
     // Getters
@@ -81,10 +73,7 @@ public:
     void increase_defense(int);
     void increase_hit_points(int);
 
-    // Create a PiPet object from a JSON file
     static PiPet fromJSON(const QJsonObject &json);
-
-    // Create a JSON file from a PiPet object
     QJsonObject toJSON() const;
 };
 #endif

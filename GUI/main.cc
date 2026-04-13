@@ -23,7 +23,7 @@ int main(int argc, char**argv)
         font-family: monospace;
         color: mistyrose;
         letter-spacing: 1px;
-        background-color: #2230BA;
+        background-color: #2230BA
     }
     QPushButton {
         background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #1327BE, stop: 1 #172FE8);
@@ -108,8 +108,9 @@ int main(int argc, char**argv)
 
     Game game;
     game.loadGame();
-    //game.setFixedSize(480, 640);
-    game.showFullScreen();
+    game.setFixedSize(480, 640);
+    game.show();
+    //game.showFullScreen();
 
     return app.exec();
 }

@@ -6,7 +6,7 @@
 
 Game::Game(QWidget *parent) : QWidget{parent} {
     this->setWindowTitle("PIPET");
-    this->setContentsMargins(15, 15, 15, 15);
+    //this->setContentsMargins(15, 15, 15, 15);
 
     pet    = new PiPet();
     player = new Player(*pet);

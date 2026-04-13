@@ -1,43 +1,88 @@
 /*
- * TrainWidget class implementation file.
+ * Train class specification file.
  * In Train mode, the Player can play mini-games with their pet to increase the pet's attributes.
+ *
  * Author(s): Sasha C. Guerrero
- * Created: 2/23/2026
- * Last Edited: 3/16/2026
  */
 #include "train.h"
 
 Train::Train(QWidget *parent)
     : QWidget{parent}
 {
-    // Initialize widgets
+    // QStackedWidget contains TrainHub, PiPatterns, and PiDash
+    stack = new QStackedWidget();
+    trainHub = new QWidget();
+    pipatterns = new PiPatterns();
+    // initialize PiDash
+    stack->addWidget(trainHub);
+    stack->addWidget(pipatterns);
+    // add PiDash
+
+    // Top-level layout
+    main_layout = new QVBoxLayout();
+    this->setLayout(main_layout);
+    main_layout->addWidget(stack);
+
+    // Train Hub widgets ------------------------------------------
     layout = new QVBoxLayout();
-    b_minigame1 = new QPushButton("Minigame 1");
-    b_minigame2 = new QPushButton("Minigame 2");
-    b_minigame3 = new QPushButton("Minigame 3");
+    trainHub->setLayout(layout);
+    b_minigame1 = new QPushButton("Play PiPatterns!");
+    b_minigame2 = new QPushButton("Play PiDash!");
     b_back = new QPushButton("BACK");
 
-    // Add buttons to grid
+    // PiPatterns logo
+    logo_pipatterns = new QLabel();
+    QImage *img0 = new QImage(":/images/Assets/PiPatterns.png");
+    QPixmap pxmap0 = QPixmap::fromImage(img0->scaled(275,275,Qt::KeepAspectRatio));
+    logo_pipatterns->setPixmap(pxmap0);
+    logo_pipatterns->setAlignment(Qt::AlignCenter);
+
+    // PiDash logo
+    logo_pidash = new QLabel();
+    QImage *img1 = new QImage(":/images/Assets/pidash.png");
+    QPixmap pxmap1 = QPixmap::fromImage(img1->scaled(200,200,Qt::KeepAspectRatio));
+    logo_pidash->setPixmap(pxmap1);
+    logo_pidash->setAlignment(Qt::AlignCenter);
+
+    // Add logos and buttons to layout
+    layout->addWidget(logo_pipatterns);
     layout->addWidget(b_minigame1);
+    layout->addWidget(logo_pidash);
     layout->addWidget(b_minigame2);
-    layout->addWidget(b_minigame3);
     layout->addWidget(b_back);
 
     // Icons for buttons
     QIcon left_icon(":/images/Assets/left.png");
     b_back->setIcon(left_icon);
 
-    // Assign layout
-    this->setLayout(layout);
+    // Button stylesheets
+    setUtilityStyle(*b_back);
+    setUtilityStyle(*pipatterns->b_back);
 
-    b_back->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF;
-        border-radius: 10px;
-        padding: 4px;
-        font: bold; }
-        QPushButton:pressed {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
-        }
-        )");
+    // Connect minigame1 button to PiPatterns
+    connect(b_minigame1, SIGNAL( clicked() ), this, SLOT( openPiPatterns() ));
+
+    // Connect PiPatterns's back button to Train Hub
+    connect(pipatterns->b_back, SIGNAL( clicked() ), this, SLOT( openTrainHub() ));
+
+    // Connect minigame2 button to PiDash
+
+}
+
+void Train::openTrainHub() {
+    stack->setCurrentIndex(0);
+}
+
+void Train::openPiPatterns() {
+    stack->setCurrentIndex(1);
+}
+
+void Train::setUtilityStyle(QPushButton &button) {
+    button.setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4850DB, stop:1 #4A71DB);
+            border: 2px inset #FBA8FF; border-radius: 10px;
+            padding: 4px; font: bold; }
+        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4A71DB, stop:1 #4850DB); })");
 }

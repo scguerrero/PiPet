@@ -42,5 +42,6 @@
         <file>Assets/restart.png</file>
         <file>Assets/PiPatterns.png</file>
         <file>Assets/pidash.png</file>
+        <file>Assets/gear.png</file>
     </qresource>
 </RCC>

@@ -12,6 +12,7 @@ RESOURCES += \
 # Input
 HEADERS += \
     GUI/game_class/game.h \
+    GUI/gear_class/gear.h \
     GUI/start_class/start.h \
     GUI/create_class/create.h \
     GUI/mode_class/mode.h \
@@ -27,6 +28,7 @@ HEADERS += \
     Pet/PiPet.h
 
 SOURCES += \
+    GUI/gear_class/gear.cc \
     GUI/main.cc \
     GUI/game_class/game.cc \
     GUI/start_class/start.cc \

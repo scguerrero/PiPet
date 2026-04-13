@@ -1,7 +1,7 @@
 /*
  * mode.h - Mode hub screen.
  * Clock moved to About/Settings page.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Sasha C. Guerrero, Luke Cerwin
  */
 #ifndef MODE_H
 #define MODE_H

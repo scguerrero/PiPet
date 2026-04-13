@@ -2,7 +2,7 @@
  * mode.cc - Mode hub implementation.
  * Clock removed from main screen — shown in About/Settings only.
  * About page uses main.png background, no blue box behind text.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Sasha C. Guerrero, Luke Cerwin
  */
 #include "mode.h"
 #include <QPainter>

@@ -11,6 +11,7 @@
 #include "../train_class/train.h"
 #include "../battle_class/battle.h"
 #include "../character_class/character.h"
+#include "../gear_class/gear.h"
 
 class Game : public QWidget {
     Q_OBJECT
@@ -39,6 +40,7 @@ private:
     Care   *care;
     Train  *train;
     Battle *battle;
+    Gear *gear;
 
     QHBoxLayout *utility_bar;
     QPushButton *b_save, *b_home, *b_quit;
@@ -53,6 +55,7 @@ private slots:
     void open_sleep();   // bubble → sleep directly
     void open_train();
     void open_battle();
+    void open_gear();
     void onCreateDone();
 
 protected:

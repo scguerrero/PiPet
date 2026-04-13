@@ -23,6 +23,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     care   = new Care(player, currentPetType);
     train  = new Train();
     battle = new Battle();
+    gear = new Gear();
 
     pages->addWidget(start);   // 0
     pages->addWidget(create);  // 1
@@ -30,6 +31,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(care);    // 3
     pages->addWidget(train);   // 4
     pages->addWidget(battle);  // 5
+    pages->addWidget(gear);    // 6
 
     // Utility bar
     utility_bar = new QHBoxLayout();
@@ -69,6 +71,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     // Mode other buttons
     connect(mode->b_train,   SIGNAL(clicked()), this, SLOT(open_train()));
     connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
+    connect(mode->b_gear,  SIGNAL(clicked()), this, SLOT(open_gear()));
 
     // Care back buttons → return to Mode via signal
     connect(care, SIGNAL(requestReturnToMode()), this, SLOT(open_mode()));
@@ -76,6 +79,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     // Train / Battle back
     connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
     connect(battle->btnBack, SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(gear->b_back, SIGNAL(clicked()), this, SLOT(open_mode()));
 
     setUtilityStyle(*b_save);
     setUtilityStyle(*b_home);
@@ -133,6 +137,7 @@ void Game::open_start() { pages->setCurrentIndex(0); }
 void Game::open_create(){ pages->setCurrentIndex(1); }
 void Game::open_train() { pages->setCurrentIndex(4); }
 void Game::open_battle(){ pages->setCurrentIndex(5); }
+void Game::open_gear() { pages->setCurrentIndex(6); }
 
 QJsonObject Game::toJson() const {
     QJsonObject json;

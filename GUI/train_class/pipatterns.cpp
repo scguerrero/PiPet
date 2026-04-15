@@ -21,6 +21,10 @@ PiPatterns::PiPatterns(QWidget *parent) : QWidget(parent) {
     logo->setAlignment(Qt::AlignCenter);
     layout->addWidget(logo);
 
+    // Matrix of tiles
+    matrix = new Matrix();
+    layout->addWidget(matrix);
+
     // Back button
     b_back = new QPushButton("BACK");
     layout->addWidget(b_back);

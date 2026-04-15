@@ -7,6 +7,7 @@
 #ifndef GEAR_H
 #define GEAR_H
 #include <QtWidgets>
+#include "item.h"
 
 class Gear : public QWidget {
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
     QVBoxLayout *layout;
     QLabel *logo;
     QPushButton *b_back;
+    Item *item;
 };
 
 #endif // GEAR_H

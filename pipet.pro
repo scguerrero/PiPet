@@ -13,6 +13,7 @@ RESOURCES += \
 HEADERS += \
     GUI/game_class/game.h \
     GUI/gear_class/gear.h \
+    GUI/gear_class/item.h \
     GUI/start_class/start.h \
     GUI/create_class/create.h \
     GUI/mode_class/mode.h \
@@ -22,6 +23,8 @@ HEADERS += \
     GUI/care_class/sleep.h \
     GUI/care_class/groom.h \
     GUI/train_class/matrix.h \
+    GUI/train_class/minigame_2.h \
+    GUI/train_class/minigame_3.h \
     GUI/train_class/pipatterns.h \
     GUI/train_class/tile.h \
     GUI/train_class/train.h \
@@ -31,6 +34,7 @@ HEADERS += \
 
 SOURCES += \
     GUI/gear_class/gear.cc \
+    GUI/gear_class/item.cc \
     GUI/main.cc \
     GUI/game_class/game.cc \
     GUI/start_class/start.cc \
@@ -42,6 +46,8 @@ SOURCES += \
     GUI/care_class/sleep.cc \
     GUI/care_class/groom.cc \
     GUI/train_class/matrix.cc \
+    GUI/train_class/minigame_2.cpp \
+    GUI/train_class/minigame_3.cpp \
     GUI/train_class/pipatterns.cpp \
     GUI/train_class/tile.cc \
     GUI/train_class/train.cc \

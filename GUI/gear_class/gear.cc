@@ -21,6 +21,10 @@ Gear::Gear(QWidget *parent) : QWidget(parent) {
     logo->setAlignment(Qt::AlignCenter);
     layout->addWidget(logo);
 
+    // Test item
+    item = new Item("Cap", ":/images/Assets/capplaceholder.png", "wow baseball!");
+    layout->addWidget(item);
+
     // Back button
     b_back = new QPushButton("BACK");
     layout->addWidget(b_back);

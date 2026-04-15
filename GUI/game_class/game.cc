@@ -21,7 +21,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     create = new Create();
     mode   = new Mode(player);
     care   = new Care(player, currentPetType);
-    train  = new Train();
+    train  = new Train(pet);
     battle = new Battle();
     gear = new Gear();
 

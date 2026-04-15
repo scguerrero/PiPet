@@ -2,39 +2,45 @@
  * Train class specification file.
  * In Train mode, the Player can play mini-games with their pet to increase the pet's attributes.
  *
- * Author(s): Sasha C. Guerrero
+ * Author(s): Sasha C. Guerrero, Tanya Magurupira
  */
 #ifndef TRAIN_H
 #define TRAIN_H
 #include <QtWidgets>
 #include "pipatterns.h"
+#include "../../Pet/PiPet.h"
+#include "minigame_2.h"
+#include "minigame_3.h"
+
 
 class Train : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Train(QWidget *parent = nullptr);
+    explicit Train(PiPet* pet, QWidget *parent = nullptr);
     QPushButton *b_back;
+
+private slots:
+    void openMenuPage(); // Page 0 is the Menu Page
+    void openPiPatterns(); // Page 1 is PiPatterns
+
+    void onMiniGame2(); // triggered by the Minigame 2 button
+    void onTrackRushFinished(int finalScole, int xpEarned);
+    void onMiniGame3();                                      // ← NEW
+    void onSkySnackFinished(int finalScore, int xpEarned);   // ← NEW
+
 private:
-    // Top-level layout
-    QVBoxLayout *main_layout;
+    PiPet* m_pet = nullptr;
 
-    // QStackedWidget contains TrainHub, PiPatterns, and PiDash
-    QStackedWidget *stack;
-    QWidget *trainHub;
-    PiPatterns *pipatterns; // Mini-game 1
-    //PiDash *pidash; // Mini-game 2
+    QStackedWidget *m_stack; // page 0 = menu, page 1 = minigame
+    QWidget  *m_menuPage; // holds the button layout
 
-    // TrainHub widgets ----------------------------------------------
-    QVBoxLayout *layout; // Vertically-arrange widgets
-    QPushButton *b_minigame1, *b_minigame2; // Buttons leading to each minigame
-    QLabel *logo_pipatterns, *logo_pidash; // Logos for each minigame
+    QVBoxLayout *layout; // buttons leading to each mini-game will go in this layout
+    QPushButton *b_minigame1, *b_minigame2, *b_minigame3;
 
-public slots:
-    void setUtilityStyle(QPushButton &button); // Button stylesheet
-    void openTrainHub(); // Open Train Hub at index 0 of stack
-    void openPiPatterns(); // Open minigame PiPatterns at index 1 of stack
-    // Open minigame PiDash
+    PiPatterns *pipatterns;// minigame widget 1
+    minigame_2* m_trackRush = nullptr; // the game widget
+    minigame_3* m_skySnack  = nullptr;  // ← NEW
 };
 
 #endif // TRAIN_H

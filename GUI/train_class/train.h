@@ -9,8 +9,8 @@
 #include <QtWidgets>
 #include "pipatterns.h"
 #include "../../Pet/PiPet.h"
-#include "minigame_2.h"
-#include "minigame_3.h"
+//#include "minigame_2.h"
+//#include "minigame_3.h"
 
 
 class Train : public QWidget
@@ -24,10 +24,10 @@ private slots:
     void openMenuPage(); // Page 0 is the Menu Page
     void openPiPatterns(); // Page 1 is PiPatterns
 
-    void onMiniGame2(); // triggered by the Minigame 2 button
-    void onTrackRushFinished(int finalScole, int xpEarned);
-    void onMiniGame3();                                      // ← NEW
-    void onSkySnackFinished(int finalScore, int xpEarned);   // ← NEW
+    //void onMiniGame2(); // triggered by the Minigame 2 button
+    //void onTrackRushFinished(int finalScole, int xpEarned);
+    //void onMiniGame3();                                      // ← NEW
+    //void onSkySnackFinished(int finalScore, int xpEarned);   // ← NEW
 
 private:
     PiPet* m_pet = nullptr;
@@ -39,8 +39,8 @@ private:
     QPushButton *b_minigame1, *b_minigame2, *b_minigame3;
 
     PiPatterns *pipatterns;// minigame widget 1
-    minigame_2* m_trackRush = nullptr; // the game widget
-    minigame_3* m_skySnack  = nullptr;  // ← NEW
+    //minigame_2* m_trackRush = nullptr; // the game widget
+    //minigame_3* m_skySnack  = nullptr;  // ← NEW
 };
 
 #endif // TRAIN_H

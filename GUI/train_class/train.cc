@@ -39,8 +39,8 @@ Train::Train(PiPet* pet, QWidget *parent)
 
     connect(pipatterns->b_back, SIGNAL(clicked()), this, SLOT(openMenuPage()));
     connect(b_minigame1, SIGNAL(clicked()), this, SLOT(openPiPatterns()));
-    connect(b_minigame2, &QPushButton::clicked, this, &Train::onMiniGame2);
-    connect(b_minigame3, &QPushButton::clicked, this, &Train::onMiniGame3);
+    //connect(b_minigame2, &QPushButton::clicked, this, &Train::onMiniGame2);
+    //connect(b_minigame3, &QPushButton::clicked, this, &Train::onMiniGame3);
 
     b_back->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
@@ -63,6 +63,7 @@ void Train::openPiPatterns() {
     m_stack->setCurrentIndex(1);
 }
 
+/*
 // ══════════════════════════════════════════════════════════════
 //  Minigame 2 — PiDash (runner)
 // ══════════════════════════════════════════════════════════════
@@ -140,3 +141,4 @@ void Train::onSkySnackFinished(int finalScore, int xpEarned)
              << "happiness +"      << happinessGain
              << "intelligence +"   << intelligenceGain;
 }
+*/

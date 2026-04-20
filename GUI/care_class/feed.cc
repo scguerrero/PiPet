@@ -45,11 +45,8 @@ void FoodItem::mousePressEvent(QMouseEvent *e) {
 }
 
 void FoodItem::mouseMoveEvent(QMouseEvent *e) {
-    if (m_dragging) {
-        QPoint globalPos = e->globalPosition().toPoint();
-        QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
-        move(newPos);
-    }
+    if (m_dragging)
+        move(parentWidget()->mapFromGlobal(e->globalPosition().toPoint()) - m_offset);
 }
 
 void FoodItem::mouseReleaseEvent(QMouseEvent *e) {
@@ -176,9 +173,10 @@ QRect Feed::characterHitbox() const {
 void Feed::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    // Centre the sprite widget; top edge at y=55
-    character->setGeometry((w - kSpriteSize) / 2, 55, kSpriteSize, kSpriteSize);
-    hungerDisplay->setGeometry((w - 300) / 2, 55 + kSpriteSize + 8, 300, 38);
+    int charY = 55;
+    // FIX: set character geometry here — this is what makes spriteCenter() reliable
+    character->setGeometry((w - kSpriteSize) / 2, charY, kSpriteSize, kSpriteSize);
+    hungerDisplay->setGeometry((w - 300) / 2, charY + kSpriteSize + 8, 300, 38);
     backBtn->setGeometry((w - 220) / 2, h - 55, 220, 40);
     placeIcons();
 }
@@ -212,14 +210,12 @@ void Feed::paintEvent(QPaintEvent *e) {
         p.drawEllipse(QPointF(c.pos), 4, 4);
     }
 
-    // Hint ring — drawn as a circle centred exactly on spriteCenter()
-    // with radius kHitRadius so it matches the hit zone perfectly.
-    QPoint  sc = spriteCenter();
-    QPointF cf(sc);
+    // Hint ring — drawn at exact character center matching the hit zone
+    QPoint sc = spriteCenter();
     p.setPen(QPen(QColor(255, 100, 30, 90), 3, Qt::DashLine));
     p.setBrush(Qt::NoBrush);
-    p.drawEllipse(cf, static_cast<qreal>(kHitRadius),
-                      static_cast<qreal>(kHitRadius));
+    p.drawEllipse(QPointF(sc), static_cast<qreal>(kHitRadius),
+                               static_cast<qreal>(kHitRadius));
 }
 
 void Feed::onFoodDropped(FoodItem *icon, QPoint globalPos) {

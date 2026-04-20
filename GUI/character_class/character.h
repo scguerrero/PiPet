@@ -33,7 +33,8 @@ public:
 
 public slots:
     void playIdle();
-
+protected:
+    void resizeEvent(QResizeEvent *e) override;
 private:
     QLabel *display;
 

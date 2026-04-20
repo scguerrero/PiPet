@@ -5,7 +5,7 @@
  */
 #include "groom.h"
 #include <QPainter>
-#include <QRandomGenerator>
+static constexpr int kSpriteSize = 160;
 
 // ── GroomItem ──────────────────────────────────────────────────────────────
 GroomItem::GroomItem(const QString &iconPath, const QString &name,
@@ -104,7 +104,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     m_bg.load(":/images/Backgrounds/bathroom_16bit.png");
 
     character = new Character(this);
-    character->setFixedSize(160, 160);
+    character->setFixedSize(kSpriteSize, kSpriteSize);
     character->syncWithPlayer(*player, petType);
 
     hygieneDisplay = new QLabel(this);
@@ -156,15 +156,15 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
 void Groom::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petSize = 150;
 
-    // Center character in upper half of screen
-    int petX = (w - petSize) / 2;
     int petY = 40;
-    character->setGeometry(petX, petY, petSize, petSize);
+    int petX = (w - kSpriteSize) / 2;
 
-    hygieneDisplay->setGeometry((w - 300) / 2, petY + petSize + 6,  300, 38);
-    hintLabel->setGeometry     ((w - 300) / 2, petY + petSize + 50, 300, 30);
+    // FIX: set character geometry here so topSpot/bottomSpot are always correct
+    character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
+
+    hygieneDisplay->setGeometry((w - 300) / 2, petY + kSpriteSize + 6,  300, 38);
+    hintLabel->setGeometry     ((w - 300) / 2, petY + kSpriteSize + 50, 300, 30);
     backBtn->setGeometry((w - 220) / 2, h - 55, 220, 40);
     placeTools();
 }

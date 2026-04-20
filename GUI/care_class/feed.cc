@@ -68,7 +68,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
 
     appleItem = new FoodItem(":/images/Sprites/pets/icons/apple.png",   "Apple", 10, this);
     boneItem  = new FoodItem(":/images/Sprites/pets/icons/dogtreat.png", "Bone",  10, this);
-    drinkItem = new FoodItem(":/images/Sprites/pets/icons/water.png",     "Drink",  5, this);
+    drinkItem = new FoodItem(":/images/Sprites/pets/icons/drink.png",     "Drink",  5, this);
     pizzaItem = new FoodItem(":/images/Sprites/pets/icons/pizza.png",   "Pizza",  5, this);
 
     connect(appleItem, &FoodItem::dropped, this, &Feed::onFoodDropped);

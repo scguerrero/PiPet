@@ -75,7 +75,7 @@ Groom::Groom(Player *player, QWidget *parent)
                               "Bathe",       this);
     trimTool  = new GroomTool(":/images/Sprites/pets/icons/showerhead.png",
                               "Trim Nails",  this);
-    teethTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",
+    teethTool = new GroomTool(":/images/Sprites/pets/icons/toothbrush.png",
                               "Brush Teeth", this);
 
     connect(brushTool, &GroomTool::dropped, this, &Groom::onToolDropped);
@@ -151,8 +151,8 @@ void Groom::paintEvent(QPaintEvent *e) {
 
     // ── Bottom spot ───────────────────────────────────────────────────────
     QRect bs = bottomSpot();
-    QColor bc = bottomDone ? QColor(80, 255, 120, 200)
-                           : QColor(255, 220, 50,  160);
+    QColor bc = bottomDone ? QColor(80, 300, 120, 200)
+                           : QColor(255, 220, 50, 160);
     p.setPen(QPen(bc, 4, Qt::DashLine));
     p.setBrush(QColor(bc.red(), bc.green(), bc.blue(), 60));
     p.drawEllipse(bs);

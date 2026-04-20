@@ -126,41 +126,48 @@ void Mode::resizeEvent(QResizeEvent *e) {
 }
 
 void Mode::layoutWidgets() {
-    int w = width();
+    int w = width(), h = height();
 
-    // Settings top-right — no clock labels on main screen
-    b_settings->move(w - 46, 8);
+    static constexpr int kCharSize = 160;
+    static constexpr int kStatsH   = 100;
+    static constexpr int kBubbleH  = 80;
+    static constexpr int kBtnH     = 36;
+    static constexpr int kMargin   = 8;
+    static constexpr int kSpacing  = 6;
+
+    // ── Build from the bottom up so there's no dead space ─────────────────
+    int btnY    = h - kBtnH    - kMargin;
+    int bubbleY = btnY  - kBubbleH - kSpacing;
+    int statsY  = bubbleY - kStatsH  - kSpacing;
+    int charY   = statsY  - kCharSize - kSpacing;
+
+    // Settings top-right
+    b_settings->move(w - 46, kMargin);
 
     // Pet name centered at top
     petNameLabel->setGeometry((w - 200) / 2, 8, 200, 28);
 
-    // Character centered below name
-    int charSize = 160;
-    int charX = (w - charSize) / 2;
-    int charY = 48;
-    character->setGeometry(charX, charY, charSize, charSize);
+    // Character
+    int charX = (w - kCharSize) / 2;
+    character->setGeometry(charX, charY, kCharSize, kCharSize);
 
-    // Anger mark just above character head
-    angerMark->setGeometry(charX + charSize/2 + 32, charY, 48, 48);
+    // Anger mark top-right of character
+    angerMark->setGeometry(charX + kCharSize/2 + 32, charY, 48, 48);
 
-    // Stat bars below character
-    statsBox->setGeometry(8, charY + charSize + 8, w - 16, 100);
+    // Stat bars
+    statsBox->setGeometry(kMargin, statsY, w - kMargin*2, kStatsH);
 
-    // Bubble buttons below stat bars
-    int bubbleY = charY + charSize + 118;
-    int bubbleH = 80;
-    int bubbleW = (w - 32) / 3;
-    int sp      = 8;
-    feedBubble->setGeometry (sp,                   bubbleY, bubbleW, bubbleH);
-    groomBubble->setGeometry(sp + bubbleW + sp,     bubbleY, bubbleW, bubbleH);
-    sleepBubble->setGeometry(sp + (bubbleW+sp)*2,   bubbleY, bubbleW, bubbleH);
+    // Bubbles — three equal columns with margins
+    int bubbleW = (w - kMargin*4) / 3;
+    feedBubble->setGeometry (kMargin,               bubbleY, bubbleW, kBubbleH);
+    groomBubble->setGeometry(kMargin*2 + bubbleW,   bubbleY, bubbleW, kBubbleH);
+    sleepBubble->setGeometry(kMargin*3 + bubbleW*2, bubbleY, bubbleW, kBubbleH);
 
-    // Train / Battle / Gear below bubbles
-    int btnY = bubbleY + bubbleH + 8;
-    int btnW = (w - 32) / 3;
-    b_train->setGeometry (8,               btnY, btnW, 36);
-    b_battle->setGeometry(8 + btnW + 8,    btnY, btnW, 36);
-    b_gear->setGeometry  (8+(btnW+8)*2,    btnY, btnW, 36);
+    // Train / Battle / Gear
+    int btnW = (w - kMargin*4) / 3;
+    b_train->setGeometry (kMargin,             btnY, btnW, kBtnH);
+    b_battle->setGeometry(kMargin*2 + btnW,    btnY, btnW, kBtnH);
+    b_gear->setGeometry  (kMargin*3 + btnW*2,  btnY, btnW, kBtnH);
 }
 
 // ── Paint ─────────────────────────────────────────────────────────────────

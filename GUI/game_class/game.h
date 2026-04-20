@@ -1,6 +1,6 @@
 /*
  * game.h - Top-level game widget.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #ifndef GAME_H
 #define GAME_H

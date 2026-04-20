@@ -1,7 +1,7 @@
 /*
  * groom.h - Groom screen with two-spot drag mechanic.
  * Uses standard QWidget mouse events — same as rest of codebase.
- * Author(s): Luke Cerwin Sasha Guerro
+* Author(s): Luke Cewin & Sasha Guerrero
  */
 #ifndef GROOM_H
 #define GROOM_H
@@ -10,6 +10,7 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QGroupBox>
 #include "../../Player/Player.h"
 #include "../character_class/character.h"
 // ── Draggable Item ────────────────────────────────────────────────────────
@@ -36,7 +37,7 @@ class Groom : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Groom(Player *player, Character::PetType petType,  // ADD: petType
+    explicit Groom(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateHygieneDisplay();
     QPushButton *backBtn;
@@ -48,22 +49,25 @@ private slots:
     void resetSpots();
 private:
     Player             *player;
-    Character::PetType  petType;                                // ADD: petType member
-    QPixmap  m_bg;
+    Character::PetType  petType;
+    QPixmap    m_bg;
     Character *character;
     GroomItem *brushTool;
     GroomItem *batheTool;
     GroomItem *trimTool;
     GroomItem *teethTool;
     void placeTools();
-    QLabel *hygieneDisplay;
-    QLabel *hintLabel;
-    GroomItem *activeTool = nullptr;
-    bool       topDone    = false;
-    bool       bottomDone = false;
+    QLabel     *hygieneDisplay;
+    QLabel     *hintLabel;
+    QGroupBox  *actionsBox;
+    GroomItem  *activeTool = nullptr;
+    bool        topDone    = false;
+    bool        bottomDone = false;
     QRect topSpot()    const;
     QRect bottomSpot() const;
     QTimer *m_resetTimer;
+    QTimer *m_hintTimer;
     void applyGroomAction(const QString &message);
+    void showHint(const QString &text);
 };
 #endif // GROOM_H

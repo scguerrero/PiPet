@@ -1,7 +1,7 @@
 /*
  * sleep.cc - Sleep screen with character GIF.
  * Cuddle replaces Brush Teeth.
- * Author(s): Tanya Magurupira
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #include "sleep.h"
 #include <QPainter>
@@ -32,9 +32,6 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     wearPjsBtn  = new QPushButton("👖 Wear Pjs");
     readBookBtn = new QPushButton("📖 Bed Time Story");
     tuckInBtn   = new QPushButton("🛌 Tuck In Bed");
-    backBtn     = new QPushButton("Back to Care Hub!");
-
-    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
 
     actionsGrid->addWidget(cuddleBtn,   0, 0, Qt::AlignCenter);
     actionsGrid->addWidget(wearPjsBtn,  0, 1, Qt::AlignCenter);
@@ -47,20 +44,14 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     connect(readBookBtn, SIGNAL(clicked()), this, SLOT(readBook()));
     connect(tuckInBtn,   SIGNAL(clicked()), this, SLOT(tuckIn()));
 
-    // Character GIF at top center, buttons below
-    layout->addWidget(character, 0, Qt::AlignCenter);
-    layout->addStretch();
-    layout->addWidget(sleepDisplay);
-    layout->addWidget(actionsBox);
-    layout->addWidget(backBtn);
-    this->setLayout(layout);
-
     actionsBox->setStyleSheet(
         "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
         "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
         "subcontrol-position: top center; padding: 0 4px; }");
 
+    backBtn     = new QPushButton("Back to Care Hub!");
+    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
     backBtn->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
@@ -68,6 +59,14 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
             padding: 4px; font: bold; color: mistyrose; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); })");
+    // Character GIF at top center, buttons below
+    layout->addSpacing(150);
+    layout->addWidget(character, 0, Qt::AlignCenter);
+    layout->addStretch();
+    layout->addWidget(sleepDisplay);
+    layout->addWidget(actionsBox);
+    layout->addWidget(backBtn);
+    this->setLayout(layout);
 }
 
 void Sleep::paintEvent(QPaintEvent *event) {

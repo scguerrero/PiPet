@@ -1,7 +1,7 @@
 /*
  * Gear mode is where the player can collect items for their PiPet.
  *
- * Author: Sasha C. Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 
 #ifndef GEAR_H

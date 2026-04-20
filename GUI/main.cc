@@ -1,6 +1,6 @@
 /*
  * main.cc - Main file for the PIPET game.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 
 #include <QtWidgets>

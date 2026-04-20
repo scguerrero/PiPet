@@ -1,6 +1,6 @@
 /*
  * game.cc - Top-level game widget implementation.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #include "game.h"
 
@@ -11,6 +11,8 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     player = new Player(*pet);
 
     layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
     this->setLayout(layout);
 
     pages = new QStackedWidget();

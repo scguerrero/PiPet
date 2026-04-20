@@ -1,7 +1,7 @@
 /*
  * sleep.h - Sleep screen with character GIF.
  * Cuddle replaces Brush Teeth.
- * Author(s): Luke Cerwin Sasha Guerro
+ * Author(s): Luke Cewin & Sasha Guerrero
   */
 #ifndef SLEEP_H
 #define SLEEP_H

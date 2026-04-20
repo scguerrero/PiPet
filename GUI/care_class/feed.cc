@@ -6,13 +6,8 @@
 #include <QPainter>
 #include <QRandomGenerator>
 
-// ── Sprite geometry ───────────────────────────────────────────────────────
-// All pet GIFs are exactly 160×160 px and the character widget matches that
-// size, so geometry().center() is always the true visual centre regardless
-// of which pet is loaded.  One constant radius drives both the hit-test and
-// the eating-bubble ring so they are always in sync.
-static constexpr int kSpriteSize   = 160;   // must match character->setFixedSize
-static constexpr int kHitRadius    = kSpriteSize / 2;   // 80 px — full sprite circle
+static constexpr int kSpriteSize = 160;
+static constexpr int kHitRadius  = kSpriteSize / 2;
 
 // ── FoodItem ──────────────────────────────────────────────────────────────
 
@@ -110,8 +105,6 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     m_bg.load(":/images/Backgrounds/kitchen_16bit.png");
 
     character = new Character(this);
-    // kSpriteSize drives both the widget size and the hit geometry —
-    // change the constant once and everything stays in sync.
     character->setFixedSize(kSpriteSize, kSpriteSize);
     character->syncWithPlayer(*player, petType);
 
@@ -140,30 +133,34 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
             border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 8px; font: bold; color: mistyrose; }
+            padding: 4px; font: bold; color: mistyrose; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); })");
+
+    // ── Food tray group box (visual backdrop only — icons are free children) ─
+    actionsBox = new QGroupBox("Drag A food to Feed your PiPet!", this);
+    actionsBox->setStyleSheet(
+        "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
+        "color: mistyrose; margin-top: 30px; }"
+        "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
+        "subcontrol-position: top center; padding: 0 4px; }");
+    actionsBox->lower();
 
     m_crumbTimer = new QTimer(this);
     m_crumbTimer->setInterval(30);
     connect(m_crumbTimer, &QTimer::timeout, this, &Feed::tickCrumbs);
-    if (width() > 0 && height() > 0)
-        resizeEvent(nullptr);
 }
 
-// ── spriteCenter ──────────────────────────────────────────────────────────
-// Single source of truth for the visual centre of the pet sprite.
-// Because every GIF is kSpriteSize × kSpriteSize and the widget matches,
-// geometry().center() is always exact — no per-asset tweaking needed.
+void Feed::showEvent(QShowEvent *e) {
+    QWidget::showEvent(e);
+    QResizeEvent re(size(), size());
+    resizeEvent(&re);
+}
+
 QPoint Feed::spriteCenter() const {
-    qDebug() << "character geometry:" << character->geometry();
-    qDebug() << "spriteCenter:" << character->geometry().center();
     return character->geometry().center();
 }
 
-// ── characterHitbox ───────────────────────────────────────────────────────
-// Circular hit zone built from spriteCenter() + kHitRadius.
-// Represented as a QRect whose inscribed circle has radius kHitRadius.
 QRect Feed::characterHitbox() const {
     QPoint c = spriteCenter();
     return QRect(c.x() - kHitRadius, c.y() - kHitRadius,
@@ -173,11 +170,14 @@ QRect Feed::characterHitbox() const {
 void Feed::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int charY = 55;
-    // FIX: set character geometry here — this is what makes spriteCenter() reliable
-    character->setGeometry((w - kSpriteSize) / 2, charY, kSpriteSize, kSpriteSize);
-    hungerDisplay->setGeometry((w - 300) / 2, charY + kSpriteSize + 8, 300, 38);
-    backBtn->setGeometry((w - 220) / 2, h - 55, 220, 40);
+    int petY = 40;
+    int petX = (w - kSpriteSize) / 2;
+    character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
+    // Hunger display sits just above the actionsBox
+    hungerDisplay->setGeometry((w - 300) / 2, h - 218, 300, 38);
+    // actionsBox and backBtn stretch full width with 8px side margins
+    actionsBox->setGeometry(8, h - 178, w - 16, 120);
+    backBtn->setGeometry(8, h - 52, w - 16, 44);
     placeIcons();
 }
 
@@ -186,7 +186,7 @@ void Feed::placeIcons() {
     int iconW = 64, spacing = 18;
     int totalW = 4 * iconW + 3 * spacing;
     int startX = (w - totalW) / 2;
-    int y = h - 115;
+    int y = h - 148;   // centered inside actionsBox
     QList<FoodItem*> icons = {appleItem, boneItem, drinkItem, pizzaItem};
     for (int i = 0; i < icons.size(); i++) {
         int x = startX + i * (iconW + spacing);
@@ -194,6 +194,7 @@ void Feed::placeIcons() {
         icons[i]->homePos = QPoint(x, y);
         icons[i]->raise();
     }
+    actionsBox->lower();
     backBtn->raise();
 }
 
@@ -219,9 +220,6 @@ void Feed::paintEvent(QPaintEvent *e) {
 }
 
 void Feed::onFoodDropped(FoodItem *icon, QPoint globalPos) {
-    // Hit-test: check whether the drop point falls inside the circular zone.
-    // Using QRect::contains is a square approximation; the circle check below
-    // is exact and matches the ring drawn in paintEvent.
     QPoint local = mapFromGlobal(globalPos);
     QPoint sc    = spriteCenter();
     int dx = local.x() - sc.x();
@@ -257,8 +255,7 @@ void Feed::tickCrumbs() {
 
 void Feed::updateHungerDisplay() {
     hungerDisplay->setText(
-        QString("Hunger: %1 / 100 ")
-            .arg(player->getPet().hunger()));
+        QString("Hunger: %1 / 100").arg(player->getPet().hunger()));
 }
 
 void Feed::applyHungerAction(int boost, const QString &message) {
@@ -267,6 +264,6 @@ void Feed::applyHungerAction(int boost, const QString &message) {
     int newVal = qMin(100, pet.hunger() + boost);
     pet.set_hunger(newVal);
     player->setPet(pet);
-    spawnCrumbs(spriteCenter());   // always use the shared helper
+    spawnCrumbs(spriteCenter());
     hungerDisplay->setText(QString("%1  Hunger: %2 / 100").arg(message).arg(newVal));
 }

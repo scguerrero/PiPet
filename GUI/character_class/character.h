@@ -3,7 +3,7 @@
  * Displays the correct GIF based on pet type, age group, and emotion.
  * Emotion is driven automatically from stat levels.
  *
- * Author(s): [Your name]
+ * Author(s): [Luke Cerwin]
  */
 
 #ifndef CHARACTER_H
@@ -28,6 +28,8 @@ public:
     void setStageFromString(const QString &age_group); // "Baby","Teen","Adult"
     void updateEmotionFromStats(int energyLevel, int hungerLevel);
     void syncWithPlayer(const Player &player, PetType type);
+    QRect spriteRect() const;
+    QPoint spriteCenter() const;
 
 public slots:
     void playIdle();

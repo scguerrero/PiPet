@@ -18,7 +18,6 @@ HEADERS += \
     GUI/create_class/create.h \
     GUI/mode_class/mode.h \
     GUI/character_class/character.h \
-    GUI/care_class/care.h \
     GUI/care_class/feed.h \
     GUI/care_class/sleep.h \
     GUI/care_class/groom.h \
@@ -39,7 +38,6 @@ SOURCES += \
     GUI/create_class/create.cc \
     GUI/mode_class/mode.cc \
     GUI/character_class/character.cpp \
-    GUI/care_class/care.cc \
     GUI/care_class/feed.cc \
     GUI/care_class/sleep.cc \
     GUI/care_class/groom.cc \

@@ -14,10 +14,10 @@
 Mode::Mode(Player *player, QWidget *parent)
     : QWidget{parent}, player(player)
 {
-    m_bg.load(":/images/Backgrounds/main.jpg");
-    m_kitchenPx.load (":/images/Backgrounds/kitchen_16bit.jpg");
-    m_bathroomPx.load(":/images/Backgrounds/bathroom_16bit.jpg");
-    m_bedroomPx.load (":/images/Backgrounds/bedroom_16bit.jpg");
+    m_bg.load(":/images/Backgrounds/mode.png");
+    m_kitchenPx.load (":/images/Backgrounds/kitchen_16bit.png");
+    m_bathroomPx.load(":/images/Backgrounds/bathroom_16bit.png");
+    m_bedroomPx.load (":/images/Backgrounds/bedroom_16bit.png");
 
     // ── Settings button top-right ─────────────────────────────────────────
     b_settings = new QPushButton(this);
@@ -43,7 +43,7 @@ Mode::Mode(Player *player, QWidget *parent)
     character->setFixedSize(160, 160);
 
     // ── Anger mark ────────────────────────────────────────────────────────
-    m_angerPx.load(":/images/Sprites/pets/icons/anger_mark_small.png");
+    m_angerPx.load(":/images/Sprites/pets/icons/anger_mark.png");
     angerMark = new QLabel(this);
     angerMark->setPixmap(m_angerPx.scaled(32, 32, Qt::KeepAspectRatio,
                                            Qt::SmoothTransformation));
@@ -141,7 +141,7 @@ void Mode::layoutWidgets() {
     character->setGeometry(charX, charY, charSize, charSize);
 
     // Anger mark just above character head
-    angerMark->setGeometry(charX + charSize/2 - 18, charY - 38, 36, 36);
+    angerMark->setGeometry(charX + charSize/2 + 32, charY, 48, 48);
 
     // Stat bars below character
     statsBox->setGeometry(8, charY + charSize + 8, w - 16, 100);
@@ -170,13 +170,15 @@ void Mode::paintEvent(QPaintEvent *e) {
     if (!m_bg.isNull())
         p.drawPixmap(0, 0, width(), height(), m_bg);
 
-    drawBubble(p, feedBubble->geometry(),  m_kitchenPx,  "Feed");
-    drawBubble(p, groomBubble->geometry(), m_bathroomPx, "Groom");
-    drawBubble(p, sleepBubble->geometry(), m_bedroomPx,  "Sleep");
+    drawBubble(p, feedBubble->geometry(),  m_kitchenPx,  "Feed",  true);
+    drawBubble(p, groomBubble->geometry(), m_bathroomPx, "Groom", true);
+    drawBubble(p, sleepBubble->geometry(), m_bedroomPx,  "Sleep", true);
+
 }
 
 void Mode::drawBubble(QPainter &p, QRect rect,
-                      const QPixmap &bg, const QString &label)
+                const QPixmap &bg, const QString &label,
+                bool dimmed)
 {
     if (rect.isEmpty()) return;
     p.save();
@@ -184,13 +186,15 @@ void Mode::drawBubble(QPainter &p, QRect rect,
     path.addRoundedRect(rect, 12, 12);
     p.setClipPath(path);
     if (!bg.isNull()) {
-        QPixmap scaled = bg.scaled(rect.size(), Qt::KeepAspectRatioByExpanding,
+        QPixmap scaled = bg.scaled(rect.size(),
+                                   Qt::KeepAspectRatioByExpanding,
                                    Qt::SmoothTransformation);
         int ox = (scaled.width()  - rect.width())  / 2;
         int oy = (scaled.height() - rect.height()) / 2;
         p.drawPixmap(rect, scaled, QRect(ox, oy, rect.width(), rect.height()));
     }
-    p.fillPath(path, QColor(0, 0, 0, 130));
+    if (dimmed) {
+        p.fillPath(path, QColor(0, 0, 0, 130));}
     p.restore();
     p.setPen(QPen(QColor("#FBA8FF"), 2));
     p.setBrush(Qt::NoBrush);
@@ -228,7 +232,7 @@ void Mode::updateClock() {
 
 void Mode::decayStats() {
     PiPet pet = player->getPet();
-    pet.set_hunger   (qMax(0, pet.hunger()    - 1));
+    pet.set_hunger   (qMax(0, pet.hunger()    - 100));
     pet.set_energy   (qMax(0, pet.energy()    - 1));
     pet.set_happiness(qMax(0, pet.happiness() - 1));
     player->setPet(pet);
@@ -251,7 +255,7 @@ void Mode::updateIndicators() {
     character->updateEmotionFromStats(pet.energy(), pet.hunger());
 }
 
-// ── About page — uses main.png background, no blue box ───────────────────
+// ── About page —──────────────────
 void Mode::openAbout() {
     PiPet pet = player->getPet();
 
@@ -260,16 +264,12 @@ void Mode::openAbout() {
     about.setWindowTitle("About piPet");
     about.setFixedSize(400, 560);
 
-    // Background via paintEvent on a custom widget
-    // We overlay a QLabel with transparent background for the text
-    QPixmap mainBg(":/images/Backgrounds/main.png");
-
     // Outer layout
     QVBoxLayout *dlgLayout = new QVBoxLayout(&about);
     dlgLayout->setContentsMargins(20, 20, 20, 20);
     dlgLayout->setSpacing(0);
 
-    // Text label — transparent background so main.png shows through
+    // Text label
     QLabel *infoLabel = new QLabel(&about);
     infoLabel->setWordWrap(true);
     infoLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -328,12 +328,6 @@ void Mode::openAbout() {
 
     dlgLayout->addWidget(infoLabel, 1);
     dlgLayout->addWidget(closeBtn,  0);
-
-    // Paint main.png as background of the dialog
-    about.setStyleSheet(
-        QString("QDialog { background-image: url(:/images/Backgrounds/main.png);"
-                "background-repeat: no-repeat;"
-                "background-position: center; }"));
 
     about.exec();
 }

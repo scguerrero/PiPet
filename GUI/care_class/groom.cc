@@ -1,12 +1,14 @@
 /*
  * groom.cc - Groom screen two-spot drag mechanic.
  * Fixed: bottomSpot() was calculating outside visible area.
- * Author(s): Tanya Magurupira
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #include "groom.h"
 #include <QPainter>
+#include <QRandomGenerator>
 
-GroomTool::GroomTool(const QString &iconPath, const QString &name,
+// ── GroomItem ──────────────────────────────────────────────────────────────
+GroomItem::GroomItem(const QString &iconPath, const QString &name,
                      QWidget *parent)
     : QLabel(parent), toolName(name)
 {
@@ -17,41 +19,93 @@ GroomTool::GroomTool(const QString &iconPath, const QString &name,
         setText(name);
     setFixedSize(64, 64);
     setAlignment(Qt::AlignCenter);
+    setCursor(Qt::OpenHandCursor);
+    setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setStyleSheet("QLabel { background-color: rgba(0,0,0,130);"
                   "border-radius: 10px; color: white; font-size: 11px; }");
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    grabGesture(Qt::TapAndHoldGesture);
 }
 
-void GroomTool::mousePressEvent(QMouseEvent *e) {
+void GroomItem::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_offset   = e->globalPos();
+        m_offset   = e->position().toPoint();
+        setCursor(Qt::ClosedHandCursor);
         raise();
     }
 }
 
-void GroomTool::mouseMoveEvent(QMouseEvent *e) {
+void GroomItem::mouseMoveEvent(QMouseEvent *e) {
     if (m_dragging) {
-        QPoint newPos = parentWidget()->mapFromGlobal(
-                            e->globalPos()) - m_offset;
+        QPoint globalPos = e->globalPosition().toPoint();
+        QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
         move(newPos);
     }
 }
 
-void GroomTool::mouseReleaseEvent(QMouseEvent *e) {
+void GroomItem::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
-        emit dropped(this, e->globalPos());
+        setCursor(Qt::OpenHandCursor);
+        emit dropped(this, e->globalPosition().toPoint());
     }
 }
 
-Groom::Groom(Player *player, QWidget *parent)
-    : QWidget{parent}, player(player)
+bool GroomItem::event(QEvent *e) {
+    switch (e->type()) {
+
+    case QEvent::TouchBegin: {
+        auto *te  = static_cast<QTouchEvent *>(e);
+        auto  pts = te->points();
+        if (!pts.isEmpty()) {
+            m_dragging = true;
+            m_offset   = pts.first().position().toPoint();
+            setCursor(Qt::ClosedHandCursor);
+            raise();
+        }
+        return true;   // must return true or TouchUpdate won't fire
+    }
+
+    case QEvent::TouchUpdate: {
+        auto *te  = static_cast<QTouchEvent *>(e);
+        auto  pts = te->points();
+        if (m_dragging && !pts.isEmpty()) {
+            QPoint globalPos = pts.first().globalPosition().toPoint();
+            QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
+            move(newPos);
+        }
+        return true;
+    }
+
+    case QEvent::TouchEnd: {
+        auto *te  = static_cast<QTouchEvent *>(e);
+        auto  pts = te->points();
+        if (m_dragging) {
+            m_dragging = false;
+            setCursor(Qt::OpenHandCursor);
+            QPoint globalPos = pts.isEmpty()
+                                   ? mapToGlobal(rect().center())
+                                   : pts.first().globalPosition().toPoint();
+            emit dropped(this, globalPos);
+        }
+        return true;
+    }
+
+    default:
+        return QLabel::event(e);
+    }
+}
+
+// ── Groom ──────────────────────────────────────────────────────────────────
+Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
+    : QWidget{parent}, player(player), petType(petType)
 {
-    m_bg.load(":/images/Backgrounds/bathroom_16bit.jpg");
+    m_bg.load(":/images/Backgrounds/bathroom_16bit.png");
 
     character = new Character(this);
-    character->setFixedSize(150, 150);
-    character->syncWithPlayer(*player, Character::DragonDog);
+    character->setFixedSize(160, 160);
+    character->syncWithPlayer(*player, petType);
 
     hygieneDisplay = new QLabel(this);
     hygieneDisplay->setAlignment(Qt::AlignCenter);
@@ -69,19 +123,19 @@ Groom::Groom(Player *player, QWidget *parent)
         "padding: 4px; color: #ffd700; font-size: 13px; }");
     hintLabel->setFixedWidth(300);
 
-    brushTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",
+    brushTool = new GroomItem(":/images/Sprites/pets/icons/comb.png",
                               "Brush",       this);
-    batheTool = new GroomTool(":/images/Sprites/pets/icons/soap.png",
+    batheTool = new GroomItem(":/images/Sprites/pets/icons/soap.png",
                               "Bathe",       this);
-    trimTool  = new GroomTool(":/images/Sprites/pets/icons/showerhead.png",
+    trimTool  = new GroomItem(":/images/Sprites/pets/icons/showerhead.png",
                               "Trim Nails",  this);
-    teethTool = new GroomTool(":/images/Sprites/pets/icons/comb.png",
+    teethTool = new GroomItem(":/images/Sprites/pets/icons/toothbrush.png",
                               "Brush Teeth", this);
 
-    connect(brushTool, &GroomTool::dropped, this, &Groom::onToolDropped);
-    connect(batheTool, &GroomTool::dropped, this, &Groom::onToolDropped);
-    connect(trimTool,  &GroomTool::dropped, this, &Groom::onToolDropped);
-    connect(teethTool, &GroomTool::dropped, this, &Groom::onToolDropped);
+    connect(brushTool, &GroomItem::dropped, this, &Groom::onToolDropped);
+    connect(batheTool, &GroomItem::dropped, this, &Groom::onToolDropped);
+    connect(trimTool,  &GroomItem::dropped, this, &Groom::onToolDropped);
+    connect(teethTool, &GroomItem::dropped, this, &Groom::onToolDropped);
 
     backBtn = new QPushButton("Back to Care Hub!", this);
     backBtn->setIcon(QIcon(":/images/Assets/left.png"));
@@ -122,7 +176,7 @@ void Groom::placeTools() {
     int startX = (w - totalW) / 2;
     int y = h - 115;
 
-    QList<GroomTool*> tools = {brushTool, batheTool, trimTool, teethTool};
+    QList<GroomItem*> tools = {brushTool, batheTool, trimTool, teethTool};
     for (int i = 0; i < tools.size(); i++) {
         int x = startX + i * (iconW + spacing);
         tools[i]->move(x, y);
@@ -151,8 +205,8 @@ void Groom::paintEvent(QPaintEvent *e) {
 
     // ── Bottom spot ───────────────────────────────────────────────────────
     QRect bs = bottomSpot();
-    QColor bc = bottomDone ? QColor(80, 255, 120, 200)
-                           : QColor(255, 220, 50,  160);
+    QColor bc = bottomDone ? QColor(80, 300, 120, 200)
+                           : QColor(255, 220, 50, 160);
     p.setPen(QPen(bc, 4, Qt::DashLine));
     p.setBrush(QColor(bc.red(), bc.green(), bc.blue(), 60));
     p.drawEllipse(bs);
@@ -179,7 +233,7 @@ QRect Groom::bottomSpot() const {
     return QRect(cx - 28, cy - 28, 56, 56);
 }
 
-void Groom::onToolDropped(GroomTool *tool, QPoint globalPos) {
+void Groom::onToolDropped(GroomItem *tool, QPoint globalPos) {
     QPoint local = mapFromGlobal(globalPos);
 
     if (activeTool && activeTool != tool) {

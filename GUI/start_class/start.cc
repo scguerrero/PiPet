@@ -6,7 +6,7 @@
 #include <QPainter>
 
 Start::Start(QWidget *parent) : QWidget{parent} {
-    m_bg.load(":/images/Backgrounds/title_screen.jpg");
+    m_bg.load(":/images/Backgrounds/title_screen.png");
 
     layout  = new QVBoxLayout();
     b_start = new QPushButton("START");

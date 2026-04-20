@@ -2,12 +2,12 @@
     <qresource prefix="/images">
         <file>Assets/logo.png</file>
         <file>Assets/settings.png</file>
-        <file>Backgrounds/title_screen.jpg</file>
-        <file>Backgrounds/character_screen.jpg</file>
-        <file>Backgrounds/main.jpg</file>
-        <file>Backgrounds/kitchen_16bit.jpg</file>
-        <file>Backgrounds/bedroom_16bit.jpg</file>
-        <file>Backgrounds/bathroom_16bit.jpg</file>
+        <file>Backgrounds/title_screen.png</file>
+        <file>Backgrounds/character_screen.png</file>
+        <file>Backgrounds/mode.png</file>
+        <file>Backgrounds/kitchen_16bit.png</file>
+        <file>Backgrounds/bedroom_16bit.png</file>
+        <file>Backgrounds/bathroom_16bit.png</file>
         <file>Sprites/pets/axolotl/axolotl_adult_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_teen_idle.gif</file>
@@ -21,7 +21,7 @@
         <file>Sprites/pets/icons/fish.png</file>
         <file>Sprites/pets/icons/showerhead.png</file>
         <file>Sprites/pets/icons/soap.png</file>
-        <file>Sprites/pets/icons/anger_mark_small.png</file>
+        <file>Sprites/pets/icons/anger_mark.png</file>
         <file>Sprites/pets/icons/pizza.png</file>
         <file>Sprites/pets/icons/apple.png</file>
         <file>Sprites/pets/icons/toothbrush.png</file>

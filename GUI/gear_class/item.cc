@@ -9,7 +9,7 @@
 #include "item.h"
 
 // Argument abbreviations --> n: name, ip: imagepath, ft: flavortext
-Item::Item(QString n, QString ip, QString ft, QWidget *parent) : QWidget(parent)
+Item::Item(QString n, QString ip, QString ft, QGroupBox *parent) : QGroupBox(parent)
 {
     // Initialize member variables
     m_name = n;
@@ -25,6 +25,7 @@ Item::Item(QString n, QString ip, QString ft, QWidget *parent) : QWidget(parent)
     // Vertical layout, name, and flavortext
     layout = new QVBoxLayout();
     name = new QLabel(get_name());
+    name->setAlignment(Qt::AlignCenter);
     flavortext = new QLabel(get_flavortext());
 
     // Add widgets to layout with center-alignment
@@ -32,6 +33,18 @@ Item::Item(QString n, QString ip, QString ft, QWidget *parent) : QWidget(parent)
     layout->addWidget(image);
     layout->addWidget(flavortext);
     this->setLayout(layout);
+
+    // Style
+    this->setStyleSheet(R"(
+    QWidget {
+        background-color: transparent;
+    }
+    QGroupBox {
+        background-color: #030ba3;
+        border: 2px inset #fba8ff;
+
+    }
+    )");
 }
 
 QString Item::get_name() {

@@ -8,9 +8,11 @@
 
 #ifndef ITEM_H
 #define ITEM_H
-#include <QtWidgets>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QLabel>
 
-class Item : public QWidget {
+class Item : public QGroupBox {
     Q_OBJECT
 private:
     QString m_name = ""; // Item name
@@ -19,7 +21,7 @@ private:
 
 public:
     // Constructor with name, imagepath, and flavortext arguments
-    explicit Item(QString, QString, QString, QWidget *parent = nullptr);
+    explicit Item(QString, QString, QString, QGroupBox *parent = nullptr);
 
     // Vertical layout
     QVBoxLayout *layout;

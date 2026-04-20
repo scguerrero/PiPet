@@ -22,7 +22,7 @@ Gear::Gear(QWidget *parent) : QWidget(parent) {
     layout->addWidget(logo);
 
     // Test item
-    item = new Item("Cap", ":/images/Assets/capplaceholder.png", "wow baseball!");
+    item = new Item("Cap", ":/images/Assets/capplaceholder.png", "oh my god they're playing baseball");
     layout->addWidget(item);
 
     // Back button

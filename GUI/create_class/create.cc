@@ -6,7 +6,7 @@
 #include <QPainter>
 
 Create::Create(QWidget *parent) : QWidget{parent} {
-    m_bg.load(":/images/Backgrounds/character_screen.jpg");
+    m_bg.load(":/images/Backgrounds/character_screen.png");
 
     layout = new QVBoxLayout(this);
     layout->setSpacing(8);

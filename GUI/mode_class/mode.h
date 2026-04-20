@@ -75,7 +75,8 @@ private:
     void updateIndicators();
     void layoutWidgets();
     void drawBubble(QPainter &p, QRect rect,
-                    const QPixmap &bg, const QString &label);
+                    const QPixmap &bg, const QString &label,
+                    bool dimmed);
 };
 
 #endif

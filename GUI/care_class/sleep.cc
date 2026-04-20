@@ -9,7 +9,7 @@
 Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     : QWidget{parent}, player(player), petType(petType)
 {
-    m_bg.load(":/images/Backgrounds/bedroom_16bit.jpg");
+    m_bg.load(":/images/Backgrounds/bedroom_16bit.png");
 
     layout      = new QVBoxLayout();
     actionsBox  = new QGroupBox("Sleep Actions");
@@ -17,7 +17,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
 
     // ── Character GIF ─────────────────────────────────────────────────────
     character = new Character(this);
-    character->setFixedSize(120, 120);
+    character->setFixedSize(160, 160);
     character->syncWithPlayer(*player, petType);
 
     sleepDisplay = new QLabel();
@@ -28,7 +28,6 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
         "padding: 6px; color: mistyrose; }");
     updateSleepDisplay();
 
-    // Cuddle replaces Brush Teeth
     cuddleBtn   = new QPushButton("🤗 Cuddle Pet");
     wearPjsBtn  = new QPushButton("👖 Wear Pjs");
     readBookBtn = new QPushButton("📖 Bed Time Story");

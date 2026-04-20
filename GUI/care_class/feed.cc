@@ -1,10 +1,18 @@
 /*
  * feed.cc - Feed screen drag and drop.
- * Author(s): Tanya Magurupira
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #include "feed.h"
 #include <QPainter>
 #include <QRandomGenerator>
+
+// ── Sprite geometry ───────────────────────────────────────────────────────
+// All pet GIFs are exactly 160×160 px and the character widget matches that
+// size, so geometry().center() is always the true visual centre regardless
+// of which pet is loaded.  One constant radius drives both the hit-test and
+// the eating-bubble ring so they are always in sync.
+static constexpr int kSpriteSize   = 160;   // must match character->setFixedSize
+static constexpr int kHitRadius    = kSpriteSize / 2;   // 80 px — full sprite circle
 
 // ── FoodItem ──────────────────────────────────────────────────────────────
 
@@ -19,22 +27,27 @@ FoodItem::FoodItem(const QString &iconPath, const QString &name,
         setText(name);
     setFixedSize(64, 64);
     setAlignment(Qt::AlignCenter);
+    setCursor(Qt::OpenHandCursor);
+    setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setStyleSheet("QLabel { background-color: rgba(0,0,0,130);"
                   "border-radius: 10px; color: white; font-size: 11px; }");
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    grabGesture(Qt::TapAndHoldGesture);
 }
 
 void FoodItem::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_offset   = e->globalPos(); // Qt6 — no deprecated globalPos()
+        m_offset   = e->position().toPoint();
+        setCursor(Qt::ClosedHandCursor);
         raise();
     }
 }
 
 void FoodItem::mouseMoveEvent(QMouseEvent *e) {
     if (m_dragging) {
-        QPoint newPos = parentWidget()->mapFromGlobal(
-                            e->globalPos() ) - m_offset;
+        QPoint globalPos = e->globalPosition().toPoint();
+        QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
         move(newPos);
     }
 }
@@ -42,7 +55,53 @@ void FoodItem::mouseMoveEvent(QMouseEvent *e) {
 void FoodItem::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
-        emit dropped(this, e->globalPos() );
+        setCursor(Qt::OpenHandCursor);
+        emit dropped(this, e->globalPosition().toPoint());
+    }
+}
+
+bool FoodItem::event(QEvent *e) {
+    switch (e->type()) {
+
+    case QEvent::TouchBegin: {
+        auto *te  = static_cast<QTouchEvent *>(e);
+        auto  pts = te->points();
+        if (!pts.isEmpty()) {
+            m_dragging = true;
+            m_offset   = pts.first().position().toPoint();
+            setCursor(Qt::ClosedHandCursor);
+            raise();
+        }
+        return true;
+    }
+
+    case QEvent::TouchUpdate: {
+        auto *te  = static_cast<QTouchEvent *>(e);
+        auto  pts = te->points();
+        if (m_dragging && !pts.isEmpty()) {
+            QPoint globalPos = pts.first().globalPosition().toPoint();
+            QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
+            move(newPos);
+        }
+        return true;
+    }
+
+    case QEvent::TouchEnd: {
+        auto *te  = static_cast<QTouchEvent *>(e);
+        auto  pts = te->points();
+        if (m_dragging) {
+            m_dragging = false;
+            setCursor(Qt::OpenHandCursor);
+            QPoint globalPos = pts.isEmpty()
+                                   ? mapToGlobal(rect().center())
+                                   : pts.first().globalPosition().toPoint();
+            emit dropped(this, globalPos);
+        }
+        return true;
+    }
+
+    default:
+        return QLabel::event(e);
     }
 }
 
@@ -51,10 +110,12 @@ void FoodItem::mouseReleaseEvent(QMouseEvent *e) {
 Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     : QWidget{parent}, player(player), petType(petType)
 {
-    m_bg.load(":/images/Backgrounds/kitchen_16bit.jpg");
+    m_bg.load(":/images/Backgrounds/kitchen_16bit.png");
 
     character = new Character(this);
-    character->setFixedSize(150, 150);
+    // kSpriteSize drives both the widget size and the hit geometry —
+    // change the constant once and everything stays in sync.
+    character->setFixedSize(kSpriteSize, kSpriteSize);
     character->syncWithPlayer(*player, petType);
 
     hungerDisplay = new QLabel(this);
@@ -66,10 +127,10 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     hungerDisplay->setFixedWidth(300);
     updateHungerDisplay();
 
-    appleItem = new FoodItem(":/images/Sprites/pets/icons/apple.png",   "Apple", 10, this);
+    appleItem = new FoodItem(":/images/Sprites/pets/icons/apple.png",    "Apple", 10, this);
     boneItem  = new FoodItem(":/images/Sprites/pets/icons/dogtreat.png", "Bone",  10, this);
-    drinkItem = new FoodItem(":/images/Sprites/pets/icons/drink.png",     "Drink",  5, this);
-    pizzaItem = new FoodItem(":/images/Sprites/pets/icons/pizza.png",   "Pizza",  5, this);
+    drinkItem = new FoodItem(":/images/Sprites/pets/icons/drink.png",    "Drink",  5, this);
+    pizzaItem = new FoodItem(":/images/Sprites/pets/icons/pizza.png",    "Pizza",  5, this);
 
     connect(appleItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
     connect(boneItem,  &FoodItem::dropped, this, &Feed::onFoodDropped);
@@ -89,14 +150,35 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     m_crumbTimer = new QTimer(this);
     m_crumbTimer->setInterval(30);
     connect(m_crumbTimer, &QTimer::timeout, this, &Feed::tickCrumbs);
+    if (width() > 0 && height() > 0)
+        resizeEvent(nullptr);
+}
+
+// ── spriteCenter ──────────────────────────────────────────────────────────
+// Single source of truth for the visual centre of the pet sprite.
+// Because every GIF is kSpriteSize × kSpriteSize and the widget matches,
+// geometry().center() is always exact — no per-asset tweaking needed.
+QPoint Feed::spriteCenter() const {
+    qDebug() << "character geometry:" << character->geometry();
+    qDebug() << "spriteCenter:" << character->geometry().center();
+    return character->geometry().center();
+}
+
+// ── characterHitbox ───────────────────────────────────────────────────────
+// Circular hit zone built from spriteCenter() + kHitRadius.
+// Represented as a QRect whose inscribed circle has radius kHitRadius.
+QRect Feed::characterHitbox() const {
+    QPoint c = spriteCenter();
+    return QRect(c.x() - kHitRadius, c.y() - kHitRadius,
+                 kHitRadius * 2,     kHitRadius * 2);
 }
 
 void Feed::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petSize = 150;
-    character->setGeometry((w - petSize) / 2, 55, petSize, petSize);
-    hungerDisplay->setGeometry((w - 300) / 2, 55 + petSize + 8, 300, 38);
+    // Centre the sprite widget; top edge at y=55
+    character->setGeometry((w - kSpriteSize) / 2, 55, kSpriteSize, kSpriteSize);
+    hungerDisplay->setGeometry((w - 300) / 2, 55 + kSpriteSize + 8, 300, 38);
     backBtn->setGeometry((w - 220) / 2, h - 55, 220, 40);
     placeIcons();
 }
@@ -130,20 +212,25 @@ void Feed::paintEvent(QPaintEvent *e) {
         p.drawEllipse(QPointF(c.pos), 4, 4);
     }
 
-    // Hint ring around character
-    QRect hb = characterHitbox();
-    p.setPen(QPen(QColor(255, 220, 100, 90), 3, Qt::DashLine));
+    // Hint ring — drawn as a circle centred exactly on spriteCenter()
+    // with radius kHitRadius so it matches the hit zone perfectly.
+    QPoint  sc = spriteCenter();
+    QPointF cf(sc);
+    p.setPen(QPen(QColor(255, 100, 30, 90), 3, Qt::DashLine));
     p.setBrush(Qt::NoBrush);
-    p.drawEllipse(hb);
-}
-
-QRect Feed::characterHitbox() const {
-    QRect r = character->geometry();
-    return r.adjusted(-18, -18, 18, 18);
+    p.drawEllipse(cf, static_cast<qreal>(kHitRadius),
+                      static_cast<qreal>(kHitRadius));
 }
 
 void Feed::onFoodDropped(FoodItem *icon, QPoint globalPos) {
-    if (characterHitbox().contains(mapFromGlobal(globalPos)))
+    // Hit-test: check whether the drop point falls inside the circular zone.
+    // Using QRect::contains is a square approximation; the circle check below
+    // is exact and matches the ring drawn in paintEvent.
+    QPoint local = mapFromGlobal(globalPos);
+    QPoint sc    = spriteCenter();
+    int dx = local.x() - sc.x();
+    int dy = local.y() - sc.y();
+    if (dx * dx + dy * dy <= kHitRadius * kHitRadius)
         applyHungerAction(icon->hungerBoost, icon->foodName + "!");
     icon->move(icon->homePos);
     update();
@@ -174,7 +261,7 @@ void Feed::tickCrumbs() {
 
 void Feed::updateHungerDisplay() {
     hungerDisplay->setText(
-        QString("Hunger: %1 / 100  —  drag food onto your pet!")
+        QString("Hunger: %1 / 100 ")
             .arg(player->getPet().hunger()));
 }
 
@@ -184,6 +271,6 @@ void Feed::applyHungerAction(int boost, const QString &message) {
     int newVal = qMin(100, pet.hunger() + boost);
     pet.set_hunger(newVal);
     player->setPet(pet);
-    spawnCrumbs(character->geometry().center());
+    spawnCrumbs(spriteCenter());   // always use the shared helper
     hungerDisplay->setText(QString("%1  Hunger: %2 / 100").arg(message).arg(newVal));
 }

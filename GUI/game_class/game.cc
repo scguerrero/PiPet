@@ -6,7 +6,6 @@
 
 Game::Game(QWidget *parent) : QWidget{parent} {
     this->setWindowTitle("PIPET");
-    //this->setContentsMargins(15, 15, 15, 15);
 
     pet    = new PiPet();
     player = new Player(*pet);
@@ -20,18 +19,22 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     start  = new Start();
     create = new Create();
     mode   = new Mode(player);
-    care   = new Care(player, currentPetType);
+    feed   = new Feed(player, currentPetType);
+    groom  = new Groom(player, currentPetType);
+    sleep  = new Sleep(player, currentPetType);
     train  = new Train(pet);
     battle = new Battle();
-    gear = new Gear();
+    gear   = new Gear();
 
     pages->addWidget(start);   // 0
     pages->addWidget(create);  // 1
     pages->addWidget(mode);    // 2
-    pages->addWidget(care);    // 3
-    pages->addWidget(train);   // 4
-    pages->addWidget(battle);  // 5
-    pages->addWidget(gear);    // 6
+    pages->addWidget(feed);    // 3
+    pages->addWidget(groom);   // 4
+    pages->addWidget(sleep);   // 5
+    pages->addWidget(train);   // 6
+    pages->addWidget(battle);  // 7
+    pages->addWidget(gear);    // 8
 
     // Utility bar
     utility_bar = new QHBoxLayout();
@@ -53,33 +56,28 @@ Game::Game(QWidget *parent) : QWidget{parent} {
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
     connect(b_save, SIGNAL(clicked()), this, SLOT(saveGame()));
-    connect(b_home, SIGNAL(clicked()), this, SLOT(open_start()));
+    connect(b_home, SIGNAL(clicked()), this, SLOT(open_mode()));  // HOME → mode screen
     connect(b_quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
 
     connect(create->b_done, SIGNAL(clicked()), this, SLOT(onCreateDone()));
 
     // Mode bubble clicks → go directly to care sub-screen
-    connect(mode->feedBubble,  &QLabel::linkActivated, this, &Game::open_feed);
-    connect(mode->groomBubble, &QLabel::linkActivated, this, &Game::open_groom);
-    connect(mode->sleepBubble, &QLabel::linkActivated, this, &Game::open_sleep);
-
-    // Since QLabel doesn't emit clicked(), we use mousePressEvent via eventFilter
     mode->feedBubble->installEventFilter(this);
     mode->groomBubble->installEventFilter(this);
     mode->sleepBubble->installEventFilter(this);
 
     // Mode other buttons
-    connect(mode->b_train,   SIGNAL(clicked()), this, SLOT(open_train()));
-    connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
-    connect(mode->b_gear,  SIGNAL(clicked()), this, SLOT(open_gear()));
+    connect(mode->b_train,  SIGNAL(clicked()), this, SLOT(open_train()));
+    connect(mode->b_battle, SIGNAL(clicked()), this, SLOT(open_battle()));
+    connect(mode->b_gear,   SIGNAL(clicked()), this, SLOT(open_gear()));
 
-    // Care back buttons → return to Mode via signal
-    connect(care, SIGNAL(requestReturnToMode()), this, SLOT(open_mode()));
-
-    // Train / Battle back
-    connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(battle->btnBack, SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(gear->b_back, SIGNAL(clicked()), this, SLOT(open_mode()));
+    // Back buttons → return to Mode
+    connect(feed->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
+    connect(groom->backBtn, &QPushButton::clicked, this, &Game::open_mode);
+    connect(sleep->backBtn, &QPushButton::clicked, this, &Game::open_mode);
+    connect(train->b_back,  SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(battle->btnBack,SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(gear->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
 
     setUtilityStyle(*b_save);
     setUtilityStyle(*b_home);
@@ -109,14 +107,24 @@ void Game::onCreateDone() {
 
     mode->setPetType(currentPetType);
 
-    pages->removeWidget(care);
-    delete care;
-    care = new Care(player, currentPetType);
-    pages->insertWidget(3, care);
+    // Rebuild Feed, Groom, Sleep with new pet type
+    pages->removeWidget(feed);  delete feed;
+    pages->removeWidget(groom); delete groom;
+    pages->removeWidget(sleep); delete sleep;
 
-    connect(care, SIGNAL(requestReturnToMode()), this, SLOT(open_mode()));
+    feed  = new Feed(player, currentPetType);
+    groom = new Groom(player, currentPetType);
+    sleep = new Sleep(player, currentPetType);
 
-    // Re-install event filter on new mode bubbles
+    pages->insertWidget(3, feed);
+    pages->insertWidget(4, groom);
+    pages->insertWidget(5, sleep);
+
+    connect(feed->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
+    connect(groom->backBtn, &QPushButton::clicked, this, &Game::open_mode);
+    connect(sleep->backBtn, &QPushButton::clicked, this, &Game::open_mode);
+
+    // Re-install event filter on mode bubbles
     mode->feedBubble->installEventFilter(this);
     mode->groomBubble->installEventFilter(this);
     mode->sleepBubble->installEventFilter(this);
@@ -124,20 +132,15 @@ void Game::onCreateDone() {
     open_mode();
 }
 
-void Game::open_mode() {
-    mode->refreshDisplay();
-    pages->setCurrentIndex(2);
-}
-
-void Game::open_care()  { care->updateStats(); pages->setCurrentIndex(3); }
-void Game::open_feed()  { care->updateStats(); care->goToFeed();  pages->setCurrentIndex(3); }
-void Game::open_groom() { care->updateStats(); care->goToGroom(); pages->setCurrentIndex(3); }
-void Game::open_sleep() { care->updateStats(); care->goToSleep(); pages->setCurrentIndex(3); }
-void Game::open_start() { pages->setCurrentIndex(0); }
-void Game::open_create(){ pages->setCurrentIndex(1); }
-void Game::open_train() { pages->setCurrentIndex(4); }
-void Game::open_battle(){ pages->setCurrentIndex(5); }
-void Game::open_gear() { pages->setCurrentIndex(6); }
+void Game::open_mode()   { mode->refreshDisplay(); pages->setCurrentIndex(2); }
+void Game::open_feed()   { feed->updateHungerDisplay();   pages->setCurrentIndex(3); }
+void Game::open_groom()  { groom->updateHygieneDisplay(); pages->setCurrentIndex(4); }
+void Game::open_sleep()  { sleep->updateSleepDisplay();   pages->setCurrentIndex(5); }
+void Game::open_start()  { pages->setCurrentIndex(0); }
+void Game::open_create() { pages->setCurrentIndex(1); }
+void Game::open_train()  { pages->setCurrentIndex(6); }
+void Game::open_battle() { pages->setCurrentIndex(7); }
+void Game::open_gear()   { pages->setCurrentIndex(8); }
 
 QJsonObject Game::toJson() const {
     QJsonObject json;

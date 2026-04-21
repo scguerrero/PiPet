@@ -1,6 +1,9 @@
 /*
  * game.cc - Top-level game widget implementation.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * - Start/Create: no utility bar
+ * - Mode: Save top-left, greyed Home full-width at bottom
+ * - All other screens: active Home full-width at bottom only
+ * Author(s): Luke Cerwin, Sasha Guerrero
  */
 #include "game.h"
 
@@ -26,7 +29,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     sleep  = new Sleep(player, currentPetType);
     train  = new Train(pet);
     battle = new Battle();
-    gear   = new Gear();
+    gear   = new Gear(player, currentPetType);
 
     pages->addWidget(start);   // 0
     pages->addWidget(create);  // 1
@@ -38,55 +41,90 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(battle);  // 7
     pages->addWidget(gear);    // 8
 
-    // Utility bar
-    utility_bar = new QHBoxLayout();
-    b_save = new QPushButton("SAVE");
-    b_home = new QPushButton("HOME");
-    b_quit = new QPushButton("QUIT");
+    // ── Bottom utility bar ────────────────────────────────────────────────
+    utilityWidget = new QWidget(this);
+    utility_bar   = new QHBoxLayout(utilityWidget);
+    utility_bar->setContentsMargins(4, 4, 4, 4);
+    utility_bar->setSpacing(6);
+
+    b_save = new QPushButton("SAVE", utilityWidget);
+    b_home = new QPushButton("HOME", utilityWidget);
+    b_quit = new QPushButton("QUIT", utilityWidget);
     b_save->setIcon(QIcon(":/images/Assets/save.png"));
     b_home->setIcon(QIcon(":/images/Assets/home.png"));
     b_quit->setIcon(QIcon(":/images/Assets/quit.png"));
+
     utility_bar->addWidget(b_save);
     utility_bar->addWidget(b_home);
     utility_bar->addWidget(b_quit);
-    layout->addLayout(utility_bar);
+    layout->addWidget(utilityWidget);
 
-    // Start navigation
+    // ── Save button on Mode screen top-left ───────────────────────────────
+    b_save_mode = new QPushButton("SAVE", mode);
+    b_save_mode->setIcon(QIcon(":/images/Assets/save.png"));
+    b_save_mode->setGeometry(8, 8, 80, 36);
+    b_save_mode->hide();
+
+    // ── Connections ───────────────────────────────────────────────────────
     if (new_game)
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
     else
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    connect(b_save, SIGNAL(clicked()), this, SLOT(saveGame()));
-    connect(b_home, SIGNAL(clicked()), this, SLOT(open_mode()));  // HOME → mode screen
-    connect(b_quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
+    connect(b_save,      SIGNAL(clicked()), this,                     SLOT(saveGame()));
+    connect(b_save_mode, SIGNAL(clicked()), this,                     SLOT(saveGame()));
+    connect(b_home,      SIGNAL(clicked()), this,                     SLOT(open_mode()));
+    connect(b_quit,      SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
 
     connect(create->b_done, SIGNAL(clicked()), this, SLOT(onCreateDone()));
 
-    // Mode bubble clicks → go directly to care sub-screen
     mode->feedBubble->installEventFilter(this);
     mode->groomBubble->installEventFilter(this);
     mode->sleepBubble->installEventFilter(this);
 
-    // Mode other buttons
-    connect(mode->b_train,  SIGNAL(clicked()), this, SLOT(open_train()));
-    connect(mode->b_battle, SIGNAL(clicked()), this, SLOT(open_battle()));
-    connect(mode->b_gear,   SIGNAL(clicked()), this, SLOT(open_gear()));
+    connect(mode->b_train,   SIGNAL(clicked()), this, SLOT(open_train()));
+    connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
+    connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
-    // Back buttons → return to Mode
-    connect(feed->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
-    connect(groom->backBtn, &QPushButton::clicked, this, &Game::open_mode);
-    connect(sleep->backBtn, &QPushButton::clicked, this, &Game::open_mode);
-    connect(train->b_back,  SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(battle->btnBack,SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(gear->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(feed->backBtn,   &QPushButton::clicked, this, &Game::open_mode);
+    connect(groom->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
+    connect(sleep->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
+    connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(battle->btnBack, SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(gear->backBtn,   SIGNAL(clicked()), this, SLOT(open_mode()));
 
     setUtilityStyle(*b_save);
-    setUtilityStyle(*b_home);
+    setUtilityStyle(*b_save_mode);
     setUtilityStyle(*b_quit);
+
+    showUtilityBar(false); // hidden on start screen
 }
 
-// Event filter catches bubble label taps/clicks
+// ── Helper: configure bar to show only Home full-width ────────────────────
+void Game::showHomeOnly(bool activeStyle) {
+    showUtilityBar(true);
+    b_save->hide();
+    b_quit->hide();
+    b_home->show();
+    utility_bar->setStretch(0, 0);
+    utility_bar->setStretch(1, 1);
+    utility_bar->setStretch(2, 0);
+    if (activeStyle)
+        setUtilityStyle(*b_home);
+    else
+        b_home->setStyleSheet(R"(
+            QPushButton {
+                background-color: rgba(60,60,60,180);
+                border: 2px inset #888888; border-radius: 10px;
+                padding: 4px; font: bold; color: #888888;
+            })");
+}
+
+void Game::showUtilityBar(bool show) {
+    utilityWidget->setVisible(show);
+}
+
+// ── Event filter for bubble taps ──────────────────────────────────────────
 bool Game::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonRelease) {
         if (obj == mode->feedBubble)  { open_feed();  return true; }
@@ -96,6 +134,69 @@ bool Game::eventFilter(QObject *obj, QEvent *event) {
     return QWidget::eventFilter(obj, event);
 }
 
+// ── Navigation ────────────────────────────────────────────────────────────
+
+void Game::open_start() {
+    showUtilityBar(false);
+    b_save_mode->hide();
+    pages->setCurrentIndex(0);
+}
+
+void Game::open_create() {
+    showUtilityBar(false);
+    b_save_mode->hide();
+    pages->setCurrentIndex(1);
+}
+
+void Game::open_mode() {
+    showHomeOnly(false); // greyed Home only at bottom
+    b_save_mode->show();
+    b_save_mode->raise();
+    mode->refreshDisplay();
+    pages->setCurrentIndex(2);
+}
+
+void Game::open_feed() {
+    showHomeOnly(true); // active Home only at bottom
+    b_save_mode->hide();
+    feed->updateHungerDisplay();
+    pages->setCurrentIndex(3);
+}
+
+void Game::open_groom() {
+    showHomeOnly(true);
+    b_save_mode->hide();
+    groom->updateHygieneDisplay();
+    pages->setCurrentIndex(4);
+}
+
+void Game::open_sleep() {
+    showHomeOnly(true);
+    b_save_mode->hide();
+    sleep->updateSleepDisplay();
+    pages->setCurrentIndex(5);
+}
+
+void Game::open_train() {
+    showHomeOnly(true);
+    b_save_mode->hide();
+    pages->setCurrentIndex(6);
+}
+
+void Game::open_battle() {
+    showHomeOnly(true);
+    b_save_mode->hide();
+    pages->setCurrentIndex(7);
+}
+
+void Game::open_gear() {
+    showHomeOnly(true);
+    b_save_mode->hide();
+    gear->refresh(currentPetType);
+    pages->setCurrentIndex(8);
+}
+
+// ── onCreateDone ──────────────────────────────────────────────────────────
 void Game::onCreateDone() {
     if (create->b_axolotl->isChecked())
         currentPetType = Character::ElectricAxolotl;
@@ -108,8 +209,8 @@ void Game::onCreateDone() {
     if (item) player->pet.set_name(item->text());
 
     mode->setPetType(currentPetType);
+    gear->refresh(currentPetType);
 
-    // Rebuild Feed, Groom, Sleep with new pet type
     pages->removeWidget(feed);  delete feed;
     pages->removeWidget(groom); delete groom;
     pages->removeWidget(sleep); delete sleep;
@@ -126,7 +227,6 @@ void Game::onCreateDone() {
     connect(groom->backBtn, &QPushButton::clicked, this, &Game::open_mode);
     connect(sleep->backBtn, &QPushButton::clicked, this, &Game::open_mode);
 
-    // Re-install event filter on mode bubbles
     mode->feedBubble->installEventFilter(this);
     mode->groomBubble->installEventFilter(this);
     mode->sleepBubble->installEventFilter(this);
@@ -134,16 +234,7 @@ void Game::onCreateDone() {
     open_mode();
 }
 
-void Game::open_mode()   { mode->refreshDisplay(); pages->setCurrentIndex(2); }
-void Game::open_feed()   { feed->updateHungerDisplay();   pages->setCurrentIndex(3); }
-void Game::open_groom()  { groom->updateHygieneDisplay(); pages->setCurrentIndex(4); }
-void Game::open_sleep()  { sleep->updateSleepDisplay();   pages->setCurrentIndex(5); }
-void Game::open_start()  { pages->setCurrentIndex(0); }
-void Game::open_create() { pages->setCurrentIndex(1); }
-void Game::open_train()  { pages->setCurrentIndex(6); }
-void Game::open_battle() { pages->setCurrentIndex(7); }
-void Game::open_gear()   { pages->setCurrentIndex(8); }
-
+// ── Save / Load ───────────────────────────────────────────────────────────
 QJsonObject Game::toJson() const {
     QJsonObject json;
     json["Player"] = player->toJson();
@@ -179,7 +270,7 @@ void Game::setUtilityStyle(QPushButton &button) {
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
             border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; }
+            padding: 4px; font: bold; color: mistyrose; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); })");
 }

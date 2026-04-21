@@ -184,7 +184,7 @@ void Groom::resizeEvent(QResizeEvent *e) {
     // Hint label floats just below the character GIF
     hintLabel->setGeometry((w - 300) / 2, petY + kSpriteSize + 6, 300, 30);
     // Hygiene display sits just above the actionsBox
-    hygieneDisplay->setGeometry((w - 300) / 2, h - 218, 360, 38);
+    hygieneDisplay->setGeometry((w - 300) / 2, h - 218, w-16, 38);
     // actionsBox and backBtn stretch full width with 8px side margins
     actionsBox->setGeometry(8, h - 178, w - 16, 120);
     backBtn->setGeometry(8, h - 52, w - 16, 44);

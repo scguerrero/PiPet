@@ -1,6 +1,6 @@
 /*
  * game.h - Top-level game widget.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin, Sasha Guerrero
  */
 #ifndef GAME_H
 #define GAME_H
@@ -12,8 +12,9 @@
 #include "../care_class/sleep.h"
 #include "../train_class/train.h"
 #include "../battle_class/battle.h"
-#include "../character_class/character.h"
 #include "../gear_class/gear.h"
+#include "../character_class/character.h"
+
 class Game : public QWidget {
     Q_OBJECT
 public:
@@ -22,15 +23,22 @@ public:
     void read(const QJsonObject &json);
     PiPet  *pet;
     Player *player;
+
 public slots:
     bool loadGame();
     bool saveGame();
     void setUtilityStyle(QPushButton &button);
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
 private:
     bool new_game = true;
     Character::PetType currentPetType = Character::DragonDog;
+
     QVBoxLayout    *layout;
     QStackedWidget *pages;
+
     Start  *start;
     Create *create;
     Mode   *mode;
@@ -40,8 +48,18 @@ private:
     Train  *train;
     Battle *battle;
     Gear   *gear;
+
+    // Bottom utility bar — shown on care/train/battle/gear screens only
     QHBoxLayout *utility_bar;
     QPushButton *b_save, *b_home, *b_quit;
+    QWidget     *utilityWidget; // wrapper so we can show/hide the whole bar
+
+    // Save button lives at top-left on Mode screen
+    QPushButton *b_save_mode;
+
+    void showUtilityBar(bool show);
+    void showHomeOnly(bool activeStyle); // shows only Home button full-width
+
 private slots:
     void open_start();
     void open_create();
@@ -53,7 +71,6 @@ private slots:
     void open_battle();
     void open_gear();
     void onCreateDone();
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
 };
+
 #endif

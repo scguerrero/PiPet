@@ -1,13 +1,7 @@
 <RCC>
     <qresource prefix="/images">
-        <file>Assets/logo.png</file>
-        <file>Assets/settings.png</file>
-        <file>Backgrounds/title_screen.png</file>
-        <file>Backgrounds/character_screen.png</file>
-        <file>Backgrounds/mode.png</file>
-        <file>Backgrounds/kitchen_16bit.png</file>
-        <file>Backgrounds/bedroom_16bit.png</file>
-        <file>Backgrounds/bathroom_16bit.png</file>
+
+        <!-- GIFs -->
         <file>Sprites/pets/axolotl/axolotl_adult_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_teen_idle.gif</file>
@@ -16,20 +10,63 @@
         <file>Sprites/pets/dragondog/dragondog_idle.gif</file>
         <file>Sprites/pets/dragondog/purpledragondog_idle.gif</file>
         <file>Sprites/pets/dragondog/purpledragondog_sleep.gif</file>
-        <file>Sprites/pets/icons/comb.png</file>
-        <file>Sprites/pets/icons/dogtreat.png</file>
-        <file>Sprites/pets/icons/fish.png</file>
-        <file>Sprites/pets/icons/showerhead.png</file>
-        <file>Sprites/pets/icons/soap.png</file>
-        <file>Sprites/pets/icons/anger_mark.png</file>
-        <file>Sprites/pets/icons/pizza.png</file>
-        <file>Sprites/pets/icons/apple.png</file>
-        <file>Sprites/pets/icons/toothbrush.png</file>
-        <file>Sprites/pets/icons/drink.png</file>
         <file>Sprites/pets/seelcat/seelcat_adult_idle.gif</file>
         <file>Sprites/pets/seelcat/seelcat_idle.gif</file>
         <file>Sprites/pets/seelcat/seelcat_sleep.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_idle.gif</file>
+
+        <file>Sprites/pets/axolotl/axolotl_adult_cowboy.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_adult_crown.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_adult_santa.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_adult_wizard.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_cowboy.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_crown.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_santa.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_teen_cowboy.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_teen_santa.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_teen_wizard.gif</file>
+        <file>Sprites/pets/axolotl/axolotl_wizard.gif</file>
+
+        <file>Sprites/pets/dragondog/dragondog_adult_cowboy.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_adult_crown.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_adult_santa.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_adult_wizard.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_cowboy.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_crown.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_santa.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_teen_cowboy.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_teen_crown.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_teen_santa.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_teen_wizard.gif</file>
+        <file>Sprites/pets/dragondog/dragondog_wizard.gif</file>
+
+        <file>Sprites/pets/seelcat/seelcat_adult_crown.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_adult_santa.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_adult_wizard.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_crown.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_santa.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_teen_crown.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_teen_santa.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_teen_wizard.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_wizard.gif</file>
+
+        <file>Backgrounds/loading_screen.gif</file>
+
+        <!-- Backgrounds -->
+        <file>Backgrounds/title_screen.png</file>
+        <file>Backgrounds/character_screen.png</file>
+        <file>Backgrounds/mode.png</file>
+        <file>Backgrounds/kitchen_16bit.png</file>
+        <file>Backgrounds/bedroom_16bit.png</file>
+        <file>Backgrounds/bathroom_16bit.png</file>
+        <file>Backgrounds/gearStage_16bit.png</file>
+        <file>Backgrounds/battle_16bit.png</file>
+
+        <!-- Logos -->
+        <file>Assets/logo.png</file>
+
+        <!-- Icons -->
+        <file>Assets/settings.png</file>
         <file>Assets/home.png</file>
         <file>Assets/quit.png</file>
         <file>Assets/save.png</file>
@@ -40,12 +77,38 @@
         <file>Assets/charge.png</file>
         <file>Assets/defend.png</file>
         <file>Assets/restart.png</file>
+        <file>Assets/gear.png</file>
+        <file>Assets/hamburger_menu.png</file>
+        <file>Assets/gear_icon.png</file>
+        <file>Assets/energy_icon.png</file>
+        <file>Assets/happiness_icon.png</file>
+        <file>Assets/hunger_icon.png</file>
+
+        <file>Sprites/pets/icons/comb.png</file>
+        <file>Sprites/pets/icons/showerhead.png</file>
+        <file>Sprites/pets/icons/soap.png</file>
+        <file>Sprites/pets/icons/anger_mark.png</file>
+        <file>Sprites/pets/icons/toothbrush.png</file>
+        <file>Sprites/pets/icons/drink.png</file>
+
+        <file>Sprites/pets/icons/cowboy_hat.png</file>
+        <file>Sprites/pets/icons/crown_hat.png</file>
+        <file>Sprites/pets/icons/santa_hat.png</file>
+        <file>Sprites/pets/icons/wizard_hat.png</file>
+
+        <!-- Food / Tools -->
+        <file>Sprites/pets/icons/dogtreat.png</file>
+        <file>Sprites/pets/icons/fish.png</file>
+        <file>Sprites/pets/icons/pizza.png</file>
+        <file>Sprites/pets/icons/apple.png</file>
+
+        <!-- Misc -->
         <file>Assets/PiPatterns.png</file>
         <file>Assets/pidash.png</file>
-        <file>Assets/gear.png</file>
         <file>Assets/capplaceholder.png</file>
         <file>Assets/cowboyhatplaceholder.png</file>
         <file>Assets/crownplaceholder.png</file>
         <file>Assets/wizardhatplaceholder</file>
+
     </qresource>
 </RCC>

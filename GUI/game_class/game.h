@@ -29,6 +29,13 @@ public slots:
     bool saveGame();
     void setUtilityStyle(QPushButton &button);
 
+    // Achievement helpers — called from battle, feed, mode, gear
+    void onBattleWon();
+    void onFedBone();
+    void onMinigamePlayed(int gameIndex); // 0, 1, or 2
+    void onAgeChanged(const QString &ageGroup);
+    void onCrownHatEquipped();
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
@@ -49,13 +56,20 @@ private:
     Battle *battle;
     Gear   *gear;
 
-    // Bottom utility bar — shown on care/train/battle/gear screens only
+    // Utility bar
     QHBoxLayout *utility_bar;
-    QPushButton *b_save_mode, *b_home;
-    QWidget     *utilityWidget; // wrapper so we can show/hide the whole bar
+    QPushButton *b_save_mode, *b_home, *b_achievements;
+    QWidget     *utilityWidget;
 
     void showUtilityBar(bool show);
-    void showHomeOnly(bool activeStyle); // shows only Home button full-width
+    void showHomeOnly(bool activeStyle);
+
+    // Achievement popup — shows unlocked achievement name briefly
+    void showAchievementPopup(const QList<QString> &titles);
+
+    // Inactivity timer — fires after 30 minutes of no input
+    QTimer *m_inactivityTimer;
+    void    resetInactivityTimer();
 
 private slots:
     void open_start();
@@ -68,6 +82,8 @@ private slots:
     void open_battle();
     void open_gear();
     void onCreateDone();
+    void onInactivityTriggered();
+    void showAchievementsScreen();
 };
 
 #endif

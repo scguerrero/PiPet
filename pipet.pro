@@ -27,7 +27,9 @@ HEADERS += \
     GUI/train_class/train.h \
     GUI/battle_class/battle.h \
     GUI/clock_class/clock.h \
+    GUI/achievements_class/achievements.h \
     Pet/PiPet.h
+    Player/Player.h
 
 SOURCES += \
     GUI/gear_class/gear.cc \
@@ -47,5 +49,6 @@ SOURCES += \
     GUI/train_class/train.cc \
     GUI/battle_class/battle.cc \
     GUI/clock_class/clock.cpp \
+    GUI/achievements_class/achievements.cpp \
     Pet/PiPet.cpp \
     Player/Player.cpp

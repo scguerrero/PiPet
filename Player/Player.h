@@ -3,49 +3,46 @@
 #define PLAYER_H
 #include <QDateTime>
 #include "../Pet/PiPet.h"
+#include "../GUI/achievements_class/achievements.h"
 
 class Player {
 private:
-    QDateTime startDate; // Time when object initialized
-    int streak;        // Consecutive days opened
-    int goodDays;      // Days pet's condition > 80%
-    int hours;         // Hours spent in game
+    QDateTime startDate;
+    int streak;
+    int goodDays;
+    int hours;
 
 public:
-    PiPet pet; // Composed pet object
+    PiPet        pet;
+    Achievements achievements;
 
-    // Default constructor
+    // Battle and minigame counters tracked here so they persist via JSON
+    int battleWins     = 0;
+    int minigamesPlayed = 0; // bitmask: bit0=MG1, bit1=MG2, bit2=MG3
+
     Player();
-
-    // Constructor
     Player(const PiPet& petInit);
 
-    // Getters
     QDateTime getStartDate() const;
-    int getStreak() const;
-    int getGoodDays() const;
-    int getHours() const;
-    PiPet getPet() const;
+    int getStreak()    const;
+    int getGoodDays()  const;
+    int getHours()     const;
+    PiPet getPet()     const;
 
-    // Setters
     void setStartDate(QDateTime t);
     void setStreak(int s);
     void setGoodDays(int g);
     void setHours(int h);
     void setPet(const PiPet& p);
 
-    // Actions
     void feedPet();
     void sendPetToSleep();
     void groomPet();
     void givePetAffection();
-    double getCareRating() const;  // goodDays / streak * 100
+    double getCareRating() const;
     void celebratePetBirthday();
 
-    // Initialize a Player object from JSON
     static Player fromJSON(const QJsonObject &json);
-
-    // Create a JSON from a Player object
     QJsonObject toJson() const;
 };
 

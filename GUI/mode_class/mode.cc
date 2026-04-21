@@ -1,7 +1,5 @@
 /*
  * mode.cc - Mode hub implementation.
- * Clock removed from main screen — shown in About/Settings only.
- * About page uses main.png background, no blue box behind text.
  * Author(s): Sasha C. Guerrero, Luke Cerwin
  */
 #include "mode.h"
@@ -19,7 +17,6 @@ Mode::Mode(Player *player, QWidget *parent)
     m_bathroomPx.load(":/images/Backgrounds/bathroom_16bit.png");
     m_bedroomPx.load (":/images/Backgrounds/bedroom_16bit.png");
 
-    // ── Settings button top-right ─────────────────────────────────────────
     b_settings = new QPushButton(this);
     b_settings->setIcon(QIcon(":/images/Assets/settings.png"));
     b_settings->setIconSize(QSize(28, 28));
@@ -30,19 +27,15 @@ Mode::Mode(Player *player, QWidget *parent)
         "QPushButton:pressed { background-color: rgba(72,80,219,180); }");
     connect(b_settings, SIGNAL(clicked()), this, SLOT(openAbout()));
 
-    // ── Pet name label ────────────────────────────────────────────────────
     petNameLabel = new QLabel(this);
     petNameLabel->setAlignment(Qt::AlignCenter);
     petNameLabel->setStyleSheet(
         "QLabel { background-color: rgba(0,0,0,150); border-radius: 8px;"
-        "padding: 4px 10px; color: #ffd700;"
-        "font-size: 16px; font-weight: bold; }");
+        "padding: 4px 10px; color: #ffd700; font-size: 16px; font-weight: bold; }");
 
-    // ── Character GIF ─────────────────────────────────────────────────────
     character = new Character(this);
     character->setFixedSize(160, 160);
 
-    // ── Anger mark ────────────────────────────────────────────────────────
     m_angerPx.load(":/images/Sprites/pets/icons/anger_mark.png");
     angerMark = new QLabel(this);
     angerMark->setPixmap(m_angerPx.scaled(32, 32, Qt::KeepAspectRatio,
@@ -51,14 +44,12 @@ Mode::Mode(Player *player, QWidget *parent)
     angerMark->setFixedSize(36, 36);
     angerMark->hide();
 
-    // ── Clock — private, only used in About page ──────────────────────────
     timekeeper = new Clock();
     time       = new QTime();
     timer      = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(updateClock()));
     timer->start(1000);
 
-    // ── Stat bars ─────────────────────────────────────────────────────────
     statsBox  = new QGroupBox("Condition", this);
     statsGrid = new QGridLayout();
     statsBox->setLayout(statsGrid);
@@ -80,14 +71,10 @@ Mode::Mode(Player *player, QWidget *parent)
         bar->setTextVisible(true);
     }
 
-    statsGrid->addWidget(hunger_label,    0, 0);
-    statsGrid->addWidget(hunger_bar,      0, 1);
-    statsGrid->addWidget(energy_label,    1, 0);
-    statsGrid->addWidget(energy_bar,      1, 1);
-    statsGrid->addWidget(happiness_label, 2, 0);
-    statsGrid->addWidget(happiness_bar,   2, 1);
+    statsGrid->addWidget(hunger_label,    0, 0); statsGrid->addWidget(hunger_bar,    0, 1);
+    statsGrid->addWidget(energy_label,    1, 0); statsGrid->addWidget(energy_bar,    1, 1);
+    statsGrid->addWidget(happiness_label, 2, 0); statsGrid->addWidget(happiness_bar, 2, 1);
 
-    // ── Bubble care labels ────────────────────────────────────────────────
     feedBubble  = new QLabel(this);
     groomBubble = new QLabel(this);
     sleepBubble = new QLabel(this);
@@ -98,12 +85,10 @@ Mode::Mode(Player *player, QWidget *parent)
         b->setStyleSheet("QLabel { background-color: transparent; }");
     }
 
-    // ── Navigation buttons ────────────────────────────────────────────────
-    b_care   = new QPushButton(this);
+    b_care   = new QPushButton(this); b_care->hide();
     b_train  = new QPushButton("Train",  this);
     b_battle = new QPushButton("Battle", this);
     b_gear   = new QPushButton("Gear",   this);
-    b_care->hide();
 
     QString btnStyle = R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
@@ -116,76 +101,52 @@ Mode::Mode(Player *player, QWidget *parent)
     b_battle->setStyleSheet(btnStyle);
     b_gear->setStyleSheet(btnStyle);
 
+    m_lastAgeGroup = player->getPet().age_group();
     refreshDisplay();
 }
 
-// ── Layout ────────────────────────────────────────────────────────────────
-void Mode::resizeEvent(QResizeEvent *e) {
-    QWidget::resizeEvent(e);
-    layoutWidgets();
-}
+void Mode::resizeEvent(QResizeEvent *e) { QWidget::resizeEvent(e); layoutWidgets(); }
 
 void Mode::layoutWidgets() {
     int w = width(), h = height();
+    static constexpr int kCharSize = 160, kStatsH = 100, kBubbleH = 80;
+    static constexpr int kBtnH = 36, kMargin = 8, kSpacing = 6;
 
-    static constexpr int kCharSize = 160;
-    static constexpr int kStatsH   = 100;
-    static constexpr int kBubbleH  = 80;
-    static constexpr int kBtnH     = 36;
-    static constexpr int kMargin   = 8;
-    static constexpr int kSpacing  = 6;
-
-    // ── Build from the bottom up so there's no dead space ─────────────────
     int btnY    = h - kBtnH    - kMargin;
     int bubbleY = btnY  - kBubbleH - kSpacing;
     int statsY  = bubbleY - kStatsH  - kSpacing;
     int charY   = statsY  - kCharSize - kSpacing;
 
-    // Settings top-right
     b_settings->move(w - 46, kMargin);
-
-    // Pet name centered at top
     petNameLabel->setGeometry((w - 200) / 2, 8, 200, 28);
 
-    // Character
     int charX = (w - kCharSize) / 2;
     character->setGeometry(charX, charY, kCharSize, kCharSize);
-
-    // Anger mark top-right of character
     angerMark->setGeometry(charX + kCharSize/2 + 32, charY, 48, 48);
-
-    // Stat bars
     statsBox->setGeometry(kMargin, statsY, w - kMargin*2, kStatsH);
 
-    // Bubbles — three equal columns with margins
     int bubbleW = (w - kMargin*4) / 3;
     feedBubble->setGeometry (kMargin,               bubbleY, bubbleW, kBubbleH);
     groomBubble->setGeometry(kMargin*2 + bubbleW,   bubbleY, bubbleW, kBubbleH);
     sleepBubble->setGeometry(kMargin*3 + bubbleW*2, bubbleY, bubbleW, kBubbleH);
 
-    // Train / Battle / Gear
     int btnW = (w - kMargin*4) / 3;
-    b_train->setGeometry (kMargin,             btnY, btnW, kBtnH);
-    b_battle->setGeometry(kMargin*2 + btnW,    btnY, btnW, kBtnH);
-    b_gear->setGeometry  (kMargin*3 + btnW*2,  btnY, btnW, kBtnH);
+    b_train->setGeometry (kMargin,            btnY, btnW, kBtnH);
+    b_battle->setGeometry(kMargin*2 + btnW,   btnY, btnW, kBtnH);
+    b_gear->setGeometry  (kMargin*3 + btnW*2, btnY, btnW, kBtnH);
 }
 
-// ── Paint ─────────────────────────────────────────────────────────────────
 void Mode::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
     QPainter p(this);
-    if (!m_bg.isNull())
-        p.drawPixmap(0, 0, width(), height(), m_bg);
-
+    if (!m_bg.isNull()) p.drawPixmap(0, 0, width(), height(), m_bg);
     drawBubble(p, feedBubble->geometry(),  m_kitchenPx,  "Feed",  true);
     drawBubble(p, groomBubble->geometry(), m_bathroomPx, "Groom", true);
     drawBubble(p, sleepBubble->geometry(), m_bedroomPx,  "Sleep", true);
-
 }
 
 void Mode::drawBubble(QPainter &p, QRect rect,
-                const QPixmap &bg, const QString &label,
-                bool dimmed)
+                      const QPixmap &bg, const QString &label, bool dimmed)
 {
     if (rect.isEmpty()) return;
     p.save();
@@ -193,15 +154,13 @@ void Mode::drawBubble(QPainter &p, QRect rect,
     path.addRoundedRect(rect, 12, 12);
     p.setClipPath(path);
     if (!bg.isNull()) {
-        QPixmap scaled = bg.scaled(rect.size(),
-                                   Qt::KeepAspectRatioByExpanding,
+        QPixmap scaled = bg.scaled(rect.size(), Qt::KeepAspectRatioByExpanding,
                                    Qt::SmoothTransformation);
         int ox = (scaled.width()  - rect.width())  / 2;
         int oy = (scaled.height() - rect.height()) / 2;
         p.drawPixmap(rect, scaled, QRect(ox, oy, rect.width(), rect.height()));
     }
-    if (dimmed) {
-        p.fillPath(path, QColor(0, 0, 0, 130));}
+    if (dimmed) p.fillPath(path, QColor(0, 0, 0, 130));
     p.restore();
     p.setPen(QPen(QColor("#FBA8FF"), 2));
     p.setBrush(Qt::NoBrush);
@@ -211,7 +170,6 @@ void Mode::drawBubble(QPainter &p, QRect rect,
     p.drawText(rect, Qt::AlignCenter, label);
 }
 
-// ── Public API ────────────────────────────────────────────────────────────
 void Mode::setPetType(Character::PetType type) {
     petType = type;
     character->setPetType(type);
@@ -223,10 +181,8 @@ void Mode::refreshDisplay() {
     updateIndicators();
     petNameLabel->setText(player->getPet().name());
 
-    // If a hat is equipped, show hat GIF; otherwise show idle
-    QString hat = player->getPet().hat();
+    QString hat  = player->getPet().hat();
     if (!hat.isEmpty()) {
-        // Build hat GIF path matching gear.cc convention
         QString folder, prefix;
         QString type = player->getPet().pet_type();
         if      (type == "ElectricAxolotl") { folder = "axolotl";   prefix = "axolotl";   }
@@ -245,25 +201,16 @@ void Mode::refreshDisplay() {
                 if (disp->movie()) disp->movie()->stop();
                 disp->setMovie(movie);
                 movie->start();
-            } else {
-                delete movie;
-                character->syncWithPlayer(*player, petType);
-            }
-        } else {
-            delete movie;
-            character->syncWithPlayer(*player, petType);
-        }
+            } else { delete movie; character->syncWithPlayer(*player, petType); }
+        } else { delete movie; character->syncWithPlayer(*player, petType); }
     } else {
         character->syncWithPlayer(*player, petType);
     }
-
     layoutWidgets();
 }
 
-// ── Clock tick (private — feeds About page only) ──────────────────────────
 void Mode::updateClock() {
     timekeeper->increment_elapsed_time(1);
-
     secondsSinceDecay++;
     if (secondsSinceDecay >= DECAY_INTERVAL_SECS) {
         secondsSinceDecay = 0;
@@ -273,7 +220,7 @@ void Mode::updateClock() {
 
 void Mode::decayStats() {
     PiPet pet = player->getPet();
-    pet.set_hunger   (qMax(0, pet.hunger()    - 100));
+    pet.set_hunger   (qMax(0, pet.hunger()    - 1)); // FIX: was -100
     pet.set_energy   (qMax(0, pet.energy()    - 1));
     pet.set_happiness(qMax(0, pet.happiness() - 1));
     player->setPet(pet);
@@ -291,26 +238,38 @@ void Mode::updateStatBars() {
 
 void Mode::updateIndicators() {
     PiPet pet = player->getPet();
-    if (pet.hunger() < 25) angerMark->show();
-    else                    angerMark->hide();
+
+    bool angry    = (pet.hunger() < 25);
+    bool sleeping = (pet.energy() < 25);
+
+    if (angry) angerMark->show();
+    else       angerMark->hide();
+
     character->updateEmotionFromStats(pet.energy(), pet.hunger());
+
+    // ── Achievement signals ───────────────────────────────────────────────
+    // Temper Tantrum: pet sleeping AND angry at the same time
+    if (sleeping && angry)
+        emit temperTantrum();
+
+    // Age-up detection
+    QString currentAge = pet.age_group();
+    if (currentAge != m_lastAgeGroup) {
+        m_lastAgeGroup = currentAge;
+        emit petAgedUp(currentAge);
+    }
 }
 
-// ── About page —──────────────────
 void Mode::openAbout() {
     PiPet pet = player->getPet();
-
-    // Build a QDialog instead of QMessageBox so we can paint a background
     QDialog about(this);
     about.setWindowTitle("About piPet");
     about.setFixedSize(400, 560);
 
-    // Outer layout
     QVBoxLayout *dlgLayout = new QVBoxLayout(&about);
     dlgLayout->setContentsMargins(20, 20, 20, 20);
     dlgLayout->setSpacing(0);
 
-    // Text label
     QLabel *infoLabel = new QLabel(&about);
     infoLabel->setWordWrap(true);
     infoLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -325,50 +284,37 @@ void Mode::openAbout() {
         "<b style='color:#ffd700;font-size:16px;'>piPet</b><br>"
         "<span style='color:#aaa;'>Digital Pet Game</span><br><br>"
         "<b style='color:#ffd700;'>── Session ──</b><br>"
-        "Current Time: %1<br>"
-        "Time Played:  %2s<br><br>"
+        "Current Time: %1<br>Time Played:  %2s<br><br>"
         "<b style='color:#ffd700;'>── Pet ──</b><br>"
-        "Name:         %3<br>"
-        "Age Group:    %4<br>"
-        "Days Old:     %5<br><br>"
+        "Name: %3  Age: %4  Days: %5<br><br>"
         "<b style='color:#ffd700;'>── Condition ──</b><br>"
-        "Hunger:       %6 / 100<br>"
-        "Energy:       %7 / 100<br>"
-        "Happiness:    %8 / 100<br>"
-        "Strength:     %9 / 100<br>"
-        "Hygiene:      %10 / 100<br>"
-        "Intelligence: %11 / 100<br><br>"
-        "<b style='color:#ffd700;'>── Battle Stats ──</b><br>"
-        "Attack:       %12<br>"
-        "Defense:      %13<br>"
-        "Hit Points:   %14<br><br>"
+        "Hunger: %6  Energy: %7  Happiness: %8<br>"
+        "Strength: %9  Hygiene: %10  Intelligence: %11<br><br>"
+        "<b style='color:#ffd700;'>── Battle ──</b><br>"
+        "Attack: %12  Defense: %13  HP: %14<br><br>"
         "<span style='color:#aaa;font-size:11px;'>"
-        "Luke C. · Sasha G. · Camden G.<br>"
-        "Tanya M. · Cesar R.</span>"
+        "Luke C. · Sasha G. · Camden G. · Tanya M. · Cesar R.</span>"
     )
-    .arg(currentTime)
-    .arg(elapsed)
-    .arg(pet.name())        .arg(pet.age_group())
-    .arg(pet.days_old())    .arg(pet.hunger())
-    .arg(pet.energy())      .arg(pet.happiness())
-    .arg(pet.strength())    .arg(pet.hygiene())
-    .arg(pet.intelligence()).arg(pet.attack())
-    .arg(pet.defense())     .arg(pet.hit_points()));
+    .arg(currentTime).arg(elapsed)
+    .arg(pet.name()).arg(pet.age_group()).arg(pet.days_old())
+    .arg(pet.hunger()).arg(pet.energy()).arg(pet.happiness())
+    .arg(pet.strength()).arg(pet.hygiene()).arg(pet.intelligence())
+    .arg(pet.attack()).arg(pet.defense()).arg(pet.hit_points()));
 
-    // Close button
     QPushButton *closeBtn = new QPushButton("Close", &about);
     closeBtn->setFixedHeight(36);
     closeBtn->setStyleSheet(
         "QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
-        "stop:0 #4850DB, stop:1 #4A71DB);"
-        "border: 2px inset #FBA8FF; border-radius: 10px;"
-        "padding: 4px; font: bold; color: mistyrose; }"
+        "stop:0 #4850DB,stop:1 #4A71DB); border:2px inset #FBA8FF;"
+        "border-radius:10px; padding:4px; font:bold; color:mistyrose; }"
         "QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
-        "stop:0 #4A71DB, stop:1 #4850DB); }");
+        "stop:0 #4A71DB,stop:1 #4850DB); }");
     connect(closeBtn, &QPushButton::clicked, &about, &QDialog::accept);
 
     dlgLayout->addWidget(infoLabel, 1);
     dlgLayout->addWidget(closeBtn,  0);
-
+    about.setStyleSheet(
+        "QDialog { background-image: url(:/images/Backgrounds/main.png);"
+        "background-repeat: no-repeat; background-position: center; }");
     about.exec();
 }

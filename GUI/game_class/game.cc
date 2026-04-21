@@ -46,17 +46,10 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     utility_bar   = new QHBoxLayout(utilityWidget);
     utility_bar->setContentsMargins(4, 4, 4, 4);
     utility_bar->setSpacing(6);
-
-    b_save = new QPushButton("SAVE", utilityWidget);
     b_home = new QPushButton("HOME", utilityWidget);
-    b_quit = new QPushButton("QUIT", utilityWidget);
-    b_save->setIcon(QIcon(":/images/Assets/save.png"));
     b_home->setIcon(QIcon(":/images/Assets/home.png"));
-    b_quit->setIcon(QIcon(":/images/Assets/quit.png"));
 
-    utility_bar->addWidget(b_save);
     utility_bar->addWidget(b_home);
-    utility_bar->addWidget(b_quit);
     layout->addWidget(utilityWidget);
 
     // ── Save button on Mode screen top-left ───────────────────────────────
@@ -71,10 +64,8 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     else
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    connect(b_save,      SIGNAL(clicked()), this,                     SLOT(saveGame()));
     connect(b_save_mode, SIGNAL(clicked()), this,                     SLOT(saveGame()));
     connect(b_home,      SIGNAL(clicked()), this,                     SLOT(open_mode()));
-    connect(b_quit,      SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
 
     connect(create->b_done, SIGNAL(clicked()), this, SLOT(onCreateDone()));
 
@@ -86,16 +77,14 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
     connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
-    connect(feed->backBtn,   &QPushButton::clicked, this, &Game::open_mode);
-    connect(groom->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
-    connect(sleep->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
     connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(battle->btnBack, SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(gear->backBtn,   SIGNAL(clicked()), this, SLOT(open_mode()));
-
-    setUtilityStyle(*b_save);
+    connect(gear, &Gear::hatEquipped, this, [this](const QString &hatKey) {
+        PiPet p = player->getPet();
+        p.set_hat(hatKey);
+        player->setPet(p);
+        mode->refreshDisplay();
+    });
     setUtilityStyle(*b_save_mode);
-    setUtilityStyle(*b_quit);
 
     showUtilityBar(false); // hidden on start screen
 }
@@ -103,8 +92,6 @@ Game::Game(QWidget *parent) : QWidget{parent} {
 // ── Helper: configure bar to show only Home full-width ────────────────────
 void Game::showHomeOnly(bool activeStyle) {
     showUtilityBar(true);
-    b_save->hide();
-    b_quit->hide();
     b_home->show();
     utility_bar->setStretch(0, 0);
     utility_bar->setStretch(1, 1);
@@ -211,6 +198,16 @@ void Game::onCreateDone() {
     mode->setPetType(currentPetType);
     gear->refresh(currentPetType);
 
+    // Persist pet type into the PiPet so it survives save/load
+    {
+        PiPet p = player->getPet();
+        QString typeStr = (currentPetType == Character::ElectricAxolotl) ? "ElectricAxolotl"
+                        : (currentPetType == Character::SeelCat)         ? "SeelCat"
+                                                                         : "DragonDog";
+        p.set_pet_type(typeStr);
+        player->setPet(p);
+    }
+
     pages->removeWidget(feed);  delete feed;
     pages->removeWidget(groom); delete groom;
     pages->removeWidget(sleep); delete sleep;
@@ -222,10 +219,6 @@ void Game::onCreateDone() {
     pages->insertWidget(3, feed);
     pages->insertWidget(4, groom);
     pages->insertWidget(5, sleep);
-
-    connect(feed->backBtn,  &QPushButton::clicked, this, &Game::open_mode);
-    connect(groom->backBtn, &QPushButton::clicked, this, &Game::open_mode);
-    connect(sleep->backBtn, &QPushButton::clicked, this, &Game::open_mode);
 
     mode->feedBubble->installEventFilter(this);
     mode->groomBubble->installEventFilter(this);
@@ -252,6 +245,21 @@ bool Game::loadGame() {
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
     read(loadDoc.object());
+
+    // Restore pet type
+    QString typeStr = player->getPet().pet_type();
+    if      (typeStr == "ElectricAxolotl") currentPetType = Character::ElectricAxolotl;
+    else if (typeStr == "SeelCat")         currentPetType = Character::SeelCat;
+    else                                   currentPetType = Character::DragonDog;
+
+    mode->setPetType(currentPetType);
+    gear->refresh(currentPetType);
+
+    // Restore equipped hat on gear screen — select the saved card
+    QString savedHat = player->getPet().hat();
+    if (!savedHat.isEmpty())
+        gear->restoreHat(savedHat);
+
     return true;
 }
 

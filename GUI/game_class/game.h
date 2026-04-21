@@ -51,11 +51,8 @@ private:
 
     // Bottom utility bar — shown on care/train/battle/gear screens only
     QHBoxLayout *utility_bar;
-    QPushButton *b_save, *b_home, *b_quit;
+    QPushButton *b_save_mode, *b_home;
     QWidget     *utilityWidget; // wrapper so we can show/hide the whole bar
-
-    // Save button lives at top-left on Mode screen
-    QPushButton *b_save_mode;
 
     void showUtilityBar(bool show);
     void showHomeOnly(bool activeStyle); // shows only Home button full-width

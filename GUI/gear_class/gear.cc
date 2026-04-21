@@ -167,17 +167,6 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     m_particleTimer->setInterval(30);
     connect(m_particleTimer, &QTimer::timeout, this, &Gear::tickParticles);
 
-    // ── Back button ───────────────────────────────────────────────────────
-    backBtn = new QPushButton("Back", this);
-    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
-    backBtn->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
-        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4A71DB, stop:1 #4850DB); })");
-
     layoutWidgets();
 }
 
@@ -194,13 +183,12 @@ QRect Gear::pedestalCharRect() const {
     return QRect(cx, cy, cw, ch);
 }
 
-// Yellow strip region: full width, above the back button
+// Yellow strip region: full width, near the bottom
 QRect Gear::stripRect() const {
     int w = width(), h = height();
     int stripH = 96;
-    int btnH   = 44;
     int margin = 8;
-    int y = h - btnH - margin - stripH - 4;
+    int y = h - stripH - margin;
     return QRect(margin, y, w - margin * 2, stripH);
 }
 
@@ -221,9 +209,6 @@ void Gear::layoutWidgets() {
 
     // Particle overlay fills whole window
     m_particleOverlay->setGeometry(0, 0, w, h);
-
-    // Back button
-    backBtn->setGeometry(8, h - 52, w - 16, 44);
 }
 
 void Gear::resizeEvent(QResizeEvent *e) {
@@ -371,4 +356,12 @@ void Gear::refresh(Character::PetType petType) {
         loadHatGif(m_equippedHat);
 
     layoutWidgets();
+}
+
+// Restore a hat silently (no particle burst) — used after loadGame()
+void Gear::restoreHat(const QString &hatKey) {
+    m_equippedHat = hatKey;
+    for (HatCard *card : m_hatCards)
+        card->setSelected(card->hatKey() == hatKey);
+    loadHatGif(hatKey);
 }

@@ -50,22 +50,12 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
         "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
         "subcontrol-position: top center; padding: 0 4px; }");
 
-    backBtn     = new QPushButton("Back to Care Hub!");
-    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
-    backBtn->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
-        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4A71DB, stop:1 #4850DB); })");
     // Character GIF at top center, buttons below
     layout->addSpacing(150);
     layout->addWidget(character, 0, Qt::AlignCenter);
     layout->addStretch();
     layout->addWidget(sleepDisplay);
     layout->addWidget(actionsBox);
-    layout->addWidget(backBtn);
     this->setLayout(layout);
 }
 

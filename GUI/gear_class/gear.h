@@ -58,7 +58,8 @@ public:
     // Call this whenever the player's pet type or stage changes externally
     void refresh(Character::PetType petType);
 
-    QPushButton *backBtn;
+    // Call after loadGame() to restore a previously equipped hat without a particle burst
+    void restoreHat(const QString &hatKey);
 
 signals:
     void hatEquipped(const QString &hatKey); // emitted after the particle burst

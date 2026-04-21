@@ -149,16 +149,6 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     connect(trimTool,  &GroomItem::dropped, this, &Groom::onToolDropped);
     connect(teethTool, &GroomItem::dropped, this, &Groom::onToolDropped);
 
-    backBtn = new QPushButton("Back to Care Hub!", this);
-    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
-    backBtn->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
-        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4A71DB, stop:1 #4850DB); })");
-
     m_resetTimer = new QTimer(this);
     m_resetTimer->setSingleShot(true);
     m_resetTimer->setInterval(1800);
@@ -184,10 +174,9 @@ void Groom::resizeEvent(QResizeEvent *e) {
     // Hint label floats just below the character GIF
     hintLabel->setGeometry((w - 300) / 2, petY + kSpriteSize + 6, 300, 30);
     // Hygiene display sits just above the actionsBox
-    hygieneDisplay->setGeometry((w - 300) / 2, h - 218, w-16, 38);
-    // actionsBox and backBtn stretch full width with 8px side margins
-    actionsBox->setGeometry(8, h - 178, w - 16, 120);
-    backBtn->setGeometry(8, h - 52, w - 16, 44);
+    hygieneDisplay->setGeometry((w - 300) / 2, h - 170, w-16, 38);
+    // actionsBox stretches full width with 8px side margins
+    actionsBox->setGeometry(8, h - 130, w - 16, 122);
     placeTools();
 }
 
@@ -196,7 +185,7 @@ void Groom::placeTools() {
     int iconW = 64, spacing = 18;
     int totalW = 4 * iconW + 3 * spacing;
     int startX = (w - totalW) / 2;
-    int y = h - 148;   // centered inside actionsBox
+    int y = h - 88;   // centered inside actionsBox
 
     QList<GroomItem*> tools = {brushTool, batheTool, trimTool, teethTool};
     for (int i = 0; i < tools.size(); i++) {
@@ -206,7 +195,6 @@ void Groom::placeTools() {
         tools[i]->raise();
     }
     actionsBox->lower();   // keep box behind tools
-    backBtn->raise();
 }
 
 void Groom::paintEvent(QPaintEvent *e) {

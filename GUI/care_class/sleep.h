@@ -19,7 +19,6 @@ public:
     explicit Sleep(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateSleepDisplay();
-    QPushButton *backBtn;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

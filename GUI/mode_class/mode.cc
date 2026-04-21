@@ -222,7 +222,41 @@ void Mode::refreshDisplay() {
     updateStatBars();
     updateIndicators();
     petNameLabel->setText(player->getPet().name());
-    character->syncWithPlayer(*player, petType);
+
+    // If a hat is equipped, show hat GIF; otherwise show idle
+    QString hat = player->getPet().hat();
+    if (!hat.isEmpty()) {
+        // Build hat GIF path matching gear.cc convention
+        QString folder, prefix;
+        QString type = player->getPet().pet_type();
+        if      (type == "ElectricAxolotl") { folder = "axolotl";   prefix = "axolotl";   }
+        else if (type == "SeelCat")         { folder = "seelcat";   prefix = "seelcat";   }
+        else                                { folder = "dragondog"; prefix = "dragondog"; }
+
+        QString stage = player->getPet().age_group();
+        QString infix = (stage == "Teen") ? "teen_" : (stage == "Adult") ? "adult_" : "";
+        QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
+                            .arg(folder, prefix, infix, hat);
+
+        QMovie *movie = new QMovie(path, QByteArray(), character);
+        if (movie->isValid()) {
+            QLabel *disp = character->findChild<QLabel *>();
+            if (disp) {
+                if (disp->movie()) disp->movie()->stop();
+                disp->setMovie(movie);
+                movie->start();
+            } else {
+                delete movie;
+                character->syncWithPlayer(*player, petType);
+            }
+        } else {
+            delete movie;
+            character->syncWithPlayer(*player, petType);
+        }
+    } else {
+        character->syncWithPlayer(*player, petType);
+    }
+
     layoutWidgets();
 }
 

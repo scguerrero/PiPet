@@ -127,16 +127,6 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     connect(drinkItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
     connect(pizzaItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
 
-    backBtn = new QPushButton("Back to Care Hub!", this);
-    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
-    backBtn->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
-        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4A71DB, stop:1 #4850DB); })");
-
     // ── Food tray group box (visual backdrop only — icons are free children) ─
     actionsBox = new QGroupBox("Drag A food to Feed your PiPet!", this);
     actionsBox->setStyleSheet(
@@ -174,10 +164,9 @@ void Feed::resizeEvent(QResizeEvent *e) {
     int petX = (w - kSpriteSize) / 2;
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
     // Hunger display sits just above the actionsBox
-    hungerDisplay->setGeometry((w - 300) / 2, h - 218, 300, 38);
-    // actionsBox and backBtn stretch full width with 8px side margins
-    actionsBox->setGeometry(8, h - 178, w - 16, 120);
-    backBtn->setGeometry(8, h - 52, w - 16, 44);
+    hungerDisplay->setGeometry((w - 300) / 2, h - 170, 300, 38);
+    // actionsBox stretches full width with 8px side margins
+    actionsBox->setGeometry(8, h - 130, w - 16, 122);
     placeIcons();
 }
 
@@ -186,7 +175,7 @@ void Feed::placeIcons() {
     int iconW = 64, spacing = 18;
     int totalW = 4 * iconW + 3 * spacing;
     int startX = (w - totalW) / 2;
-    int y = h - 148;   // centered inside actionsBox
+    int y = h - 88;   // centered inside actionsBox
     QList<FoodItem*> icons = {appleItem, boneItem, drinkItem, pizzaItem};
     for (int i = 0; i < icons.size(); i++) {
         int x = startX + i * (iconW + spacing);
@@ -195,7 +184,6 @@ void Feed::placeIcons() {
         icons[i]->raise();
     }
     actionsBox->lower();
-    backBtn->raise();
 }
 
 void Feed::paintEvent(QPaintEvent *e) {

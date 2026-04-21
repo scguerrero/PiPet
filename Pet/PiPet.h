@@ -15,7 +15,9 @@ class PiPet
 private:
     QString m_name = "Rasbaire";
     QString m_age_group = "Baby";
-    int m_days_old = 0;       // FIX: was uninitialized
+    QString m_pet_type = "DragonDog"; // "DragonDog" | "ElectricAxolotl" | "SeelCat"
+    QString m_hat = "";               // "" | "cowboy" | "crown" | "santa" | "wizard"
+    int m_days_old = 0;
 
     int m_hunger = 50;
     int m_energy = 50;
@@ -36,6 +38,8 @@ public:
     // Getters
     QString name();
     QString age_group();
+    QString pet_type();
+    QString hat();
     int days_old();
     int hunger();
     int energy();
@@ -50,6 +54,8 @@ public:
     // Setters
     void set_name(QString);
     void set_age_group(QString);
+    void set_pet_type(QString);
+    void set_hat(QString);
     void set_days_old(int);
     void set_hunger(int);
     void set_energy(int);

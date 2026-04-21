@@ -46,7 +46,6 @@ public:
     explicit Feed(Player *player, Character::PetType petType,
                   QWidget *parent = nullptr);
     void updateHungerDisplay();
-    QPushButton *backBtn;
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;

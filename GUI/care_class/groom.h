@@ -40,7 +40,6 @@ public:
     explicit Groom(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateHygieneDisplay();
-    QPushButton *backBtn;
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;

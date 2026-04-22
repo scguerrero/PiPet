@@ -1,7 +1,7 @@
 /*
  * feed.h - Feed screen with drag-and-drop food onto character GIF.
  * Uses standard QWidget mouse events — same as rest of codebase.
- * Author(s): Luke Cerwin Sasha Guerro
+ * Author(s): Luke Cerwin, Sasha Guerrero
  */
 #ifndef FEED_H
 #define FEED_H
@@ -12,11 +12,13 @@
 #include <QTimer>
 #include "../../Player/Player.h"
 #include "../character_class/character.h"
+
 struct Crumb {
     QPointF pos;
     QPointF vel;
     int     life;
 };
+
 // ── Draggable food icon ───────────────────────────────────────────────────
 class FoodItem : public QLabel {
     Q_OBJECT
@@ -36,8 +38,8 @@ signals:
 private:
     QPoint m_offset;
     bool   m_dragging = false;
-    // NOTE: spriteCenter() belongs to Feed, not here
 };
+
 // ── Feed widget ───────────────────────────────────────────────────────────
 class Feed : public QWidget
 {
@@ -46,19 +48,26 @@ public:
     explicit Feed(Player *player, Character::PetType petType,
                   QWidget *parent = nullptr);
     void updateHungerDisplay();
+
+    // Re-syncs the character sprite to the current pet type and equipped hat.
+    // Call this from game.cc each time the feed screen is opened.
+    void refreshCharacter();
+
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
     void showEvent  (QShowEvent   *e) override;
+
 private slots:
     void onFoodDropped(FoodItem *icon, QPoint globalPos);
     void tickCrumbs();
+
 private:
     Player             *player;
     Character::PetType  petType;
     QPixmap             m_bg;
     Character *character;
-    QPoint spriteCenter()    const;   // single source of truth for pet centre
+    QPoint spriteCenter()    const;
     QRect  characterHitbox() const;
     FoodItem *appleItem;
     FoodItem *boneItem;
@@ -72,4 +81,5 @@ private:
     void spawnCrumbs(QPoint center);
     void applyHungerAction(int boost, const QString &message);
 };
+
 #endif // FEED_H

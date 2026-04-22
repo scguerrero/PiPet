@@ -16,13 +16,13 @@
 HatCard::HatCard(const QString &hatKey, const QString &iconPath, QWidget *parent)
     : QLabel(parent), m_key(hatKey)
 {
-    setFixedSize(80, 80);
+    setFixedSize(110, 110);
     setAlignment(Qt::AlignCenter);
     setScaledContents(false);
 
     QImage img(iconPath);
     if (!img.isNull()) {
-        QPixmap px = QPixmap::fromImage(img.scaled(56, 56,
+        QPixmap px = QPixmap::fromImage(img.scaled(80, 80,
                                          Qt::KeepAspectRatio,
                                          Qt::SmoothTransformation));
         setPixmap(px);
@@ -132,13 +132,16 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
         QScrollArea > QWidget > QWidget { background: transparent; }
     )");
 
+    // Enable touch AND left-mouse (finger) scrolling for touchscreen devices
     QScroller::grabGesture(m_scrollArea->viewport(), QScroller::TouchGesture);
+    QScroller::grabGesture(m_scrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+
 
     m_stripWidget = new QWidget();
     m_stripWidget->setStyleSheet("background: transparent;");
     m_stripLayout = new QHBoxLayout(m_stripWidget);
-    m_stripLayout->setContentsMargins(12, 8, 12, 8);
-    m_stripLayout->setSpacing(12);
+    m_stripLayout->setContentsMargins(8, 8, 8, 8);
+    m_stripLayout->setSpacing(22);
 
     for (auto &[key, icon] : kHats) {
         HatCard *card = new HatCard(key, icon, m_stripWidget);
@@ -165,7 +168,7 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
         connect(noneCard, &HatCard::clicked, this, &Gear::onHatSelected);
     }
 
-    m_stripWidget->setFixedHeight(96);
+    m_stripWidget->setFixedHeight(126);
     m_scrollArea->setWidget(m_stripWidget);
 
     // ── Particle overlay (transparent, drawn in paintEvent) ───────────────
@@ -186,19 +189,18 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
 // The pedestal sits roughly at the horizontal center, upper-middle of screen.
 // These proportions are tuned to match the reference screenshot — adjust if needed.
 QRect Gear::pedestalCharRect() const {
-    int w = width(), h = height();
     int cw = 160, ch = 160;
     // Horizontally centered; vertically the pedestal top is ~28% from top
-    int cx = (w - cw) / 2;
-    int cy = static_cast<int>(h * 0.28);
+    int cx = 160;
+    int cy = 190;
     return QRect(cx, cy, cw, ch);
 }
 
-// Yellow strip region: full width, near the bottom
 QRect Gear::stripRect() const {
-    int w = width(), h = height();
-    int stripH = 96, margin = 8;
-    return QRect(margin, h - stripH - margin, w - margin * 2, stripH);
+    int h = height();
+    int stripH = 126, margin = 8;
+    int visibleW = 3 * (110 + 22) + 55 + 16; // 3.5 cards across ~480px
+    return QRect(margin, h - stripH - margin, visibleW, stripH);
 }
 
 void Gear::layoutWidgets() {
@@ -212,8 +214,8 @@ void Gear::layoutWidgets() {
     // Hat strip
     QRect sr = stripRect();
     m_scrollArea->setGeometry(sr);
-    int totalW = m_hatCards.size() * (80 + 12) + 24;
-    m_stripWidget->setFixedWidth(qMax(totalW, sr.width()));
+    int totalW = m_hatCards.size() * (110 + 22) + 16;
+    m_stripWidget->setFixedWidth(totalW);
 
     // Particle overlay fills whole window
     m_particleOverlay->setGeometry(0, 0, w, h);
@@ -249,7 +251,7 @@ void Gear::onHatSelected(const QString &hatKey) {
     m_equippedHat = hatKey;
 
     // Update selection highlight
-    for (HatCard *card : m_hatCards)
+    for (HatCard *card : std::as_const(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
 
     // Swap GIF
@@ -337,7 +339,8 @@ void Gear::tickParticles() {
     int cx = pr.center().x();
     int cy = pr.center().y();
     auto *rng = QRandomGenerator::global();
-    for (QRect &r : m_particles) {
+    for (int i = 0; i < m_particles.size(); ++i) {
+        QRect &r = m_particles[i];
         int dx = (r.center().x() - cx) / 4 + rng->bounded(-2, 3);
         int dy = (r.center().y() - cy) / 4 + rng->bounded(-3, 1) - 1;
         r.translate(dx, dy);
@@ -369,7 +372,7 @@ void Gear::refresh(Character::PetType petType) {
 // Restore a hat silently (no particle burst) — used after loadGame()
 void Gear::restoreHat(const QString &hatKey) {
     m_equippedHat = hatKey;
-    for (HatCard *card : m_hatCards)
+    for (HatCard *card : std::as_const(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
     loadHatGif(hatKey);
 }

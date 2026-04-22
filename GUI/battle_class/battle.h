@@ -1,12 +1,15 @@
 /*
- * In single-player battle, the PiPet battles against the computer.
- * Added: dojo background + wood-chip particle effect on the training dummy.
+ * battle.h - Single-player battle screen.
+ * Added: dojo background + wood-chip particle effect on the training dummy,
+ *        player Character sprite shown in the arena (hat-aware).
  *
- * Author(s): Camden Gugel
+ * Author(s): Camden Gugel, Luke Cerwin
  */
 
 #ifndef BATTLE_H
 #define BATTLE_H
+#include "../character_class/character.h"
+#include "../../Player/Player.h"
 
 #include <QMainWindow>
 #include <QLabel>
@@ -27,13 +30,13 @@ enum class Move { Attack, Charge, Defend };
 
 // ── Wood chip particle ────────────────────────────────────────────────────
 struct WoodParticle {
-    QPointF pos;       // current position (widget-space, proportional → pixel in paintEvent)
-    QPointF vel;       // pixels per tick
-    float   rotation;  // degrees
-    float   rotSpeed;  // degrees per tick
-    float   alpha;     // 0-1
-    float   fade;      // alpha lost per tick
-    float   w, h;      // chip dimensions
+    QPointF pos;
+    QPointF vel;
+    float   rotation;
+    float   rotSpeed;
+    float   alpha;
+    float   fade;
+    float   w, h;
     QColor  color;
 };
 
@@ -44,12 +47,16 @@ class Battle : public QWidget
 public:
     explicit Battle(QWidget *parent = nullptr);
 
+    // Call this from game.cc each time the battle screen is opened.
+    // Syncs the character sprite to the correct pet type and equipped hat.
+    void setPlayerInfo(Player *player, Character::PetType petType);
+
 signals:
-    // Emitted when the player wins — game.cc connects to onBattleWon()
     void battleWon();
 
 protected:
     void paintEvent(QPaintEvent *e) override;
+
 
 private slots:
     void onAttack();
@@ -71,8 +78,6 @@ private:
     Move cpuMove();
     void refreshUI();
     void endGame();
-
-    // Spawns wood chips at the dummy head/chest area (red-annotated zone)
     void spawnWoodParticles(int count = 18);
 
     // Game state
@@ -84,16 +89,21 @@ private:
     bool playerSkip    = false;
     bool cpuSkip       = false;
 
-    static constexpr int maxHP        = 100;
-    static constexpr int baseAtk      = 20;
-    static constexpr int chargeBonus  = 10;
-    static constexpr int maxDefends   = 5;
+    static constexpr int maxHP       = 100;
+    static constexpr int baseAtk     = 20;
+    static constexpr int chargeBonus = 10;
+    static constexpr int maxDefends  = 5;
 
     // Widgets
     QProgressBar *playerBar, *cpuBar;
     QLabel       *playerHPLabel, *cpuHPLabel;
     QLabel       *resultLabel, *logLabel;
     QPushButton  *btnAttack, *btnCharge, *btnDefend, *btnRestart;
+
+    // Player character sprite — always set via setPlayerInfo() before use
+    Character          *m_character = nullptr;
+    Player             *m_player    = nullptr;
+    Character::PetType  m_petType;
 
     // Background
     QPixmap m_bg;

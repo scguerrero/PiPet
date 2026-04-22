@@ -46,7 +46,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     this->setLayout(root);
 
     // ── Title ─────────────────────────────────────────────────────────────
-    title = new QLabel("piPetBattle", this);
+    title = new QLabel("Wentz Dojo", this);
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet(
         "font-size: 22px; font-weight: bold; margin-bottom: 4px;"
@@ -69,19 +69,20 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         return l;
     };
 
-    hpGrid->addWidget(makeNameLabel("You",  Qt::AlignLeft),  0, 0);
-    hpGrid->addWidget(makeNameLabel("CPU",  Qt::AlignRight), 0, 2);
+    hpGrid->addWidget(makeNameLabel("Wing Chun",  Qt::AlignLeft),  0, 0);
+    hpGrid->addWidget(makeNameLabel("You",  Qt::AlignRight), 0, 2);
 
     playerBar = new QProgressBar();
     playerBar->setRange(0, maxHP); playerBar->setValue(maxHP);
     playerBar->setTextVisible(false);
-    playerBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
+    playerBar->setInvertedAppearance(true);
+    playerBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
 
     cpuBar = new QProgressBar();
     cpuBar->setRange(0, maxHP); cpuBar->setValue(maxHP);
     cpuBar->setTextVisible(false);
-    cpuBar->setInvertedAppearance(true);
-    cpuBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
+    cpuBar->setInvertedAppearance(false);
+    cpuBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
 
     hpGrid->addWidget(playerBar, 1, 0);
     hpGrid->addWidget(new QLabel("vs"), 1, 1, Qt::AlignCenter);
@@ -101,6 +102,14 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     root->addWidget(sep);
 
     // ── Result / log labels ───────────────────────────────────────────────
+    // Order: sep → logLabel (italic move log) → resultLabel (yellow outcome)
+    logLabel = new QLabel("");
+    logLabel->setAlignment(Qt::AlignCenter);
+    logLabel->setStyleSheet(
+        "font-size: 12px; font-style: italic; color: mistyrose;"
+        "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
+    root->addWidget(logLabel);
+
     resultLabel = new QLabel("Choose your move!");
     resultLabel->setAlignment(Qt::AlignCenter);
     resultLabel->setWordWrap(true);
@@ -109,12 +118,10 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         "background-color: rgba(0,0,0,150); border-radius: 6px; padding: 4px;");
     root->addWidget(resultLabel);
 
-    logLabel = new QLabel("");
-    logLabel->setAlignment(Qt::AlignCenter);
-    logLabel->setStyleSheet(
-        "font-size: 12px; font-style: italic; color: mistyrose;"
-        "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
-    root->addWidget(logLabel);
+    // ── Player character sprite (not in layout — rendered via paintEvent) ─
+    m_character = new Character(this);
+    m_character->setFixedSize(160, 160);
+    root->addWidget(m_character, 0, Qt::AlignRight);
 
     root->addStretch();
 
@@ -164,8 +171,46 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     connect(btnRestart, &QPushButton::clicked, this, &Battle::onRestart);
 
     refreshUI();
+}
 
+// ── Hat-aware player info sync ────────────────────────────────────────────
+// Called by game.cc each time the battle screen is opened. Syncs the
+// character sprite to the current pet type and equipped hat (if any).
 
+void Battle::setPlayerInfo(Player *player, Character::PetType petType) {
+    m_player  = player;
+    m_petType = petType;
+    if (!m_player) return;
+
+    QString hat = m_player->getPet().hat();
+    if (hat.isEmpty()) {
+        m_character->syncWithPlayer(*m_player, m_petType);
+        return;
+    }
+
+    QString folder, prefix;
+    QString type = m_player->getPet().pet_type();
+    if      (type == "ElectricAxolotl") { folder = "axolotl";   prefix = "axolotl";   }
+    else if (type == "SeelCat")         { folder = "seelcat";   prefix = "seelcat";   }
+    else                                { folder = "dragondog"; prefix = "dragondog"; }
+
+    QString stage = m_player->getPet().age_group();
+    QString infix = (stage == "Teen") ? "teen_" : (stage == "Adult") ? "adult_" : "";
+    QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
+                        .arg(folder, prefix, infix, hat);
+
+    QMovie *movie = new QMovie(path, QByteArray(), m_character);
+    if (movie->isValid()) {
+        QLabel *disp = m_character->findChild<QLabel *>();
+        if (disp) {
+            if (disp->movie()) disp->movie()->stop();
+            disp->setMovie(movie);
+            movie->start();
+            return;
+        }
+    }
+    delete movie;
+    m_character->syncWithPlayer(*m_player, m_petType);
 }
 
 // ── Background + particle paint ───────────────────────────────────────────
@@ -349,8 +394,8 @@ void Battle::playTurn(Move pm)
     // NORMAL TURN
     Move cm = cpuMove();
     log = QString("You: %1  |  CPU: %2")
-              .arg(pm == Move::Attack ? "Attack " : pm == Move::Charge ? "Charge " : "Defend ")
-              .arg(cm == Move::Attack ? "Attack " : cm == Move::Charge ? "Charge " : "Defend ");
+              .arg(pm == Move::Attack ? "Attack " : pm == Move::Charge ? "Charge " : "Defend ",
+                   cm == Move::Attack ? "Attack " : cm == Move::Charge ? "Charge " : "Defend ");
 
     if (pm == Move::Attack && cm == Move::Attack) {
         playerHP -= cpuAtk;
@@ -435,6 +480,8 @@ void Battle::endGame()
         resultLabel->setText("Double KO — it's a draw!");
     else if (playerHP <= 0)
         resultLabel->setText("You were defeated! CPU wins.");
-    else
+    else {
         resultLabel->setText("You won!");
+        emit battleWon();
+    }
 }

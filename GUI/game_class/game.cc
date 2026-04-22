@@ -202,6 +202,7 @@ void Game::open_mode() {
 void Game::open_feed() {
     showHomeOnly(true);
     b_save_mode->hide();
+    feed->refreshCharacter();      // sync hat gif before showing screen
     feed->updateHungerDisplay();
     pages->setCurrentIndex(3);
 }
@@ -209,6 +210,7 @@ void Game::open_feed() {
 void Game::open_groom() {
     showHomeOnly(true);
     b_save_mode->hide();
+    groom->refreshCharacter();     // sync hat gif before showing screen
     groom->updateHygieneDisplay();
     pages->setCurrentIndex(4);
 }
@@ -216,6 +218,7 @@ void Game::open_groom() {
 void Game::open_sleep() {
     showHomeOnly(true);
     b_save_mode->hide();
+    sleep->refreshCharacter();     // sync hat gif before showing screen
     sleep->updateSleepDisplay();
     pages->setCurrentIndex(5);
 }
@@ -229,6 +232,7 @@ void Game::open_train() {
 void Game::open_battle() {
     showHomeOnly(true);
     b_save_mode->hide();
+    battle->setPlayerInfo(player, currentPetType);  // sync sprite + hat
     pages->setCurrentIndex(7);
 }
 
@@ -242,15 +246,13 @@ void Game::open_gear() {
 // ── Achievement trigger slots ─────────────────────────────────────────────
 
 void Game::onBattleWon() {
-    player->battleWins++;
-    showAchievementPopup(player->achievements.onBattleWon(player->battleWins));
+    showAchievementPopup(player->achievements.onBattleWon(++m_totalBattleWins));
 }
 
 void Game::onFedBone() {
     showAchievementPopup(
         player->achievements.onFedBone(player->getPet().pet_type()));
 }
-
 
 void Game::onAgeChanged(const QString &ageGroup) {
     showAchievementPopup(player->achievements.onAgeChanged(ageGroup));
@@ -405,25 +407,7 @@ void Game::onCreateDone() {
         player->setPet(p);
     }
 
-    pages->removeWidget(feed);  delete feed;
-    pages->removeWidget(groom); delete groom;
-    pages->removeWidget(sleep); delete sleep;
-
-    feed  = new Feed(player, currentPetType);
-    groom = new Groom(player, currentPetType);
-    sleep = new Sleep(player, currentPetType);
-
-    pages->insertWidget(3, feed);
-    pages->insertWidget(4, groom);
-    pages->insertWidget(5, sleep);
-
-    connect(sleep, &Sleep::tuckInUsed,       this, &Game::onTuckIn);
-    connect(sleep, &Sleep::bedTimeStoryUsed, this, &Game::onBedTimeStory);
-
-    mode->feedBubble->installEventFilter(this);
-    mode->groomBubble->installEventFilter(this);
-    mode->sleepBubble->installEventFilter(this);
-
+    rebuildCareScreens();
     open_mode();
 }
 
@@ -450,6 +434,8 @@ bool Game::loadGame() {
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
     read(loadDoc.object());
 
+    // Resolve the pet type from the saved string so every screen gets the
+    // correct sprite — not the DragonDog default from construction time.
     QString typeStr = player->getPet().pet_type();
     if      (typeStr == "ElectricAxolotl") currentPetType = Character::ElectricAxolotl;
     else if (typeStr == "SeelCat")         currentPetType = Character::SeelCat;
@@ -457,6 +443,10 @@ bool Game::loadGame() {
 
     mode->setPetType(currentPetType);
     gear->refresh(currentPetType);
+
+    // Rebuild care screens so they hold the correct petType — without this
+    // they keep the DragonDog default they were constructed with.
+    rebuildCareScreens();
 
     QString savedHat = player->getPet().hat();
     if (!savedHat.isEmpty())
@@ -476,6 +466,32 @@ bool Game::saveGame() {
     msg.exec();
     saveFile.write(QJsonDocument(toJson()).toJson());
     return true;
+}
+
+// ── rebuildCareScreens ────────────────────────────────────────────────────
+// Destroys and recreates Feed, Groom, and Sleep with the current petType.
+// Called from both onCreateDone() and loadGame() so the correct sprite is
+// always used regardless of whether this is a new game or a loaded save.
+
+void Game::rebuildCareScreens() {
+    pages->removeWidget(feed);  delete feed;
+    pages->removeWidget(groom); delete groom;
+    pages->removeWidget(sleep); delete sleep;
+
+    feed  = new Feed(player, currentPetType);
+    groom = new Groom(player, currentPetType);
+    sleep = new Sleep(player, currentPetType);
+
+    pages->insertWidget(3, feed);
+    pages->insertWidget(4, groom);
+    pages->insertWidget(5, sleep);
+
+    connect(sleep, &Sleep::tuckInUsed,       this, &Game::onTuckIn);
+    connect(sleep, &Sleep::bedTimeStoryUsed, this, &Game::onBedTimeStory);
+
+    mode->feedBubble->installEventFilter(this);
+    mode->groomBubble->installEventFilter(this);
+    mode->sleepBubble->installEventFilter(this);
 }
 
 void Game::setUtilityStyle(QPushButton &button) {

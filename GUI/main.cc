@@ -8,6 +8,10 @@
 #include "game_class/game.h"
 #include <QApplication>
 #include <QCoreApplication>
+#include <QSplashScreen>
+#include <QTimer>
+#include <QEventLoop>
+#include <QPropertyAnimation>
 
 int main(int argc, char**argv)
 {
@@ -104,12 +108,31 @@ int main(int argc, char**argv)
         background: none;
     }
     )");
+    // ── Boot splash ──────────────────────────────────────────────────────────
+    QWidget splash;
+    splash.setFixedSize(480, 640);
+    splash.setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
+    QLabel *splashImg = new QLabel(&splash);
+    QPixmap splashPx(":/images/Backgrounds/bootscreen.png");
+    splashImg->setPixmap(splashPx.scaled(480, 640, Qt::KeepAspectRatio,
+                                         Qt::SmoothTransformation));
+    splashImg->setGeometry(0, 0, 480, 640);
+    splash.show();
+    app.processEvents();
+
+    // Load and show the game window while splash is still visible
     Game game;
     game.loadGame();
     game.setFixedSize(480, 640);
     game.show();
-    //game.showFullScreen();
+    app.processEvents();
+
+    // Hold for 3 seconds then just close — game is already underneath
+    QEventLoop loop;
+    QTimer::singleShot(3000, &loop, &QEventLoop::quit);
+    loop.exec();
+    splash.close();
 
     return app.exec();
 }

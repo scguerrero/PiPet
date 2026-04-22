@@ -13,7 +13,6 @@ RESOURCES += \
 HEADERS += \
     GUI/game_class/game.h \
     GUI/gear_class/gear.h \
-    GUI/gear_class/item.h \
     GUI/start_class/start.h \
     GUI/create_class/create.h \
     GUI/mode_class/mode.h \
@@ -35,7 +34,6 @@ HEADERS += \
 
 SOURCES += \
     GUI/gear_class/gear.cc \
-    GUI/gear_class/item.cc \
     GUI/main.cc \
     GUI/game_class/game.cc \
     GUI/start_class/start.cc \

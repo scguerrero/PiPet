@@ -1,6 +1,6 @@
 /*
  * create.cc - Pet creation screen with animated GIF gallery.
- * Author(s): Sasha C. Guerrero, Luke Cerwin
+ * Author(s): Luke Cerwin, Sasha C. Guerrero
  */
 #include "create.h"
 #include <QPainter>

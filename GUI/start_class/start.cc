@@ -1,6 +1,6 @@
 /*
  * start.cc - Start/title screen with title_screen.jpg background.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #include "start.h"
 #include <QPainter>

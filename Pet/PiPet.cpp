@@ -39,6 +39,8 @@ PiPet::~PiPet() {}
 // Getters
 QString PiPet::name() { return m_name; }
 QString PiPet::age_group() { return m_age_group; }
+QString PiPet::pet_type() { return m_pet_type; }
+QString PiPet::hat() { return m_hat; }
 int PiPet::days_old() { return m_days_old; }
 int PiPet::hunger() { return m_hunger; }
 int PiPet::energy() { return m_energy; }
@@ -54,6 +56,8 @@ bool PiPet::creation_flag() { return m_been_created; }
 // Setters
 void PiPet::set_name(QString name) { m_name = name; }
 void PiPet::set_age_group(QString age_group) { m_age_group = age_group; }
+void PiPet::set_pet_type(QString t) { m_pet_type = t; }
+void PiPet::set_hat(QString h) { m_hat = h; }
 void PiPet::set_days_old(int days_old) { m_days_old = days_old; }
 void PiPet::set_hunger(int hunger) { m_hunger = hunger; }
 void PiPet::set_energy(int energy) { m_energy = energy; }
@@ -91,6 +95,14 @@ PiPet PiPet::fromJSON(const QJsonObject &json) {
     // pet's age group
     if (const QJsonValue v = json["Age Group"]; v.isString())
         pet.set_age_group(v.toString());
+
+    // pet type (DragonDog / ElectricAxolotl / SeelCat)
+    if (const QJsonValue v = json["Pet Type"]; v.isString())
+        pet.set_pet_type(v.toString());
+
+    // equipped hat
+    if (const QJsonValue v = json["Hat"]; v.isString())
+        pet.set_hat(v.toString());
 
     // how old the pet is in days
     if (const QJsonValue v = json["Days Old"]; v.isDouble())
@@ -145,6 +157,8 @@ QJsonObject PiPet::toJSON() const {
     QJsonObject json;
     json["Name"] = m_name;
     json["Age Group"] = m_age_group;
+    json["Pet Type"] = m_pet_type;
+    json["Hat"] = m_hat;
     json["Days Old"] = m_days_old;
     json["Hunger"] = m_hunger;
     json["Energy"] = m_energy;

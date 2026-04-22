@@ -3,7 +3,7 @@
  * Item objects can be viewed in Gear mode.
  * Players must open a Lootbox to acquire an Item.
  *
- * Author: Sasha C. Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 
 #include "item.h"

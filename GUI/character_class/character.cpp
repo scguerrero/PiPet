@@ -1,6 +1,8 @@
 /*
  * character.cpp - Character display widget implementation.
- * Author(s): Luke Cerwin Sasha Guerrero
+ * Fixed: removed dynamic resize from switchTo() — widget stays at
+ * whatever setFixedSize() was called with so hitboxes are reliable.
+ * Author(s): Luke Cerwin, Sasha Guerrero
  */
 #include "character.h"
 
@@ -9,7 +11,6 @@ Character::Character(QWidget *parent)
 {
     display = new QLabel(this);
     display->setAlignment(Qt::AlignCenter);
-    display->setFixedSize(160, 160);
     display->setScaledContents(true);
     display->setStyleSheet("QLabel { background-color: transparent; }");
 
@@ -28,9 +29,15 @@ Character::Character(QWidget *parent)
     sc_teen_normal  = new QMovie(":/images/Sprites/pets/seelcat/seelcat_teen_idle.gif",      QByteArray(), this);
     sc_adult_normal = new QMovie(":/images/Sprites/pets/seelcat/seelcat_adult_idle.gif",     QByteArray(), this);
     sc_sleepy       = new QMovie(":/images/Sprites/pets/seelcat/seelcat_sleep.gif",          QByteArray(), this);
+
     playIdle();
 }
 
+void Character::resizeEvent(QResizeEvent *e) {
+    QWidget::resizeEvent(e);
+    // Keep display label filling the full widget — GIF scales to fit
+    display->setGeometry(0, 0, width(), height());
+}
 
 void Character::setPetType(PetType type) {
     currentType = type;
@@ -44,7 +51,7 @@ void Character::setStageFromString(const QString &age_group) {
 
 void Character::updateEmotionFromStats(int energyLevel, int hungerLevel) {
     Q_UNUSED(hungerLevel);
-    currentEmotion = (energyLevel < 30) ? Sleepy : Normal;
+    currentEmotion = (energyLevel < 25) ? Sleepy : Normal;
     playIdle();
 }
 
@@ -74,7 +81,6 @@ QMovie *Character::currentMovie() {
         if (currentStage == "Adult") return ax_adult_normal;
         return ax_baby_normal;
     }
-    // SeelCat
     if (currentStage == "Teen")  return sc_teen_normal;
     if (currentStage == "Adult") return sc_adult_normal;
     return sc_baby_normal;
@@ -84,36 +90,15 @@ void Character::switchTo(QMovie *movie) {
     if (!movie) return;
     if (display->movie() == movie) return;
     if (display->movie()) display->movie()->stop();
-
     display->setMovie(movie);
     movie->start();
-
-    // One-shot: resize widget to GIF's actual frame size once first frame is ready
-    connect(movie, &QMovie::frameChanged, this, [this, movie](int) {
-        QSize gifSize = movie->currentPixmap().size();
-        if (gifSize.isValid()) {
-            display->setGeometry(0, 0, gifSize.width(), gifSize.height());
-            setFixedSize(gifSize);
-        }
-        disconnect(movie, &QMovie::frameChanged, this, nullptr);        
-    });
+    // No dynamic resize — display fills widget via resizeEvent
 }
+
 QRect Character::spriteRect() const {
-    if (!display || display->pixmap(Qt::ReturnByValue).isNull())
-        return rect();
-
-    QSize spriteSize = display->pixmap(Qt::ReturnByValue).size();
-    spriteSize.scale(size(), Qt::KeepAspectRatio);
-
-    QPoint topLeft(
-        (width()  - spriteSize.width())  / 2,
-        (height() - spriteSize.height()) / 2
-        );
-
-    return QRect(topLeft, spriteSize);
+    return QRect(0, 0, width(), height());
 }
+
 QPoint Character::spriteCenter() const {
-    return mapToParent(spriteRect().center());
+    return mapToParent(QPoint(width() / 2, height() / 2));
 }
-
-

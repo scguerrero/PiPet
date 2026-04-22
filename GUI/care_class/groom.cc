@@ -5,7 +5,8 @@
  */
 #include "groom.h"
 #include <QPainter>
-#include <QRandomGenerator>
+#include <QGroupBox>
+static constexpr int kSpriteSize = 160;
 
 // ── GroomItem ──────────────────────────────────────────────────────────────
 GroomItem::GroomItem(const QString &iconPath, const QString &name,
@@ -104,9 +105,10 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     m_bg.load(":/images/Backgrounds/bathroom_16bit.png");
 
     character = new Character(this);
-    character->setFixedSize(160, 160);
+    character->setFixedSize(kSpriteSize, kSpriteSize);
     character->syncWithPlayer(*player, petType);
 
+    // ── Hygiene display — sits above the actionsBox ───────────────────────
     hygieneDisplay = new QLabel(this);
     hygieneDisplay->setAlignment(Qt::AlignCenter);
     hygieneDisplay->setWordWrap(true);
@@ -116,19 +118,29 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     hygieneDisplay->setFixedWidth(300);
     updateHygieneDisplay();
 
-    hintLabel = new QLabel("Drag a tool to spot 1 then spot 2!", this);
+    // ── Hint label — pops up below the character, hidden by default ───────
+    hintLabel = new QLabel(this);
     hintLabel->setAlignment(Qt::AlignCenter);
     hintLabel->setStyleSheet(
         "QLabel { background-color: rgba(0,0,0,140); border-radius: 6px;"
         "padding: 4px; color: #ffd700; font-size: 13px; }");
     hintLabel->setFixedWidth(300);
+    hintLabel->hide();
+
+    // ── Hint auto-hide timer (3 seconds) ──────────────────────────────────
+    m_hintTimer = new QTimer(this);
+    m_hintTimer->setSingleShot(true);
+    m_hintTimer->setInterval(3000);
+    connect(m_hintTimer, &QTimer::timeout, this, [this]() {
+        hintLabel->hide();
+    });
 
     brushTool = new GroomItem(":/images/Sprites/pets/icons/comb.png",
                               "Brush",       this);
     batheTool = new GroomItem(":/images/Sprites/pets/icons/soap.png",
-                              "Bathe",       this);
+                              "Scrub Scrub!",       this);
     trimTool  = new GroomItem(":/images/Sprites/pets/icons/showerhead.png",
-                              "Trim Nails",  this);
+                              "Rinsed off!",            this);
     teethTool = new GroomItem(":/images/Sprites/pets/icons/toothbrush.png",
                               "Brush Teeth", this);
 
@@ -137,35 +149,34 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     connect(trimTool,  &GroomItem::dropped, this, &Groom::onToolDropped);
     connect(teethTool, &GroomItem::dropped, this, &Groom::onToolDropped);
 
-    backBtn = new QPushButton("Back to Care Hub!", this);
-    backBtn->setIcon(QIcon(":/images/Assets/left.png"));
-    backBtn->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 8px; font: bold; color: mistyrose; }
-        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-            stop:0 #4A71DB, stop:1 #4850DB); })");
-
     m_resetTimer = new QTimer(this);
     m_resetTimer->setSingleShot(true);
     m_resetTimer->setInterval(1800);
     connect(m_resetTimer, &QTimer::timeout, this, &Groom::resetSpots);
+
+    // ── Tool tray group box (visual backdrop only — tools are free children) ─
+    actionsBox = new QGroupBox("Tools", this);
+    actionsBox->setStyleSheet(
+        "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
+        "color: mistyrose; margin-top: 30px; }"
+        "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
+        "subcontrol-position: top center; padding: 0 4px; }");
+    actionsBox->lower();
 }
 
 void Groom::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petSize = 150;
-
-    // Center character in upper half of screen
-    int petX = (w - petSize) / 2;
     int petY = 40;
-    character->setGeometry(petX, petY, petSize, petSize);
-
-    hygieneDisplay->setGeometry((w - 300) / 2, petY + petSize + 6,  300, 38);
-    hintLabel->setGeometry     ((w - 300) / 2, petY + petSize + 50, 300, 30);
-    backBtn->setGeometry((w - 220) / 2, h - 55, 220, 40);
+    int petX = (w - kSpriteSize) / 2;
+    // FIX: set character geometry here so topSpot/bottomSpot are always correct
+    character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
+    // Hint label floats just below the character GIF
+    hintLabel->setGeometry((w - 300) / 2, petY + kSpriteSize + 6, 300, 30);
+    // Hygiene display sits just above the actionsBox
+    hygieneDisplay->setGeometry((w - 300) / 2, h - 170, w-16, 38);
+    // actionsBox stretches full width with 8px side margins
+    actionsBox->setGeometry(8, h - 130, w - 16, 122);
     placeTools();
 }
 
@@ -174,7 +185,7 @@ void Groom::placeTools() {
     int iconW = 64, spacing = 18;
     int totalW = 4 * iconW + 3 * spacing;
     int startX = (w - totalW) / 2;
-    int y = h - 115;
+    int y = h - 88;   // centered inside actionsBox
 
     QList<GroomItem*> tools = {brushTool, batheTool, trimTool, teethTool};
     for (int i = 0; i < tools.size(); i++) {
@@ -183,7 +194,7 @@ void Groom::placeTools() {
         tools[i]->homePos = QPoint(x, y);
         tools[i]->raise();
     }
-    backBtn->raise();
+    actionsBox->lower();   // keep box behind tools
 }
 
 void Groom::paintEvent(QPaintEvent *e) {
@@ -218,7 +229,6 @@ void Groom::paintEvent(QPaintEvent *e) {
 // ensuring both are always within the visible widget area
 QRect Groom::topSpot() const {
     QRect pet = character->geometry();
-    // Spot 1 — upper quarter of character (head area)
     int cx = pet.center().x();
     int cy = pet.top() + (pet.height() / 4);
     return QRect(cx - 28, cy - 28, 56, 56);
@@ -226,11 +236,17 @@ QRect Groom::topSpot() const {
 
 QRect Groom::bottomSpot() const {
     QRect pet = character->geometry();
-    // Spot 2 — lower quarter of character (body area)
     // FIX: was pet.bottom() - 22 which could go below visible area
     int cx = pet.center().x();
     int cy = pet.top() + (pet.height() * 3 / 4);
     return QRect(cx - 28, cy - 28, 56, 56);
+}
+
+void Groom::showHint(const QString &text) {
+    hintLabel->setText(text);
+    hintLabel->show();
+    hintLabel->raise();
+    m_hintTimer->start();   // restart — resets to 3 s on every new hint
 }
 
 void Groom::onToolDropped(GroomItem *tool, QPoint globalPos) {
@@ -244,10 +260,10 @@ void Groom::onToolDropped(GroomItem *tool, QPoint globalPos) {
 
     if (!topDone && topSpot().contains(local)) {
         topDone = true;
-        hintLabel->setText("Spot 1 done!  Now hit Spot 2!");
+        showHint("Spot 1 done!  Now hit Spot 2!");
     } else if (!bottomDone && bottomSpot().contains(local)) {
         bottomDone = true;
-        hintLabel->setText("Spot 2 done!  Now hit Spot 1!");
+        showHint("Spot 2 done!  Now hit Spot 1!");
     }
 
     if (topDone && bottomDone) {
@@ -255,7 +271,9 @@ void Groom::onToolDropped(GroomItem *tool, QPoint globalPos) {
         topDone = bottomDone = false;
         activeTool = nullptr;
         m_resetTimer->start();
-        hintLabel->setText("Drag a tool to spot 1 then spot 2!");
+        // No hint shown here — hygieneDisplay already gives feedback
+        hintLabel->hide();
+        m_hintTimer->stop();
     }
 
     tool->move(tool->homePos);

@@ -46,10 +46,10 @@ public:
     explicit Feed(Player *player, Character::PetType petType,
                   QWidget *parent = nullptr);
     void updateHungerDisplay();
-    QPushButton *backBtn;
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
+    void showEvent  (QShowEvent   *e) override;
 private slots:
     void onFoodDropped(FoodItem *icon, QPoint globalPos);
     void tickCrumbs();
@@ -65,6 +65,7 @@ private:
     FoodItem *drinkItem;
     FoodItem *pizzaItem;
     void placeIcons();
+    QGroupBox  *actionsBox;
     QLabel *hungerDisplay;
     QList<Crumb> m_crumbs;
     QTimer      *m_crumbTimer;

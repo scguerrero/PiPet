@@ -1,7 +1,7 @@
 /*
  * sleep.h - Sleep screen with character GIF.
  * Cuddle replaces Brush Teeth.
- * Author(s): Luke Cerwin Sasha Guerro
+ * Author(s): Luke Cewin & Sasha Guerrero
   */
 #ifndef SLEEP_H
 #define SLEEP_H
@@ -19,7 +19,10 @@ public:
     explicit Sleep(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateSleepDisplay();
-    QPushButton *backBtn;
+
+signals:
+    void tuckInUsed();                    // → Beauty Sleep achievement
+    void bedTimeStoryUsed(int totalUsed); // → Bookworm achievement
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -46,6 +49,8 @@ private:
     QPushButton *tuckInBtn;
 
     QLabel *sleepDisplay;
+
+    int m_bedTimeStoryCount = 0; // persists for session, Bookworm needs 10
 
     void applySleepAction(int boost, const QString &message);
 };

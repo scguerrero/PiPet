@@ -119,7 +119,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     // ── Player character sprite ───────────────────────────────────────────
     m_character = new Character(this);
     m_character->setFixedSize(160, 160);
-    root->addWidget(m_character, 0, Qt::AlignCenter);
+    root->addWidget(m_character, 0, Qt::AlignRight);
 
     root->addStretch();
 

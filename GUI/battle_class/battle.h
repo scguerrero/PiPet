@@ -99,10 +99,10 @@ private:
     QLabel       *resultLabel, *logLabel;
     QPushButton  *btnAttack, *btnCharge, *btnDefend, *btnRestart;
 
-    // Player character sprite — synced via setPlayerInfo()
+    // Player character sprite — always set via setPlayerInfo() before use
     Character          *m_character = nullptr;
     Player             *m_player    = nullptr;
-    Character::PetType  m_petType   = Character::DragonDog;
+    Character::PetType  m_petType;
 
     // Background
     QPixmap m_bg;

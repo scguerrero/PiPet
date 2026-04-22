@@ -260,16 +260,21 @@ void Mode::updateIndicators() {
     }
 }
 
+// ── About page —──────────────────
 void Mode::openAbout() {
     PiPet pet = player->getPet();
+
+    // Build a QDialog instead of QMessageBox so we can paint a background
     QDialog about(this);
     about.setWindowTitle("About piPet");
-    about.setFixedSize(400, 560);
+    about.setFixedSize(400, 460);
 
+    // Outer layout
     QVBoxLayout *dlgLayout = new QVBoxLayout(&about);
     dlgLayout->setContentsMargins(20, 20, 20, 20);
     dlgLayout->setSpacing(0);
 
+    // Text label
     QLabel *infoLabel = new QLabel(&about);
     infoLabel->setWordWrap(true);
     infoLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -281,35 +286,33 @@ void Mode::openAbout() {
     int elapsed = timekeeper->elapsed_time();
 
     infoLabel->setText(QString(
-        "<b style='color:#ffd700;font-size:16px;'>piPet</b><br>"
-        "<span style='color:#aaa;'>Digital Pet Game</span><br><br>"
-        "<b style='color:#ffd700;'>── Session ──</b><br>"
-        "Current Time: %1<br>Time Played:  %2s<br><br>"
-        "<b style='color:#ffd700;'>── Pet ──</b><br>"
-        "Name: %3  Age: %4  Days: %5<br><br>"
-        "<b style='color:#ffd700;'>── Condition ──</b><br>"
-        "Hunger: %6  Energy: %7  Happiness: %8<br>"
-        "Strength: %9  Hygiene: %10  Intelligence: %11<br><br>"
-        "<b style='color:#ffd700;'>── Battle ──</b><br>"
-        "Attack: %12  Defense: %13  HP: %14<br><br>"
-        "<span style='color:#aaa;font-size:11px;'>"
-        "Luke C. · Sasha G. · Camden G. · Tanya M. · Cesar R.</span>"
-    )
-    .arg(currentTime,
-         QString::number(elapsed),
-         pet.name(),
-         pet.age_group(),
-         QString::number(pet.days_old()),
-         QString::number(pet.hunger()),
-         QString::number(pet.energy()),
-         QString::number(pet.happiness()),
-         QString::number(pet.strength()))
-    .arg(QString::number(pet.hygiene()),
-         QString::number(pet.intelligence()),
-         QString::number(pet.attack()),
-         QString::number(pet.defense()),
-         QString::number(pet.hit_points())));
+                           "<b style='color:#ffd700;font-size:16px;'>piPet About</b><br><br>"
+                           "<b style='color:#ffd700;'>── Session ──</b><br>"
+                           "Time Played:  %1s<br><br>"
+                           "<b style='color:#ffd700;'>── Pet ──</b><br>"
+                           "Name:         %2<br>"
+                           "Age Group:    %3<br>"
+                           "Days Old:     %4<br><br>"
+                           "<b style='color:#ffd700;'>── Condition ──</b><br>"
+                           "Hunger:     %5 / 100<br>"
+                           "Energy:     %6 / 100<br>"
+                           "Happiness:  %7 / 100<br>"
+                           "Hygiene: %8  Strength: %9   Intellect: %10<br><br>"
+                           "<b style='color:#ffd700;'>── Battle Stats ──</b><br>"
+                           "Attack: %12  Defense: %13<br><br>"
+                           "<span style='color:#aaa;font-size:11px;'>"
+                           "Luke C. · Sasha G. · Cesar R.<br>"
+                           "Camden G. · Tanya M.</span>"
+                           )
+                           .arg(elapsed)
+                           .arg(pet.name()) .arg(pet.age_group())
+                           .arg(pet.days_old())    .arg(pet.hunger())
+                           .arg(pet.energy())      .arg(pet.happiness())
+                           .arg(pet.hygiene())     .arg(pet.strength())
+                           .arg(pet.intelligence()) .arg(pet.attack())
+                           .arg(pet.defense()));
 
+    // Close button
     QPushButton *closeBtn = new QPushButton("Close", &about);
     closeBtn->setFixedHeight(36);
     closeBtn->setStyleSheet(
@@ -322,5 +325,6 @@ void Mode::openAbout() {
 
     dlgLayout->addWidget(infoLabel, 1);
     dlgLayout->addWidget(closeBtn,  0);
+
     about.exec();
 }

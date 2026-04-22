@@ -9,9 +9,8 @@
 #include <QtWidgets>
 #include "pipatterns.h"
 #include "../../Pet/PiPet.h"
-//#include "minigame_2.h"
-//#include "minigame_3.h"
-
+#include "pidash.h"
+#include "picatcher.h"
 
 class Train : public QWidget
 {
@@ -19,28 +18,31 @@ class Train : public QWidget
 public:
     explicit Train(PiPet* pet, QWidget *parent = nullptr);
     QPushButton *b_back;
-
-private slots:
-    void openMenuPage(); // Page 0 is the Menu Page
-    void openPiPatterns(); // Page 1 is PiPatterns
-
-    //void onMiniGame2(); // triggered by the Minigame 2 button
-    //void onTrackRushFinished(int finalScole, int xpEarned);
-    //void onMiniGame3();                                      // ← NEW
-    //void onSkySnackFinished(int finalScore, int xpEarned);   // ← NEW
-
 private:
-    PiPet* m_pet = nullptr;
+    QVBoxLayout *main_layout;
+    PiPet* m_pet;
 
-    QStackedWidget *m_stack; // page 0 = menu, page 1 = minigame
-    QWidget  *m_menuPage; // holds the button layout
+    // QStackedWidget contains TrainHub, PiPatterns, PiDash, and PiCatcher
+    QStackedWidget *stack;
+    QWidget *trainHub;
+    PiPatterns *pipatterns; // Mini-game 1
+    piDash *m_trackRush = nullptr; // Mini-game 2
+    piCatcher *m_skySnack = nullptr; // Mini-game 3
 
-    QVBoxLayout *layout; // buttons leading to each mini-game will go in this layout
-    QPushButton *b_minigame1, *b_minigame2, *b_minigame3;
+    // TrainHub widgets ----------------------------------------------
+    QVBoxLayout *layout; // Vertically-arrange widgets
+    QPushButton *b_minigame1, *b_minigame2, *b_minigame3; // Buttons leading to each minigame
+    QLabel *logo_pipatterns, *logo_pidash, *logo_picatcher; // Logos for each minigame
 
-    PiPatterns *pipatterns;// minigame widget 1
-    //minigame_2* m_trackRush = nullptr; // the game widget
-    //minigame_3* m_skySnack  = nullptr;  // ← NEW
+public slots:
+    void setUtilityStyle(QPushButton &button); // Button stylesheet
+    void openTrainHub(); // Open Train Hub at index 0 of stack
+    void openPiPatterns(); // Open minigame PiPatterns at index 1 of stack
+    void openPiDash(); // open minigame PiDash at index 2 of stock
+    void openPiCatcher(); // open minigame PiCatcher at index 3 of stock
+    void onTrackRushFinished(int finalScore, int xpEarned); //
+    void onSkySnackFinished(int finalScore, int xpEarned);
+
 };
 
 #endif // TRAIN_H

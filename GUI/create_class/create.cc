@@ -1,6 +1,6 @@
 /*
  * create.cc - Pet creation screen with animated GIF gallery.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin, Sasha C. Guerrero
  */
 #include "create.h"
 #include <QPainter>
@@ -162,4 +162,5 @@ void Create::checkDoneEligibility() {
     if (name_list->currentItem()) name_chosen = true;
     b_done->setEnabled(name_chosen);
     if (name_chosen) b_done->setToolTip("");
+
 }

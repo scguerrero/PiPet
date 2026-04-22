@@ -71,7 +71,7 @@ bool FoodItem::event(QEvent *e) {
         auto *te  = static_cast<QTouchEvent *>(e);
         auto pts = te->touchPoints();
         if (m_dragging && !pts.isEmpty()) {
-            QPoint globalPos = pts.first().globalPosition().toPoint();
+            QPoint globalPos = pts.first().screenPos().toPoint();
             QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
             move(newPos);
         }
@@ -86,7 +86,7 @@ bool FoodItem::event(QEvent *e) {
             setCursor(Qt::OpenHandCursor);
             QPoint globalPos = pts.isEmpty()
                                    ? mapToGlobal(rect().center())
-                                   : pts.first().globalPosition().toPoint();
+                                   : pts.first().screenPos().toPoint();
             emit dropped(this, globalPos);
         }
         return true;

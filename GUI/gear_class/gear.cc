@@ -30,6 +30,7 @@ HatCard::HatCard(const QString &hatKey, const QString &iconPath, QWidget *parent
         setText(hatKey);
     }
 
+
     setCursor(Qt::PointingHandCursor);
     applyStyle();
 }

@@ -51,6 +51,7 @@ int PiPet::happiness() { return m_happiness; }
 int PiPet::attack() { return m_attack; }
 int PiPet::defense() { return m_defense; }
 int PiPet::hit_points() { return m_hit_points; }
+bool PiPet::creation_flag() { return m_been_created; }
 
 // Setters
 void PiPet::set_name(QString name) { m_name = name; }
@@ -67,6 +68,7 @@ void PiPet::set_happiness(int happiness) { m_happiness = happiness; }
 void PiPet::set_attack(int attack) { m_attack = attack; }
 void PiPet::set_defense(int defense) { m_defense = defense; }
 void PiPet::set_hit_points(int hit_points) { m_hit_points = hit_points; }
+void PiPet::set_creation_flag(bool flag) { m_been_created = flag; }
 
 // Incrementers: Increase the current value of a member variable by a given amount
 void PiPet::increase_days_old(int days_old) { m_days_old += days_old; }
@@ -138,9 +140,13 @@ PiPet PiPet::fromJSON(const QJsonObject &json) {
     if (const QJsonValue v = json["Defense"]; v.isDouble())
         pet.set_defense(v.toInt());
 
-    // pet's defense level
+    // pet's hit points
     if (const QJsonValue v = json["Hit Points"]; v.isDouble())
         pet.set_hit_points(v.toInt());
+
+    // pet's creation flag
+    if (const QJsonValue v = json["Created"]; v.isBool())
+        pet.set_creation_flag(v.toBool());
 
     return pet;
 }
@@ -163,5 +169,6 @@ QJsonObject PiPet::toJSON() const {
     json["Attack"] = m_attack;
     json["Defense"] = m_defense;
     json["Hit Points"] = m_hit_points;
+    json["Created"] = m_been_created;
     return json;
 }

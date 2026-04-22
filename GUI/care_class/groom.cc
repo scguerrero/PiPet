@@ -31,7 +31,7 @@ GroomItem::GroomItem(const QString &iconPath, const QString &name,
 void GroomItem::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_offset   = e->position().toPoint();
+        m_offset   = e->pos();
         setCursor(Qt::ClosedHandCursor);
         raise();
     }
@@ -39,7 +39,7 @@ void GroomItem::mousePressEvent(QMouseEvent *e) {
 
 void GroomItem::mouseMoveEvent(QMouseEvent *e) {
     if (m_dragging) {
-        QPoint globalPos = e->globalPosition().toPoint();
+        QPoint globalPos = e->globalPos();
         QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
         move(newPos);
     }
@@ -49,7 +49,7 @@ void GroomItem::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
         setCursor(Qt::OpenHandCursor);
-        emit dropped(this, e->globalPosition().toPoint());
+        emit dropped(this, e->globalPos());
     }
 }
 
@@ -58,10 +58,10 @@ bool GroomItem::event(QEvent *e) {
 
     case QEvent::TouchBegin: {
         auto *te  = static_cast<QTouchEvent *>(e);
-        auto  pts = te->points();
+        auto  pts = te->touchPoints();
         if (!pts.isEmpty()) {
             m_dragging = true;
-            m_offset   = pts.first().position().toPoint();
+            m_offset   = pts.first().pos().toPoint();
             setCursor(Qt::ClosedHandCursor);
             raise();
         }
@@ -70,9 +70,9 @@ bool GroomItem::event(QEvent *e) {
 
     case QEvent::TouchUpdate: {
         auto *te  = static_cast<QTouchEvent *>(e);
-        auto  pts = te->points();
+        auto  pts = te->touchPoints();
         if (m_dragging && !pts.isEmpty()) {
-            QPoint globalPos = pts.first().globalPosition().toPoint();
+            QPoint globalPos = pts.first().screenPos().toPoint();
             QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
             move(newPos);
         }
@@ -81,13 +81,13 @@ bool GroomItem::event(QEvent *e) {
 
     case QEvent::TouchEnd: {
         auto *te  = static_cast<QTouchEvent *>(e);
-        auto  pts = te->points();
+        auto  pts = te->touchPoints();
         if (m_dragging) {
             m_dragging = false;
             setCursor(Qt::OpenHandCursor);
             QPoint globalPos = pts.isEmpty()
                                    ? mapToGlobal(rect().center())
-                                   : pts.first().globalPosition().toPoint();
+                                   : pts.first().screenPos().toPoint();
             emit dropped(this, globalPos);
         }
         return true;

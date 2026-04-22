@@ -53,6 +53,7 @@ public:
     // Call this from game.cc each time the feed screen is opened.
     void refreshCharacter();
 
+
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
@@ -66,6 +67,8 @@ private:
     Player             *player;
     Character::PetType  petType;
     QPixmap             m_bg;
+    QLabel  *infoHelper;
+    QTimer  *m_infoTimer;
     Character *character;
     QPoint spriteCenter()    const;
     QRect  characterHitbox() const;

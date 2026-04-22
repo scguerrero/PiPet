@@ -50,7 +50,7 @@ public:
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
-
+    void showEvent  (QShowEvent   *e) override;
 private slots:
     void onToolDropped(GroomItem *tool, QPoint globalPos);
     void resetSpots();
@@ -67,6 +67,8 @@ private:
     void placeTools();
     QLabel     *hygieneDisplay;
     QLabel     *hintLabel;
+    QLabel  *infoHelper;
+    QTimer  *m_infoTimer;
     QGroupBox  *actionsBox;
     GroomItem  *activeTool = nullptr;
     bool        topDone    = false;

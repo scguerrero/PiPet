@@ -118,6 +118,21 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     hygieneDisplay->setFixedWidth(300);
     updateHygieneDisplay();
 
+    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    infoHelper = new QLabel(this);
+    infoHelper->setAlignment(Qt::AlignCenter);
+    infoHelper->setWordWrap(true);
+    infoHelper->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
+        "padding: 6px; color: mistyrose; font-size: 15px; }");
+    infoHelper->setFixedWidth(300);
+    infoHelper->setText("Drag a tool onto spots 1 & 2 to groom your pet!");
+    infoHelper->hide();
+
+    m_infoTimer = new QTimer(this);
+    m_infoTimer->setSingleShot(true);
+    connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
+
     // ── Hint label — pops up below the character, hidden by default ───────
     hintLabel = new QLabel(this);
     hintLabel->setAlignment(Qt::AlignCenter);
@@ -164,6 +179,16 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     actionsBox->lower();
 }
 
+void Groom::showEvent(QShowEvent *e) {
+    QWidget::showEvent(e);
+
+    // Position info helper near the top center
+    infoHelper->setGeometry((width() - 300) / 2, 20, 300, 50);
+    infoHelper->show();
+    infoHelper->raise();
+    m_infoTimer->start(3000);
+}
+
 void Groom::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
@@ -177,6 +202,8 @@ void Groom::resizeEvent(QResizeEvent *e) {
     hygieneDisplay->setGeometry((w - 300) / 2, h - 170, w-16, 38);
     // actionsBox stretches full width with 8px side margins
     actionsBox->setGeometry(8, h - 130, w - 16, 122);
+    // Info helper near the top center
+    infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
     placeTools();
 }
 

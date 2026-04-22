@@ -68,7 +68,7 @@ signals:
 protected:
     void resizeEvent(QResizeEvent *e) override;
     void paintEvent (QPaintEvent  *e) override;
-
+    void showEvent  (QShowEvent   *e) override;
 private slots:
     void onHatSelected(const QString &hatKey);
 
@@ -77,6 +77,8 @@ private:
     Character::PetType m_petType  = Character::DragonDog;
     QString            m_stage    = "Baby";   // "Baby" | "Teen" | "Adult"
     QString            m_equippedHat = "";    // "" = no hat / idle gif
+    QLabel  *infoHelper;
+    QTimer  *m_infoTimer;
 
     // Background
     QPixmap m_bg;

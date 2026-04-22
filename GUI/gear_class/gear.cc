@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QRandomGenerator>
 #include <QTimer>
+#include <QScroller>
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  HatCard
@@ -122,6 +123,21 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     m_character = new Character(this);
     m_character->syncWithPlayer(*m_player, m_petType);
 
+    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    infoHelper = new QLabel(this);
+    infoHelper->setAlignment(Qt::AlignCenter);
+    infoHelper->setWordWrap(true);
+    infoHelper->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
+        "padding: 6px; color: mistyrose; font-size: 15px; }");
+    infoHelper->setFixedWidth(300);
+    infoHelper->setText("Tap a hat below to dress up your pet!");
+    infoHelper->hide();
+
+    m_infoTimer = new QTimer(this);
+    m_infoTimer->setSingleShot(true);
+    connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
+
     // ── Hat scroll strip ──────────────────────────────────────────────────
     m_scrollArea = new QScrollArea(this);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -184,6 +200,17 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     layoutWidgets();
 }
 
+// ── showEvent ─────────────────────────────────────────────────────────────
+void Gear::showEvent(QShowEvent *e) {
+    QWidget::showEvent(e);
+
+    // Position info helper near the top center (right of achievements button)
+    infoHelper->setGeometry((width() - 300) / 2, 40, 300, 50);
+    infoHelper->show();
+    infoHelper->raise();
+    m_infoTimer->start(3000);
+}
+
 // ── Geometry helpers ──────────────────────────────────────────────────────
 
 // The pedestal sits roughly at the horizontal center, upper-middle of screen.
@@ -210,6 +237,9 @@ void Gear::layoutWidgets() {
     // (setGeometry already called in constructor and stays at 8,8)
 
     m_character->setGeometry(pedestalCharRect());
+
+    // Info helper near the top center
+    infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
 
     // Hat strip
     QRect sr = stripRect();
@@ -251,7 +281,7 @@ void Gear::onHatSelected(const QString &hatKey) {
     m_equippedHat = hatKey;
 
     // Update selection highlight
-    for (HatCard *card : std::as_const(m_hatCards))
+    for (HatCard *card : qAsConst(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
 
     // Swap GIF
@@ -372,7 +402,7 @@ void Gear::refresh(Character::PetType petType) {
 // Restore a hat silently (no particle burst) — used after loadGame()
 void Gear::restoreHat(const QString &hatKey) {
     m_equippedHat = hatKey;
-    for (HatCard *card : std::as_const(m_hatCards))
+    for (HatCard *card : qAsConst(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
     loadHatGif(hatKey);
 }

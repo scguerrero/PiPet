@@ -60,7 +60,8 @@ bool FoodItem::event(QEvent *e) {
         auto pts = te->touchPoints();
         if (!pts.isEmpty()) {
             m_dragging = true;
-            m_offset = e->pos();
+            QPoint globalPos = pts.first().screenPos().toPoint();
+            m_offset = mapFromGlobal(globalPos);
             setCursor(Qt::ClosedHandCursor);
             raise();
         }
@@ -117,6 +118,21 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     hungerDisplay->setFixedWidth(300);
     updateHungerDisplay();
 
+    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    infoHelper = new QLabel(this);
+    infoHelper->setAlignment(Qt::AlignCenter);
+    infoHelper->setWordWrap(true);
+    infoHelper->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
+        "padding: 6px; color: mistyrose; font-size: 15px; }");
+    infoHelper->setFixedWidth(300);
+    infoHelper->setText("Drag a food item onto your pet to feed it!");
+    infoHelper->hide();
+
+    m_infoTimer = new QTimer(this);
+    m_infoTimer->setSingleShot(true);
+    connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
+
     appleItem = new FoodItem(":/images/Sprites/pets/icons/apple.png",    "Apple", 10, this);
     boneItem  = new FoodItem(":/images/Sprites/pets/icons/dogtreat.png", "Bone",  10, this);
     drinkItem = new FoodItem(":/images/Sprites/pets/icons/drink.png",    "Drink",  5, this);
@@ -145,6 +161,10 @@ void Feed::showEvent(QShowEvent *e) {
     QWidget::showEvent(e);
     QResizeEvent re(size(), size());
     resizeEvent(&re);
+
+    infoHelper->show();
+    infoHelper->raise();
+    m_infoTimer->start(3000);
 }
 
 QPoint Feed::spriteCenter() const {
@@ -163,6 +183,7 @@ void Feed::resizeEvent(QResizeEvent *e) {
     int petY = 200;
     int petX = (w - kSpriteSize) / 2;
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
+    infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
     // Hunger display sits just above the actionsBox
     hungerDisplay->setGeometry((w - 300) / 2, h - 170, 300, 38);
     // actionsBox stretches full width with 8px side margins

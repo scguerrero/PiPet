@@ -28,6 +28,21 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
         "padding: 6px; color: mistyrose; }");
     updateSleepDisplay();
 
+    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    infoHelper = new QLabel(this);
+    infoHelper->setAlignment(Qt::AlignCenter);
+    infoHelper->setWordWrap(true);
+    infoHelper->setStyleSheet(
+        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
+        "padding: 6px; color: mistyrose; font-size: 15px; }");
+    infoHelper->setFixedWidth(300);
+    infoHelper->setText("Use the actions below to help your pet rest!");
+    infoHelper->hide();
+
+    m_infoTimer = new QTimer(this);
+    m_infoTimer->setSingleShot(true);
+    connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
+
     cuddleBtn   = new QPushButton("🤗 Cuddle Pet");
     wearPjsBtn  = new QPushButton("👖 Wear Pjs");
     readBookBtn = new QPushButton("📖 Bed Time Story");
@@ -57,6 +72,16 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     layout->addWidget(sleepDisplay);
     layout->addWidget(actionsBox);
     this->setLayout(layout);
+}
+
+void Sleep::showEvent(QShowEvent *e) {
+    QWidget::showEvent(e);
+
+    // Position info helper near the top center
+    infoHelper->setGeometry((width() - 300) / 2, 20, 300, 50);
+    infoHelper->show();
+    infoHelper->raise();
+    m_infoTimer->start(3000);
 }
 
 void Sleep::paintEvent(QPaintEvent *event) {

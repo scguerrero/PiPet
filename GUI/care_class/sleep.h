@@ -30,6 +30,7 @@ signals:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void showEvent  (QShowEvent   *e) override;
 
 private slots:
     void cuddle();
@@ -46,6 +47,8 @@ private:
     QVBoxLayout *layout;
     QGroupBox   *actionsBox;
     QGridLayout *actionsGrid;
+    QLabel  *infoHelper;
+    QTimer  *m_infoTimer;
 
     QPushButton *cuddleBtn;
     QPushButton *wearPjsBtn;

@@ -4,12 +4,12 @@
 Player::Player() {
     pet        = PiPet();
     startDate  = QDateTime::currentDateTime();
-    streak = goodDays = hours = battleWins = minigamesPlayed = 0;
+    streak = goodDays = hours = battleWins = 0;
 }
 
 Player::Player(const PiPet& petInit)
     : streak(0), goodDays(0), hours(0),
-      battleWins(0), minigamesPlayed(0), pet(petInit) {
+      battleWins(0), pet(petInit) {
     startDate = QDateTime::currentDateTime();
 }
 
@@ -49,7 +49,6 @@ Player Player::fromJSON(const QJsonObject &json) {
     if (const QJsonValue v = json["Good Days"];        v.isDouble()) player.goodDays         = v.toInt();
     if (const QJsonValue v = json["Hours"];            v.isDouble()) player.hours            = v.toInt();
     if (const QJsonValue v = json["BattleWins"];       v.isDouble()) player.battleWins       = v.toInt();
-    if (const QJsonValue v = json["MinigamesPlayed"];  v.isDouble()) player.minigamesPlayed  = v.toInt();
     if (const QJsonValue v = json["PiPet"];            v.isObject()) player.pet              = PiPet::fromJSON(v.toObject());
     if (const QJsonValue v = json["Achievements"];     v.isObject()) player.achievements.fromJson(v.toObject());
 
@@ -63,7 +62,6 @@ QJsonObject Player::toJson() const {
     json["Good Days"]       = goodDays;
     json["Hours"]           = hours;
     json["BattleWins"]      = battleWins;
-    json["MinigamesPlayed"] = minigamesPlayed;
     json["PiPet"]           = pet.toJSON();
     json["Achievements"]    = achievements.toJson();
     return json;

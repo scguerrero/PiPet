@@ -2,7 +2,7 @@
  * Achievements.h - Tracks all player achievements.
  * Pure data class — no widgets, no Qt signals.
  * Saves/loads with Player via JSON.
- * Author(s): Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #ifndef ACHIEVEMENTS_H
 #define ACHIEVEMENTS_H
@@ -28,10 +28,13 @@ public:
     QList<QString> onBattleWon(int totalWins);
     QList<QString> onFedBone(const QString &petType);
     QList<QString> onInactive();                     // call after 30 min timer
-    QList<QString> onMinigamePlayed(int gamesPlayed);
     QList<QString> onAgeChanged(const QString &ageGroup);
     QList<QString> onTemperTantrum(bool sleeping, bool angry);
     QList<QString> onCrownHatEquipped();
+    QList<QString> onTuckIn();
+    QList<QString> onBedTimeStory(int totalStories);
+    QList<QString> onDaysOld(int days);
+    QList<QString> onMarathonSession();  // call after 2 hours played
 
     // ── Gear screen display ───────────────────────────────────────────────
     const QList<Achievement> &all() const { return m_achievements; }

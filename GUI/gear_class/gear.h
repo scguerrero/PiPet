@@ -22,6 +22,7 @@
 
 #include <QtWidgets>
 #include <QMovie>
+#include <QScroller>
 #include "../character_class/character.h"
 #include "../../Player/Player.h"
 
@@ -80,8 +81,12 @@ private:
     // Background
     QPixmap m_bg;
 
-    // Pet on pedestal
-    Character *m_character;
+    // Achievements button — top-left, same style as b_save_mode on Mode
+public:
+    QPushButton *b_achievements; // public so game.cc can connect directly
+private:
+
+    Character   *m_character;
 
     // Hat strip (inside a scroll area)
     QScrollArea *m_scrollArea;

@@ -44,6 +44,10 @@ class Battle : public QWidget
 public:
     explicit Battle(QWidget *parent = nullptr);
 
+signals:
+    // Emitted when the player wins — game.cc connects to onBattleWon()
+    void battleWon();
+
 protected:
     void paintEvent(QPaintEvent *e) override;
 

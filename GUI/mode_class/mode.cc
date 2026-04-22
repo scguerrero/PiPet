@@ -88,7 +88,7 @@ Mode::Mode(Player *player, QWidget *parent)
     b_care   = new QPushButton(this); b_care->hide();
     b_train  = new QPushButton("Train",  this);
     b_battle = new QPushButton("Battle", this);
-    b_gear   = new QPushButton("Gear",   this);
+    b_gear   = new QPushButton("Theater",   this);
 
     QString btnStyle = R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
@@ -162,7 +162,7 @@ void Mode::drawBubble(QPainter &p, QRect rect,
     }
     if (dimmed) p.fillPath(path, QColor(0, 0, 0, 130));
     p.restore();
-    p.setPen(QPen(QColor("#FBA8FF"), 2));
+    p.setPen(QPen(QColor(0xFB, 0xA8, 0xFF), 2));
     p.setBrush(Qt::NoBrush);
     p.drawRoundedRect(rect.adjusted(1,1,-1,-1), 12, 12);
     p.setPen(Qt::white);
@@ -295,11 +295,20 @@ void Mode::openAbout() {
         "<span style='color:#aaa;font-size:11px;'>"
         "Luke C. · Sasha G. · Camden G. · Tanya M. · Cesar R.</span>"
     )
-    .arg(currentTime).arg(elapsed)
-    .arg(pet.name()).arg(pet.age_group()).arg(pet.days_old())
-    .arg(pet.hunger()).arg(pet.energy()).arg(pet.happiness())
-    .arg(pet.strength()).arg(pet.hygiene()).arg(pet.intelligence())
-    .arg(pet.attack()).arg(pet.defense()).arg(pet.hit_points()));
+    .arg(currentTime,
+         QString::number(elapsed),
+         pet.name(),
+         pet.age_group(),
+         QString::number(pet.days_old()),
+         QString::number(pet.hunger()),
+         QString::number(pet.energy()),
+         QString::number(pet.happiness()),
+         QString::number(pet.strength()))
+    .arg(QString::number(pet.hygiene()),
+         QString::number(pet.intelligence()),
+         QString::number(pet.attack()),
+         QString::number(pet.defense()),
+         QString::number(pet.hit_points())));
 
     QPushButton *closeBtn = new QPushButton("Close", &about);
     closeBtn->setFixedHeight(36);
@@ -313,8 +322,5 @@ void Mode::openAbout() {
 
     dlgLayout->addWidget(infoLabel, 1);
     dlgLayout->addWidget(closeBtn,  0);
-    about.setStyleSheet(
-        "QDialog { background-image: url(:/images/Backgrounds/main.png);"
-        "background-repeat: no-repeat; background-position: center; }");
     about.exec();
 }

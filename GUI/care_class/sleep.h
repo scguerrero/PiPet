@@ -20,6 +20,10 @@ public:
                    QWidget *parent = nullptr);
     void updateSleepDisplay();
 
+signals:
+    void tuckInUsed();                    // → Beauty Sleep achievement
+    void bedTimeStoryUsed(int totalUsed); // → Bookworm achievement
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -45,6 +49,8 @@ private:
     QPushButton *tuckInBtn;
 
     QLabel *sleepDisplay;
+
+    int m_bedTimeStoryCount = 0; // persists for session, Bookworm needs 10
 
     void applySleepAction(int boost, const QString &message);
 };

@@ -104,6 +104,19 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     // Background
     m_bg.load(":/images/Backgrounds/gearStage_16bit.png");
 
+    // ── Achievements button — top-left, same geometry as b_save_mode ──────
+    b_achievements = new QPushButton("Achievements", this);
+    b_achievements->setIcon(QIcon()); // text only, no icon needed
+    b_achievements->setGeometry(8, 8, 160, 36);
+    b_achievements->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4850DB, stop:1 #4A71DB);
+            border: 2px inset #FBA8FF; border-radius: 10px;
+            padding: 4px; font: bold; color: mistyrose; }
+        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4A71DB, stop:1 #4850DB); })");
+    // connected externally from game.cc
+
     // ── Character widget ──────────────────────────────────────────────────
     m_character = new Character(this);
     m_character->syncWithPlayer(*m_player, m_petType);
@@ -114,14 +127,11 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setWidgetResizable(false);
     m_scrollArea->setStyleSheet(R"(
-        QScrollArea {
-            background: transparent;
-            border: none;
-        }
-        QScrollArea > QWidget > QWidget {
-            background: transparent;
-        }
+        QScrollArea { background: transparent; border: none; }
+        QScrollArea > QWidget > QWidget { background: transparent; }
     )");
+
+    QScroller::grabGesture(m_scrollArea->viewport(), QScroller::TouchGesture);
 
     m_stripWidget = new QWidget();
     m_stripWidget->setStyleSheet("background: transparent;");
@@ -186,25 +196,22 @@ QRect Gear::pedestalCharRect() const {
 // Yellow strip region: full width, near the bottom
 QRect Gear::stripRect() const {
     int w = width(), h = height();
-    int stripH = 96;
-    int margin = 8;
-    int y = h - stripH - margin;
-    return QRect(margin, y, w - margin * 2, stripH);
+    int stripH = 96, margin = 8;
+    return QRect(margin, h - stripH - margin, w - margin * 2, stripH);
 }
 
 void Gear::layoutWidgets() {
     int w = width(), h = height();
 
-    // Character on pedestal
-    QRect pr = pedestalCharRect();
-    m_character->setGeometry(pr);
+    // Achievements button stays fixed top-left — no need to reposition
+    // (setGeometry already called in constructor and stays at 8,8)
+
+    m_character->setGeometry(pedestalCharRect());
 
     // Hat strip
     QRect sr = stripRect();
     m_scrollArea->setGeometry(sr);
-    // Make strip widget wide enough to hold all cards
-    int cardCount = m_hatCards.size();
-    int totalW = cardCount * (80 + 12) + 24;
+    int totalW = m_hatCards.size() * (80 + 12) + 24;
     m_stripWidget->setFixedWidth(qMax(totalW, sr.width()));
 
     // Particle overlay fills whole window
@@ -227,7 +234,7 @@ void Gear::paintEvent(QPaintEvent *e) {
     // Draw particles
     if (!m_particles.isEmpty()) {
         for (int i = 0; i < m_particles.size(); ++i) {
-            QColor c = m_particleColors.value(i, QColor("#FBA8FF"));
+            QColor c = m_particleColors.value(i, QColor(0xFB, 0xA8, 0xFF));
             c.setAlpha(qMax(0, 255 - m_particleTick * 8));
             p.setBrush(c);
             p.setPen(Qt::NoPen);
@@ -258,9 +265,8 @@ QString Gear::gifPath(const QString &hatKey) const {
     QString infix  = stageInfix(m_stage);
 
     if (hatKey.isEmpty()) {
-        // Return idle gif (no hat) — mirrors character.cpp paths
-        if (m_stage == "Teen")  return QString(":/images/Sprites/pets/%1_%2idle.gif").arg(folder, infix);
-        if (m_stage == "Adult") return QString(":/images/Sprites/pets/%1_%2idle.gif").arg(folder, infix);
+        if (m_stage == "Teen" || m_stage == "Adult")
+            return QString(":/images/Sprites/pets/%1_%2idle.gif").arg(folder, infix);
         return QString(":/images/Sprites/pets/%1_idle.gif").arg(folder);
     }
     // Hat GIF: e.g. seelcat/seelcat_teen_santa.gif
@@ -295,8 +301,9 @@ void Gear::loadHatGif(const QString &hatKey) {
 
 // ── Particles ─────────────────────────────────────────────────────────────
 static const QList<QColor> kParticleColors = {
-    QColor("#FBA8FF"), QColor("#ffd700"), QColor("#4850DB"),
-    QColor("#ffffff"), QColor("#ff8aff"), QColor("#b0cfff"),
+    QColor(0xFB, 0xA8, 0xFF), QColor(0xFF, 0xD7, 0x00),
+    QColor(0x48, 0x50, 0xDB), QColor(0xFF, 0xFF, 0xFF),
+    QColor(0xFF, 0x8A, 0xFF), QColor(0xB0, 0xCF, 0xFF),
 };
 
 void Gear::spawnParticles() {

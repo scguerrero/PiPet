@@ -84,7 +84,16 @@ void Sleep::applySleepAction(int boost, const QString &message) {
         QString("%1  |  Energy: %2 / 100").arg(message).arg(newVal));
 }
 
-void Sleep::cuddle()    { applySleepAction(5,  "Aww so cute!"); }
-void Sleep::wearPjs()   { applySleepAction(5,  "Wear Pjs!"); }
-void Sleep::readBook()  { applySleepAction(10, "Bed Time Story!"); }
-void Sleep::tuckIn()    { applySleepAction(20, "Tucked In!"); }
+void Sleep::cuddle()  { applySleepAction(5,  "Aww so cute!"); }
+void Sleep::wearPjs() { applySleepAction(5,  "Wear Pjs!"); }
+
+void Sleep::readBook() {
+    applySleepAction(10, "Bed Time Story!");
+    m_bedTimeStoryCount++;
+    emit bedTimeStoryUsed(m_bedTimeStoryCount); // → Bookworm
+}
+
+void Sleep::tuckIn() {
+    applySleepAction(20, "Tucked In!");
+    emit tuckInUsed(); // → Beauty Sleep
+}

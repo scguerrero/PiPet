@@ -7,15 +7,25 @@
 Achievements::Achievements() {
     // Define all achievements in order
     m_achievements = {
-        { "battle_1",       "Not Too Shabby I",    "Win 1 battle",              false },
-        { "battle_10",      "Not Too Shabby II",   "Win 10 battles",            false },
-        { "battle_100",     "Not Too Shabby III",  "Win 100 battles",           false },
-        { "bone_seelcat",   "What Are You Doing?", "Feed a Bone to a SeelCat",  false },
-        { "inactive_30",    "Are You There?",       "Be inactive for 30 minutes",false },
-        { "all_minigames",  "Completionist",        "Play all 3 minigames",      false },
-        { "proud_parent",   "Proud Parent",         "Bring your pet to Adult",   false },
-        { "temper_tantrum", "Temper Tantrum",       "Pet is sleeping AND hungry at the same time", false },
-        { "crown_hat",      "Here Yee Here Yee",   "Obtain the Crown Hat",      false },
+        // Battle
+        { "battle_1",       "Not Too Shabby I",    "Win 1 battle",                          false },
+        { "battle_10",      "Not Too Shabby II",   "Win 10 battles",                        false },
+        { "battle_100",     "Not Too Shabby III",  "Win 100 battles",                       false },
+        // Care — Feed
+        { "bone_seelcat",   "What Are You Doing?", "Feed a Bone to a SeelCat",              false },
+        // Care — Sleep
+        { "beauty_sleep",   "Beauty Sleep",         "Use Tuck Into Bed",                    false },
+        { "bookworm",       "Bookworm",             "Use Bed Time Story 10 times",           false },
+        // Progression
+        { "growing_up",     "Growing Up",           "Reach the Teen stage",                  false },
+        { "proud_parent",   "Proud Parent",         "Bring your pet to Adult stage",         false },
+        { "veteran",        "Veteran",              "Keep your pet alive for 7 days",        false },
+        // Session
+        { "marathon",       "Marathon Session",     "Play for 2 hours straight",             false },
+        // Misc
+        { "inactive_30",    "Are You There?",       "Be inactive for 30 minutes",            false },
+        { "temper_tantrum", "Temper Tantrum",       "Pet is sleeping AND hungry at once",    false },
+        { "crown_hat",      "Here Yee Here Yee",   "Obtain the Crown Hat",                  false },
     };
 }
 
@@ -33,64 +43,89 @@ QString Achievements::unlock(const QString &key) {
 // ── Check methods ─────────────────────────────────────────────────────────
 
 QList<QString> Achievements::onBattleWon(int totalWins) {
-    QList<QString> unlocked;
-    if (totalWins >= 1)   { QString t = unlock("battle_1");   if (!t.isEmpty()) unlocked << t; }
-    if (totalWins >= 10)  { QString t = unlock("battle_10");  if (!t.isEmpty()) unlocked << t; }
-    if (totalWins >= 100) { QString t = unlock("battle_100"); if (!t.isEmpty()) unlocked << t; }
-    return unlocked;
+    QList<QString> u;
+    if (totalWins >= 1)   { auto t = unlock("battle_1");   if (!t.isEmpty()) u << t; }
+    if (totalWins >= 10)  { auto t = unlock("battle_10");  if (!t.isEmpty()) u << t; }
+    if (totalWins >= 100) { auto t = unlock("battle_100"); if (!t.isEmpty()) u << t; }
+    return u;
 }
 
 QList<QString> Achievements::onFedBone(const QString &petType) {
-    QList<QString> unlocked;
+    QList<QString> u;
     if (petType == "SeelCat") {
-        QString t = unlock("bone_seelcat");
-        if (!t.isEmpty()) unlocked << t;
+        auto t = unlock("bone_seelcat");
+        if (!t.isEmpty()) u << t;
     }
-    return unlocked;
+    return u;
 }
 
 QList<QString> Achievements::onInactive() {
-    QList<QString> unlocked;
-    QString t = unlock("inactive_30");
-    if (!t.isEmpty()) unlocked << t;
-    return unlocked;
-}
-
-QList<QString> Achievements::onMinigamePlayed(int gamesPlayed) {
-    QList<QString> unlocked;
-    if (gamesPlayed >= 3) {
-        QString t = unlock("all_minigames");
-        if (!t.isEmpty()) unlocked << t;
-    }
-    return unlocked;
+    QList<QString> u;
+    auto t = unlock("inactive_30");
+    if (!t.isEmpty()) u << t;
+    return u;
 }
 
 QList<QString> Achievements::onAgeChanged(const QString &ageGroup) {
-    QList<QString> unlocked;
-    if (ageGroup == "Adult") {
-        QString t = unlock("proud_parent");
-        if (!t.isEmpty()) unlocked << t;
+    QList<QString> u;
+    if (ageGroup == "Teen") {
+        auto t = unlock("growing_up");
+        if (!t.isEmpty()) u << t;
     }
-    return unlocked;
+    if (ageGroup == "Adult") {
+        auto t = unlock("proud_parent");
+        if (!t.isEmpty()) u << t;
+    }
+    return u;
 }
 
 QList<QString> Achievements::onTemperTantrum(bool sleeping, bool angry) {
-    QList<QString> unlocked;
+    QList<QString> u;
     if (sleeping && angry) {
-        QString t = unlock("temper_tantrum");
-        if (!t.isEmpty()) unlocked << t;
+        auto t = unlock("temper_tantrum");
+        if (!t.isEmpty()) u << t;
     }
-    return unlocked;
+    return u;
 }
 
 QList<QString> Achievements::onCrownHatEquipped() {
-    QList<QString> unlocked;
-    QString t = unlock("crown_hat");
-    if (!t.isEmpty()) unlocked << t;
-    return unlocked;
+    QList<QString> u;
+    auto t = unlock("crown_hat");
+    if (!t.isEmpty()) u << t;
+    return u;
 }
 
-// ── JSON ──────────────────────────────────────────────────────────────────
+QList<QString> Achievements::onTuckIn() {
+    QList<QString> u;
+    auto t = unlock("beauty_sleep");
+    if (!t.isEmpty()) u << t;
+    return u;
+}
+
+QList<QString> Achievements::onBedTimeStory(int totalStories) {
+    QList<QString> u;
+    if (totalStories >= 10) {
+        auto t = unlock("bookworm");
+        if (!t.isEmpty()) u << t;
+    }
+    return u;
+}
+
+QList<QString> Achievements::onDaysOld(int days) {
+    QList<QString> u;
+    if (days >= 7) {
+        auto t = unlock("veteran");
+        if (!t.isEmpty()) u << t;
+    }
+    return u;
+}
+
+QList<QString> Achievements::onMarathonSession() {
+    QList<QString> u;
+    auto t = unlock("marathon");
+    if (!t.isEmpty()) u << t;
+    return u;
+}
 
 QJsonObject Achievements::toJson() const {
     QJsonObject json;
@@ -100,8 +135,7 @@ QJsonObject Achievements::toJson() const {
 }
 
 void Achievements::fromJson(const QJsonObject &json) {
-    for (Achievement &a : m_achievements) {
+    for (Achievement &a : m_achievements)
         if (json.contains(a.key))
             a.unlocked = json[a.key].toBool();
-    }
 }

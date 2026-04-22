@@ -5,7 +5,7 @@
  *        the dummy's head/chest zone (red-annotated area) on every
  *        landed attack.
  *
- * Author(s): Camden Gugel
+ * Author(s): Luke Cerwin
  */
 
 #include "battle.h"
@@ -50,8 +50,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet(
         "font-size: 22px; font-weight: bold; margin-bottom: 4px;"
-        "color: #ffd700;"
-        "background-color: rgba(0,0,0,150);"
+        "color: #ffd700; background-color: rgba(0,0,0,150);"
         "border-radius: 8px; padding: 4px 12px;");
     root->addWidget(title);
 
@@ -229,10 +228,7 @@ void Battle::spawnWoodParticles(int count)
 
         chip.w = 4.0f + rng->bounded(6);
         chip.h = 2.0f + rng->bounded(4);
-
-        int pidx    = rng->bounded(5);
-        chip.color  = kWoodPalette[pidx];
-
+        chip.color = kWoodPalette[rng->bounded(5)];
         m_particles.append(chip);
     }
 

@@ -13,12 +13,11 @@ private:
     int hours;
 
 public:
-    PiPet        pet;
-    Achievements achievements;
-
     // Battle and minigame counters tracked here so they persist via JSON
     int battleWins     = 0;
-    int minigamesPlayed = 0; // bitmask: bit0=MG1, bit1=MG2, bit2=MG3
+
+    PiPet        pet;
+    Achievements achievements;
 
     Player();
     Player(const PiPet& petInit);

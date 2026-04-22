@@ -1,5 +1,7 @@
 /*
  * game.cc - Top-level game widget implementation.
+ * Achievements button moved to Gear screen.
+ * Bottom bar simplified to Home only at normal size.
  * Author(s): Luke Cerwin, Sasha Guerrero
  */
 #include "game.h"
@@ -8,8 +10,8 @@
 #include <QVBoxLayout>
 #include <QScrollArea>
 
-// 30 minutes in milliseconds
 static constexpr int kInactivityMs = 30 * 60 * 1000;
+static constexpr int kMarathonMs   = 2  * 60 * 60 * 1000;
 
 Game::Game(QWidget *parent) : QWidget{parent} {
     this->setWindowTitle("PIPET");
@@ -45,19 +47,15 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(battle);  // 7
     pages->addWidget(gear);    // 8
 
-    // ── Bottom utility bar ────────────────────────────────────────────────
+    // ── Bottom bar — Home only, normal size ───────────────────────────────
     utilityWidget = new QWidget(this);
     utility_bar   = new QHBoxLayout(utilityWidget);
     utility_bar->setContentsMargins(4, 4, 4, 4);
     utility_bar->setSpacing(6);
 
-    b_home         = new QPushButton("🏠 HOME",         utilityWidget);
-    b_achievements = new QPushButton("🏆 Achievements", utilityWidget);
-
+    b_home = new QPushButton("HOME", utilityWidget);
     b_home->setIcon(QIcon(":/images/Assets/home.png"));
-
     utility_bar->addWidget(b_home);
-    utility_bar->addWidget(b_achievements);
     layout->addWidget(utilityWidget);
 
     // ── Save button on Mode screen top-left ───────────────────────────────
@@ -66,7 +64,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     b_save_mode->setGeometry(8, 8, 80, 36);
     b_save_mode->hide();
 
-    // ── Inactivity timer ──────────────────────────────────────────────────
+    // ── Timers ────────────────────────────────────────────────────────────
     m_inactivityTimer = new QTimer(this);
     m_inactivityTimer->setSingleShot(true);
     m_inactivityTimer->setInterval(kInactivityMs);
@@ -74,15 +72,21 @@ Game::Game(QWidget *parent) : QWidget{parent} {
             this, &Game::onInactivityTriggered);
     m_inactivityTimer->start();
 
+    m_marathonTimer = new QTimer(this);
+    m_marathonTimer->setSingleShot(true);
+    m_marathonTimer->setInterval(kMarathonMs);
+    connect(m_marathonTimer, &QTimer::timeout,
+            this, &Game::onMarathonTriggered);
+    m_marathonTimer->start();
+
     // ── Connections ───────────────────────────────────────────────────────
     if (new_game)
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
     else
         connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    connect(b_save_mode,    SIGNAL(clicked()), this, SLOT(saveGame()));
-    connect(b_home,         SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(b_achievements, SIGNAL(clicked()), this, SLOT(showAchievementsScreen()));
+    connect(b_save_mode, SIGNAL(clicked()), this, SLOT(saveGame()));
+    connect(b_home,      SIGNAL(clicked()), this, SLOT(open_mode()));
 
     connect(create->b_done, SIGNAL(clicked()), this, SLOT(onCreateDone()));
 
@@ -90,14 +94,26 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     mode->groomBubble->installEventFilter(this);
     mode->sleepBubble->installEventFilter(this);
 
+    // Mode signals
     connect(mode, &Mode::petAgedUp,     this, &Game::onAgeChanged);
-    connect(mode, &Mode::temperTantrum, this, [&](){ auto u = player->achievements.onTemperTantrum(true,true); showAchievementPopup(u); });
+    connect(mode, &Mode::temperTantrum, this, [this]() {
+        auto u = player->achievements.onTemperTantrum(true, true);
+        showAchievementPopup(u);
+    });
 
     connect(mode->b_train,   SIGNAL(clicked()), this, SLOT(open_train()));
     connect(mode->b_battle,  SIGNAL(clicked()), this, SLOT(open_battle()));
     connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
-    connect(train->b_back,    SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
+
+    // Battle achievement signals
+    connect(battle, &Battle::battleWon,   this, &Game::onBattleWon);
+    // Sleep achievement signals
+    connect(sleep, &Sleep::tuckInUsed,       this, &Game::onTuckIn);
+    connect(sleep, &Sleep::bedTimeStoryUsed, this, &Game::onBedTimeStory);
+
+    // Gear — hat equipped + achievements button
     connect(gear, &Gear::hatEquipped, this, [this](const QString &hatKey) {
         PiPet p = player->getPet();
         p.set_hat(hatKey);
@@ -106,10 +122,11 @@ Game::Game(QWidget *parent) : QWidget{parent} {
         if (hatKey == "crown")
             onCrownHatEquipped();
     });
+    connect(gear->b_achievements, &QPushButton::clicked,
+            this, &Game::showAchievementsScreen);
 
     setUtilityStyle(*b_save_mode);
     setUtilityStyle(*b_home);
-    setUtilityStyle(*b_achievements);
 
     showUtilityBar(false);
 }
@@ -123,20 +140,19 @@ void Game::showUtilityBar(bool show) {
 void Game::showHomeOnly(bool activeStyle) {
     showUtilityBar(true);
     b_home->show();
-    b_achievements->show();
-    if (activeStyle) {
+    if (activeStyle)
         setUtilityStyle(*b_home);
-    } else {
+    else
         b_home->setStyleSheet(R"(
             QPushButton {
                 background-color: rgba(60,60,60,180);
                 border: 2px inset #888888; border-radius: 10px;
                 padding: 4px; font: bold; color: #888888;
             })");
-    }
 }
 
-// ── Event filter — resets inactivity timer on any tap ────────────────────
+// ── Event filter ──────────────────────────────────────────────────────────
+
 bool Game::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonRelease ||
         event->type() == QEvent::TouchEnd) {
@@ -153,8 +169,11 @@ void Game::resetInactivityTimer() {
 }
 
 void Game::onInactivityTriggered() {
-    auto unlocked = player->achievements.onInactive();
-    showAchievementPopup(unlocked);
+    showAchievementPopup(player->achievements.onInactive());
+}
+
+void Game::onMarathonTriggered() {
+    showAchievementPopup(player->achievements.onMarathonSession());
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────
@@ -177,13 +196,7 @@ void Game::open_mode() {
     b_save_mode->raise();
     mode->refreshDisplay();
     pages->setCurrentIndex(2);
-
-    // Check Temper Tantrum whenever returning to mode
-    PiPet pet = player->getPet();
-    bool sleeping = (pet.energy() < 25);
-    bool angry    = (pet.hunger() < 25);
-    auto unlocked = player->achievements.onTemperTantrum(sleeping, angry);
-    showAchievementPopup(unlocked);
+    onVeteranCheck();
 }
 
 void Game::open_feed() {
@@ -226,43 +239,45 @@ void Game::open_gear() {
     pages->setCurrentIndex(8);
 }
 
-// ── Achievement trigger points ────────────────────────────────────────────
+// ── Achievement trigger slots ─────────────────────────────────────────────
 
 void Game::onBattleWon() {
     player->battleWins++;
-    auto unlocked = player->achievements.onBattleWon(player->battleWins);
-    showAchievementPopup(unlocked);
+    showAchievementPopup(player->achievements.onBattleWon(player->battleWins));
 }
 
 void Game::onFedBone() {
-    QString type = player->getPet().pet_type();
-    auto unlocked = player->achievements.onFedBone(type);
-    showAchievementPopup(unlocked);
+    showAchievementPopup(
+        player->achievements.onFedBone(player->getPet().pet_type()));
 }
 
-void Game::onMinigamePlayed(int gameIndex) {
-    // bitmask: bit 0 = game 0, bit 1 = game 1, bit 2 = game 2
-    player->minigamesPlayed |= (1 << gameIndex);
-    int count = __builtin_popcount(player->minigamesPlayed);
-    auto unlocked = player->achievements.onMinigamePlayed(count);
-    showAchievementPopup(unlocked);
-}
 
 void Game::onAgeChanged(const QString &ageGroup) {
-    auto unlocked = player->achievements.onAgeChanged(ageGroup);
-    showAchievementPopup(unlocked);
+    showAchievementPopup(player->achievements.onAgeChanged(ageGroup));
 }
 
 void Game::onCrownHatEquipped() {
-    auto unlocked = player->achievements.onCrownHatEquipped();
-    showAchievementPopup(unlocked);
+    showAchievementPopup(player->achievements.onCrownHatEquipped());
 }
 
-// ── Achievement popup ─────────────────────────────────────────────────────
-// Shows a small non-blocking toast at the top of the screen for each unlock
+void Game::onTuckIn() {
+    showAchievementPopup(player->achievements.onTuckIn());
+}
+
+void Game::onBedTimeStory(int totalUsed) {
+    showAchievementPopup(player->achievements.onBedTimeStory(totalUsed));
+}
+
+void Game::onVeteranCheck() {
+    showAchievementPopup(
+        player->achievements.onDaysOld(player->getPet().days_old()));
+}
+
+// ── Achievement popup toast ───────────────────────────────────────────────
+
 void Game::showAchievementPopup(const QList<QString> &titles) {
     if (titles.isEmpty()) return;
-
+    int offset = 0;
     for (const QString &title : titles) {
         QLabel *toast = new QLabel(this);
         toast->setText(QString("🏆 Achievement Unlocked!\n\"%1\"").arg(title));
@@ -281,25 +296,23 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
         )");
         toast->setFixedWidth(300);
         toast->adjustSize();
-        // Center horizontally, near top
-        int tx = (width() - 300) / 2;
-        toast->setGeometry(tx, 60, 300, toast->height());
+        toast->setGeometry((width() - 300) / 2, 60 + offset, 300, toast->height());
         toast->raise();
         toast->show();
-
-        // Auto-dismiss after 3 seconds
+        offset += toast->height() + 8;
         QTimer::singleShot(3000, toast, &QLabel::deleteLater);
     }
 }
 
 // ── Achievements screen ───────────────────────────────────────────────────
+
 void Game::showAchievementsScreen() {
     QDialog dlg(this);
     dlg.setWindowTitle("Achievements");
     dlg.setFixedSize(400, 520);
     dlg.setStyleSheet(
         "QDialog { background-color: #120828; }"
-        "QLabel  { background-color: transparent; color: mistyrose; "
+        "QLabel  { background-color: transparent; color: mistyrose;"
         "          font-family: monospace; font-size: 13px; }"
         "QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
         "  stop:0 #4850DB,stop:1 #4A71DB); border:2px inset #FBA8FF;"
@@ -311,15 +324,22 @@ void Game::showAchievementsScreen() {
 
     QLabel *header = new QLabel("🏆  Achievements", &dlg);
     header->setAlignment(Qt::AlignCenter);
-    header->setStyleSheet(
-        "QLabel { color:#ffd700; font-size:18px; font-weight:bold; }");
+    header->setStyleSheet("QLabel { color:#ffd700; font-size:18px; font-weight:bold; }");
     dlgLayout->addWidget(header);
 
-    // Scrollable list of achievements
+    int unlocked = 0;
+    for (const Achievement &a : player->achievements.all())
+        if (a.unlocked) unlocked++;
+    QLabel *progress = new QLabel(
+        QString("%1 / %2 unlocked")
+            .arg(unlocked).arg(player->achievements.all().size()), &dlg);
+    progress->setAlignment(Qt::AlignCenter);
+    progress->setStyleSheet("QLabel { color:#aaa; font-size:12px; }");
+    dlgLayout->addWidget(progress);
+
     QScrollArea *scroll = new QScrollArea(&dlg);
     scroll->setWidgetResizable(true);
-    scroll->setStyleSheet(
-        "QScrollArea { border: none; background: transparent; }");
+    scroll->setStyleSheet("QScrollArea { border: none; background: transparent; }");
 
     QWidget     *listWidget = new QWidget();
     QVBoxLayout *listLayout = new QVBoxLayout(listWidget);
@@ -329,7 +349,6 @@ void Game::showAchievementsScreen() {
     for (const Achievement &a : player->achievements.all()) {
         QLabel *row = new QLabel(listWidget);
         row->setWordWrap(true);
-
         if (a.unlocked) {
             row->setText(QString("✅  <b>%1</b><br>"
                                  "<span style='color:#aaa;font-size:11px;'>%2</span>")
@@ -339,13 +358,13 @@ void Game::showAchievementsScreen() {
                 "border: 1px solid #ffd700; border-radius: 8px;"
                 "padding: 8px; color: mistyrose; }");
         } else {
-            row->setText(QString("🔒  <b style='color:#666;'>%1</b><br>"
-                                 "<span style='color:#555;font-size:11px;'>%2</span>")
+            row->setText(QString("🔒  <b style='color:#555;'>%1</b><br>"
+                                 "<span style='color:#444;font-size:11px;'>%2</span>")
                              .arg(a.title, a.description));
             row->setStyleSheet(
                 "QLabel { background-color: rgba(0,0,0,100);"
                 "border: 1px solid #333; border-radius: 8px;"
-                "padding: 8px; color: #666; }");
+                "padding: 8px; color: #555; }");
         }
         listLayout->addWidget(row);
     }
@@ -362,6 +381,7 @@ void Game::showAchievementsScreen() {
 }
 
 // ── onCreateDone ──────────────────────────────────────────────────────────
+
 void Game::onCreateDone() {
     if (create->b_axolotl->isChecked())
         currentPetType = Character::ElectricAxolotl;
@@ -397,6 +417,9 @@ void Game::onCreateDone() {
     pages->insertWidget(4, groom);
     pages->insertWidget(5, sleep);
 
+    connect(sleep, &Sleep::tuckInUsed,       this, &Game::onTuckIn);
+    connect(sleep, &Sleep::bedTimeStoryUsed, this, &Game::onBedTimeStory);
+
     mode->feedBubble->installEventFilter(this);
     mode->groomBubble->installEventFilter(this);
     mode->sleepBubble->installEventFilter(this);
@@ -405,6 +428,7 @@ void Game::onCreateDone() {
 }
 
 // ── Save / Load ───────────────────────────────────────────────────────────
+
 QJsonObject Game::toJson() const {
     QJsonObject json;
     json["Player"] = player->toJson();
@@ -418,7 +442,10 @@ void Game::read(const QJsonObject &json) {
 
 bool Game::loadGame() {
     QFile loadFile("player.json");
-    if (!loadFile.open(QIODevice::ReadOnly)) { qWarning("Couldn't open save file."); return false; }
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
     read(loadDoc.object());
@@ -440,7 +467,10 @@ bool Game::loadGame() {
 
 bool Game::saveGame() {
     QFile saveFile("player.json");
-    if (!saveFile.open(QIODevice::WriteOnly)) { qWarning("Couldn't open save file."); return false; }
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
     QMessageBox msg(this);
     msg.setText("Save successful!");
     msg.exec();

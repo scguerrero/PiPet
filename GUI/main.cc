@@ -124,9 +124,8 @@ int main(int argc, char**argv)
     // Load and show the game window while splash is still visible
     Game game;
     game.loadGame();
-    //game.setFixedSize(480, 640);
-    //game.show();
-	game.showFullScreen();
+    game.setFixedSize(480, 640);
+    game.show();
     app.processEvents();
 
     // Hold for 3 seconds then just close — game is already underneath

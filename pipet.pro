@@ -21,8 +21,6 @@ HEADERS += \
     GUI/care_class/sleep.h \
     GUI/care_class/groom.h \
     GUI/train_class/matrix.h \
-    GUI/train_class/picatcher.h \
-    GUI/train_class/pidash.h \
     GUI/train_class/pipatterns.h \
     GUI/train_class/tile.h \
     GUI/train_class/train.h \
@@ -44,8 +42,6 @@ SOURCES += \
     GUI/care_class/sleep.cc \
     GUI/care_class/groom.cc \
     GUI/train_class/matrix.cc \
-    GUI/train_class/picatcher.cpp \
-    GUI/train_class/pidash.cpp \
     GUI/train_class/pipatterns.cpp \
     GUI/train_class/tile.cc \
     GUI/train_class/train.cc \

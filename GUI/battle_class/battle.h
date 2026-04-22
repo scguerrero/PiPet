@@ -57,6 +57,7 @@ signals:
 protected:
     void paintEvent(QPaintEvent *e) override;
 
+
 private slots:
     void onAttack();
     void onCharge();

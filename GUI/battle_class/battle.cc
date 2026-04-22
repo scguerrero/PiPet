@@ -46,7 +46,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     this->setLayout(root);
 
     // ── Title ─────────────────────────────────────────────────────────────
-    title = new QLabel("piPetBattle", this);
+    title = new QLabel("Wentz Dojo", this);
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet(
         "font-size: 22px; font-weight: bold; margin-bottom: 4px;"
@@ -69,19 +69,20 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         return l;
     };
 
-    hpGrid->addWidget(makeNameLabel("You",  Qt::AlignLeft),  0, 0);
-    hpGrid->addWidget(makeNameLabel("CPU",  Qt::AlignRight), 0, 2);
+    hpGrid->addWidget(makeNameLabel("Wing Chun",  Qt::AlignLeft),  0, 0);
+    hpGrid->addWidget(makeNameLabel("You",  Qt::AlignRight), 0, 2);
 
     playerBar = new QProgressBar();
     playerBar->setRange(0, maxHP); playerBar->setValue(maxHP);
     playerBar->setTextVisible(false);
-    playerBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
+    playerBar->setInvertedAppearance(true);
+    playerBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
 
     cpuBar = new QProgressBar();
     cpuBar->setRange(0, maxHP); cpuBar->setValue(maxHP);
     cpuBar->setTextVisible(false);
-    cpuBar->setInvertedAppearance(true);
-    cpuBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
+    cpuBar->setInvertedAppearance(false);
+    cpuBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
 
     hpGrid->addWidget(playerBar, 1, 0);
     hpGrid->addWidget(new QLabel("vs"), 1, 1, Qt::AlignCenter);
@@ -101,6 +102,14 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     root->addWidget(sep);
 
     // ── Result / log labels ───────────────────────────────────────────────
+    // Order: sep → logLabel (italic move log) → resultLabel (yellow outcome)
+    logLabel = new QLabel("");
+    logLabel->setAlignment(Qt::AlignCenter);
+    logLabel->setStyleSheet(
+        "font-size: 12px; font-style: italic; color: mistyrose;"
+        "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
+    root->addWidget(logLabel);
+
     resultLabel = new QLabel("Choose your move!");
     resultLabel->setAlignment(Qt::AlignCenter);
     resultLabel->setWordWrap(true);
@@ -109,14 +118,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         "background-color: rgba(0,0,0,150); border-radius: 6px; padding: 4px;");
     root->addWidget(resultLabel);
 
-    logLabel = new QLabel("");
-    logLabel->setAlignment(Qt::AlignCenter);
-    logLabel->setStyleSheet(
-        "font-size: 12px; font-style: italic; color: mistyrose;"
-        "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
-    root->addWidget(logLabel);
-
-    // ── Player character sprite ───────────────────────────────────────────
+    // ── Player character sprite (not in layout — rendered via paintEvent) ─
     m_character = new Character(this);
     m_character->setFixedSize(160, 160);
     root->addWidget(m_character, 0, Qt::AlignRight);
@@ -392,8 +394,8 @@ void Battle::playTurn(Move pm)
     // NORMAL TURN
     Move cm = cpuMove();
     log = QString("You: %1  |  CPU: %2")
-              .arg(pm == Move::Attack ? "Attack " : pm == Move::Charge ? "Charge " : "Defend ")
-              .arg(cm == Move::Attack ? "Attack " : cm == Move::Charge ? "Charge " : "Defend ");
+              .arg(pm == Move::Attack ? "Attack " : pm == Move::Charge ? "Charge " : "Defend ",
+                   cm == Move::Attack ? "Attack " : cm == Move::Charge ? "Charge " : "Defend ");
 
     if (pm == Move::Attack && cm == Move::Attack) {
         playerHP -= cpuAtk;

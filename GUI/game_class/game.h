@@ -23,6 +23,7 @@ public:
     void read(const QJsonObject &json);
     PiPet  *pet;
     Player *player;
+    int m_totalBattleWins = 0;
 
 public slots:
     bool loadGame();
@@ -67,6 +68,11 @@ private:
     void showUtilityBar(bool show);
     void showHomeOnly(bool activeStyle);
     void showAchievementPopup(const QList<QString> &titles);
+
+    // Destroys and recreates Feed/Groom/Sleep with the current petType.
+    // Called from both onCreateDone() and loadGame() so the correct sprite
+    // is always used regardless of new game vs loaded save.
+    void rebuildCareScreens();
 
     QTimer *m_inactivityTimer;
     void    resetInactivityTimer();

@@ -185,11 +185,10 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
 // The pedestal sits roughly at the horizontal center, upper-middle of screen.
 // These proportions are tuned to match the reference screenshot — adjust if needed.
 QRect Gear::pedestalCharRect() const {
-    int w = width(), h = height();
     int cw = 160, ch = 160;
     // Horizontally centered; vertically the pedestal top is ~28% from top
-    int cx = (w - cw) / 2;
-    int cy = static_cast<int>(h * 0.28);
+    int cx = 160;
+    int cy = 190;
     return QRect(cx, cy, cw, ch);
 }
 
@@ -248,7 +247,7 @@ void Gear::onHatSelected(const QString &hatKey) {
     m_equippedHat = hatKey;
 
     // Update selection highlight
-    for (HatCard *card : m_hatCards)
+    for (HatCard *card : std::as_const(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
 
     // Swap GIF
@@ -336,7 +335,8 @@ void Gear::tickParticles() {
     int cx = pr.center().x();
     int cy = pr.center().y();
     auto *rng = QRandomGenerator::global();
-    for (QRect &r : m_particles) {
+    for (int i = 0; i < m_particles.size(); ++i) {
+        QRect &r = m_particles[i];
         int dx = (r.center().x() - cx) / 4 + rng->bounded(-2, 3);
         int dy = (r.center().y() - cy) / 4 + rng->bounded(-3, 1) - 1;
         r.translate(dx, dy);
@@ -368,7 +368,7 @@ void Gear::refresh(Character::PetType petType) {
 // Restore a hat silently (no particle burst) — used after loadGame()
 void Gear::restoreHat(const QString &hatKey) {
     m_equippedHat = hatKey;
-    for (HatCard *card : m_hatCards)
+    for (HatCard *card : std::as_const(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
     loadHatGif(hatKey);
 }

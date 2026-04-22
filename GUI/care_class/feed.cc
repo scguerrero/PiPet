@@ -255,3 +255,39 @@ void Feed::applyHungerAction(int boost, const QString &message) {
     spawnCrumbs(spriteCenter());
     hungerDisplay->setText(QString("%1  Hunger: %2 / 100").arg(message).arg(newVal));
 }
+
+// ── Hat-aware character refresh ───────────────────────────────────────────
+// Called by game.cc each time the feed screen is opened so the equipped
+// hat (if any) is always visible on the character sprite.
+
+void Feed::refreshCharacter() {
+    QString hat = player->getPet().hat();
+    if (hat.isEmpty()) {
+        character->syncWithPlayer(*player, petType);
+        return;
+    }
+
+    QString folder, prefix;
+    QString type = player->getPet().pet_type();
+    if      (type == "ElectricAxolotl") { folder = "axolotl";   prefix = "axolotl";   }
+    else if (type == "SeelCat")         { folder = "seelcat";   prefix = "seelcat";   }
+    else                                { folder = "dragondog"; prefix = "dragondog"; }
+
+    QString stage = player->getPet().age_group();
+    QString infix = (stage == "Teen") ? "teen_" : (stage == "Adult") ? "adult_" : "";
+    QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
+                        .arg(folder, prefix, infix, hat);
+
+    QMovie *movie = new QMovie(path, QByteArray(), character);
+    if (movie->isValid()) {
+        QLabel *disp = character->findChild<QLabel *>();
+        if (disp) {
+            if (disp->movie()) disp->movie()->stop();
+            disp->setMovie(movie);
+            movie->start();
+            return;
+        }
+    }
+    delete movie;
+    character->syncWithPlayer(*player, petType);
+}

@@ -116,6 +116,11 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
     root->addWidget(logLabel);
 
+    // ── Player character sprite ───────────────────────────────────────────
+    m_character = new Character(this);
+    m_character->setFixedSize(160, 160);
+    root->addWidget(m_character, 0, Qt::AlignCenter);
+
     root->addStretch();
 
     // ── Action buttons ────────────────────────────────────────────────────
@@ -164,8 +169,46 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     connect(btnRestart, &QPushButton::clicked, this, &Battle::onRestart);
 
     refreshUI();
+}
 
+// ── Hat-aware player info sync ────────────────────────────────────────────
+// Called by game.cc each time the battle screen is opened. Syncs the
+// character sprite to the current pet type and equipped hat (if any).
 
+void Battle::setPlayerInfo(Player *player, Character::PetType petType) {
+    m_player  = player;
+    m_petType = petType;
+    if (!m_player) return;
+
+    QString hat = m_player->getPet().hat();
+    if (hat.isEmpty()) {
+        m_character->syncWithPlayer(*m_player, m_petType);
+        return;
+    }
+
+    QString folder, prefix;
+    QString type = m_player->getPet().pet_type();
+    if      (type == "ElectricAxolotl") { folder = "axolotl";   prefix = "axolotl";   }
+    else if (type == "SeelCat")         { folder = "seelcat";   prefix = "seelcat";   }
+    else                                { folder = "dragondog"; prefix = "dragondog"; }
+
+    QString stage = m_player->getPet().age_group();
+    QString infix = (stage == "Teen") ? "teen_" : (stage == "Adult") ? "adult_" : "";
+    QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
+                        .arg(folder, prefix, infix, hat);
+
+    QMovie *movie = new QMovie(path, QByteArray(), m_character);
+    if (movie->isValid()) {
+        QLabel *disp = m_character->findChild<QLabel *>();
+        if (disp) {
+            if (disp->movie()) disp->movie()->stop();
+            disp->setMovie(movie);
+            movie->start();
+            return;
+        }
+    }
+    delete movie;
+    m_character->syncWithPlayer(*m_player, m_petType);
 }
 
 // ── Background + particle paint ───────────────────────────────────────────
@@ -435,6 +478,8 @@ void Battle::endGame()
         resultLabel->setText("Double KO — it's a draw!");
     else if (playerHP <= 0)
         resultLabel->setText("You were defeated! CPU wins.");
-    else
+    else {
         resultLabel->setText("You won!");
+        emit battleWon();
+    }
 }

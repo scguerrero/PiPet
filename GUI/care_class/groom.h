@@ -1,7 +1,7 @@
 /*
  * groom.h - Groom screen with two-spot drag mechanic.
  * Uses standard QWidget mouse events — same as rest of codebase.
-* Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cewin & Sasha Guerrero
  */
 #ifndef GROOM_H
 #define GROOM_H
@@ -13,6 +13,7 @@
 #include <QGroupBox>
 #include "../../Player/Player.h"
 #include "../character_class/character.h"
+
 // ── Draggable Item ────────────────────────────────────────────────────────
 class GroomItem : public QLabel {
     Q_OBJECT
@@ -32,6 +33,7 @@ private:
     QPoint m_offset;
     bool   m_dragging = false;
 };
+
 // ── Groom widget ──────────────────────────────────────────────────────────
 class Groom : public QWidget
 {
@@ -40,12 +42,19 @@ public:
     explicit Groom(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateHygieneDisplay();
+
+    // Re-syncs the character sprite to the current pet type and equipped hat.
+    // Call this from game.cc each time the groom screen is opened.
+    void refreshCharacter();
+
 protected:
     void paintEvent (QPaintEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
+
 private slots:
     void onToolDropped(GroomItem *tool, QPoint globalPos);
     void resetSpots();
+
 private:
     Player             *player;
     Character::PetType  petType;
@@ -69,4 +78,5 @@ private:
     void applyGroomAction(const QString &message);
     void showHint(const QString &text);
 };
+
 #endif // GROOM_H

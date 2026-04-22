@@ -2,7 +2,7 @@
  * sleep.h - Sleep screen with character GIF.
  * Cuddle replaces Brush Teeth.
  * Author(s): Luke Cewin & Sasha Guerrero
-  */
+ */
 #ifndef SLEEP_H
 #define SLEEP_H
 
@@ -19,6 +19,10 @@ public:
     explicit Sleep(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateSleepDisplay();
+
+    // Re-syncs the character sprite to the current pet type and equipped hat.
+    // Call this from game.cc each time the sleep screen is opened.
+    void refreshCharacter();
 
 signals:
     void tuckInUsed();                    // → Beauty Sleep achievement

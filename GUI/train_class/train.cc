@@ -107,39 +107,39 @@ void Train::setUtilityStyle(QPushButton &button) {
 
 void Train::openPiDash()
 {
-    if (!m_trackRush) {
-        //pick a size you want here:
-        m_trackRush = new piDash(m_pet, this, 440, 300);
-        stack->addWidget(m_trackRush);
+//     if (!m_trackRush) {
+//         //pick a size you want here:
+//         m_trackRush = new piDash(m_pet, this, 440, 300);
+//         stack->addWidget(m_trackRush);
 
-        connect(m_trackRush, &piDash::gameFinished,
-                this,         &Train::onTrackRushFinished);
-        connect(m_trackRush->btnBack, &QPushButton::clicked,
-                this, [this]() {stack->setCurrentWidget(trainHub); });
-    }
-    stack->setCurrentWidget(m_trackRush);
-    m_trackRush->setFocus();
+//         connect(m_trackRush, &piDash::gameFinished,
+//                 this,         &Train::onTrackRushFinished);
+//         connect(m_trackRush->btnBack, &QPushButton::clicked,
+//                 this, [this]() {stack->setCurrentWidget(trainHub); });
+//     }
+//     stack->setCurrentWidget(m_trackRush);
+//     m_trackRush->setFocus();
 }
 
 void Train::onTrackRushFinished(int finalScore, int xpEarned)
 {
-    int happinessGain = qMax(1, finalScore / 20);
-    int energyGain    = qMax(1, finalScore / 25);
-    int strengthGain  = qMax(1, xpEarned  / 5);
-    int attackGain    = xpEarned / 10;
+//     int happinessGain = qMax(1, finalScore / 20);
+//     int energyGain    = qMax(1, finalScore / 25);
+//     int strengthGain  = qMax(1, xpEarned  / 5);
+//     int attackGain    = xpEarned / 10;
 
-    m_pet->increase_happiness(happinessGain);
-    m_pet->increase_energy(energyGain);
-    m_pet->increase_strength(strengthGain);
-    m_pet->increase_attack(attackGain);
+//     m_pet->increase_happiness(happinessGain);
+//     m_pet->increase_energy(energyGain);
+//     m_pet->increase_strength(strengthGain);
+//     m_pet->increase_attack(attackGain);
 
-    stack->setCurrentWidget(trainHub);
+//     stack->setCurrentWidget(trainHub);
 
-    qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned
-             << "→ happiness +" << happinessGain
-             << "energy +"      << energyGain
-             << "strength +"    << strengthGain
-             << "attack +"      << attackGain;
+//     qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned
+//              << "→ happiness +" << happinessGain
+//              << "energy +"      << energyGain
+//              << "strength +"    << strengthGain
+//              << "attack +"      << attackGain;
 }
 
 
@@ -149,18 +149,18 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
 
 void Train::openPiCatcher()
 {
-    if (!m_skySnack) {
-        //pick a size you want here
-        m_skySnack = new piCatcher(m_pet, this, 440, 300);
-        stack->addWidget(m_skySnack);
+//     if (!m_skySnack) {
+//         //pick a size you want here
+//         m_skySnack = new piCatcher(m_pet, this, 440, 300);
+//         stack->addWidget(m_skySnack);
 
-        connect(m_skySnack, &piCatcher::gameFinished,
-                this,        &Train::onSkySnackFinished);
-        connect(m_skySnack->btnBack, &QPushButton::clicked,
-                this, [this]() { stack->setCurrentWidget(trainHub); });
-    }
-    stack->setCurrentWidget(m_skySnack);
-    m_skySnack->setFocus();
+//         connect(m_skySnack, &piCatcher::gameFinished,
+//                 this,        &Train::onSkySnackFinished);
+//         connect(m_skySnack->btnBack, &QPushButton::clicked,
+//                 this, [this]() { stack->setCurrentWidget(trainHub); });
+//     }
+//     stack->setCurrentWidget(m_skySnack);
+//     m_skySnack->setFocus();
 }
 
 void Train::onSkySnackFinished(int finalScore, int xpEarned)

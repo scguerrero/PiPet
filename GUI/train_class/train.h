@@ -9,8 +9,6 @@
 #include <QtWidgets>
 #include "pipatterns.h"
 #include "../../Pet/PiPet.h"
-#include "pidash.h"
-#include "picatcher.h"
 
 class Train : public QWidget
 {
@@ -26,8 +24,6 @@ private:
     QStackedWidget *stack;
     QWidget *trainHub;
     PiPatterns *pipatterns; // Mini-game 1
-    piDash *m_trackRush = nullptr; // Mini-game 2
-    piCatcher *m_skySnack = nullptr; // Mini-game 3
 
     // TrainHub widgets ----------------------------------------------
     QVBoxLayout *layout; // Vertically-arrange widgets

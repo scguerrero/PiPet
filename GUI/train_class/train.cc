@@ -1,85 +1,123 @@
 /*
  * Train class specification file.
  * In Train mode, the Player can play mini-games with their pet to increase the pet's attributes.
- * PiPatterns is by Sasha. PiDash and SkySnack are by Tanya.
  *
- * Author(s): Sasha C. Guerrero, Tanya Magurupira
+ * Author(s): Sasha C. Guerrero
  */
 #include "train.h"
 
 Train::Train(PiPet* pet, QWidget *parent)
     : QWidget{parent}, m_pet(pet)
 {
-    m_stack    = new QStackedWidget(this);
-    m_menuPage = new QWidget();
+    // QStackedWidget contains TrainHub, PiPatterns, and PiDash
+    stack = new QStackedWidget();
+    trainHub = new QWidget();
     pipatterns = new PiPatterns();
+    stack->addWidget(trainHub);
+    stack->addWidget(pipatterns);
 
+    // Top-level layout
+    main_layout = new QVBoxLayout();
+    this->setLayout(main_layout);
+    main_layout->addWidget(stack);
+
+    // Train Hub widgets ------------------------------------------
     layout = new QVBoxLayout();
-    b_minigame1 = new QPushButton("Minigame 1");
-    b_minigame2 = new QPushButton("Minigame 2");
-    b_minigame3 = new QPushButton("Minigame 3");
+    trainHub->setLayout(layout);
+    b_minigame1 = new QPushButton("Play PiPatterns!");
+    b_minigame2 = new QPushButton("Play PiDash!");
+    b_minigame3 = new QPushButton("Play PiCatcher!");
     b_back = new QPushButton("BACK");
 
+    // PiPatterns logo
+    logo_pipatterns = new QLabel();
+    QImage *img0 = new QImage(":/images/Assets/PiPatterns.png");
+    QPixmap pxmap0 = QPixmap::fromImage(img0->scaled(275,275,Qt::KeepAspectRatio));
+    logo_pipatterns->setPixmap(pxmap0);
+    logo_pipatterns->setAlignment(Qt::AlignCenter);
+
+    // PiDash logo
+    logo_pidash = new QLabel();
+    QImage *img1 = new QImage(":/images/Assets/pidash.png");
+    QPixmap pxmap1 = QPixmap::fromImage(img1->scaled(200,200,Qt::KeepAspectRatio));
+    logo_pidash->setPixmap(pxmap1);
+    logo_pidash->setAlignment(Qt::AlignCenter);
+
+    // PiCatcher logo
+    logo_picatcher = new QLabel();
+    QImage *img2 = new QImage(":/images/Assets/picatcher.png");
+    QPixmap pxmap2 = QPixmap::fromImage(img2->scaled(250,250,Qt::KeepAspectRatio));
+    logo_picatcher->setPixmap(pxmap2);
+    logo_picatcher->setAlignment(Qt::AlignCenter);
+
+
+    // Add logos and buttons to layout
+    layout->addWidget(logo_pipatterns);
     layout->addWidget(b_minigame1);
+    layout->addWidget(logo_pidash);
     layout->addWidget(b_minigame2);
+    layout->addWidget(logo_picatcher);
     layout->addWidget(b_minigame3);
     layout->addWidget(b_back);
-    m_menuPage->setLayout(layout);
 
-    m_stack->addWidget(m_menuPage);   // index 0
-    m_stack->addWidget(pipatterns);   // index 1
-
-    QVBoxLayout *outerLayout = new QVBoxLayout(this);
-    outerLayout->setContentsMargins(0, 0, 0, 0);
-    outerLayout->addWidget(m_stack);
-    this->setLayout(outerLayout);
-
+    // Icons for buttons
     QIcon left_icon(":/images/Assets/left.png");
     b_back->setIcon(left_icon);
 
-    connect(pipatterns->b_back, SIGNAL(clicked()), this, SLOT(openMenuPage()));
-    connect(b_minigame1, SIGNAL(clicked()), this, SLOT(openPiPatterns()));
-    //connect(b_minigame2, &QPushButton::clicked, this, &Train::onMiniGame2);
-    //connect(b_minigame3, &QPushButton::clicked, this, &Train::onMiniGame3);
+    // Button stylesheets
+    setUtilityStyle(*b_back);
+    setUtilityStyle(*pipatterns->b_back);
 
-    b_back->setStyleSheet(R"(
-        QPushButton { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
-        border: 2px inset #FBA8FF;
-        border-radius: 10px;
-        padding: 4px;
-        font: bold; }
-        QPushButton:pressed {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
-        }
-        )");
+    // Connect minigame1 button to PiPatterns
+    connect(b_minigame1, SIGNAL( clicked() ), this, SLOT( openPiPatterns() ));
+
+    // Connect PiPatterns's back button to Train Hub
+    connect(pipatterns->b_back, SIGNAL( clicked() ), this, SLOT( openTrainHub() ));
+
+    //Connect minigame2 button to PiDash
+    connect(b_minigame2, SIGNAL(clicked()), this, SLOT(openPiDash()));
+
+    //conncet minigame3 button to PiCatcher
+    connect(b_minigame3, SIGNAL(clicked()), this, SLOT(openPiCatcher()));
+
 }
 
-void Train::openMenuPage() {
-    m_stack->setCurrentIndex(0);
+void Train::openTrainHub() {
+    stack->setCurrentIndex(0);
 }
 
-// Minigame 1 - PiPatterns is at index 1 of the QStackedWidget
 void Train::openPiPatterns() {
-    m_stack->setCurrentIndex(1);
+    stack->setCurrentIndex(1);
 }
 
-/*
+void Train::setUtilityStyle(QPushButton &button) {
+    button.setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4850DB, stop:1 #4A71DB);
+            border: 2px inset #FBA8FF; border-radius: 10px;
+            padding: 4px; font: bold; }
+        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4A71DB, stop:1 #4850DB); })");
+}
+
+
 // ══════════════════════════════════════════════════════════════
 //  Minigame 2 — PiDash (runner)
 // ══════════════════════════════════════════════════════════════
 
-void Train::onMiniGame2()
+void Train::openPiDash()
 {
     if (!m_trackRush) {
-        m_trackRush = new minigame_2(m_pet, this, 800, 530);
-        m_stack->addWidget(m_trackRush);
+        //pick a size you want here:
+        m_trackRush = new piDash(m_pet, this, 440, 300);
+        stack->addWidget(m_trackRush);
 
-        connect(m_trackRush, &minigame_2::gameFinished,
+        connect(m_trackRush, &piDash::gameFinished,
                 this,         &Train::onTrackRushFinished);
         connect(m_trackRush->btnBack, &QPushButton::clicked,
-                this, [this]() { m_stack->setCurrentWidget(m_menuPage); });
+                this, [this]() {stack->setCurrentWidget(trainHub); });
     }
-    m_stack->setCurrentWidget(m_trackRush);
+    stack->setCurrentWidget(m_trackRush);
     m_trackRush->setFocus();
 }
 
@@ -95,7 +133,7 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
     m_pet->increase_strength(strengthGain);
     m_pet->increase_attack(attackGain);
 
-    m_stack->setCurrentWidget(m_menuPage);
+    stack->setCurrentWidget(trainHub);
 
     qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned
              << "→ happiness +" << happinessGain
@@ -104,22 +142,24 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
              << "attack +"      << attackGain;
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  Minigame 3 — Sky Snack (food catcher)               ← NEW
 // ══════════════════════════════════════════════════════════════
 
-void Train::onMiniGame3()
+void Train::openPiCatcher()
 {
     if (!m_skySnack) {
-        m_skySnack = new minigame_3(m_pet, this, 800, 520);
-        m_stack->addWidget(m_skySnack);
+        //pick a size you want here
+        m_skySnack = new piCatcher(m_pet, this, 440, 300);
+        stack->addWidget(m_skySnack);
 
-        connect(m_skySnack, &minigame_3::gameFinished,
+        connect(m_skySnack, &piCatcher::gameFinished,
                 this,        &Train::onSkySnackFinished);
         connect(m_skySnack->btnBack, &QPushButton::clicked,
-                this, [this]() { m_stack->setCurrentWidget(m_menuPage); });
+                this, [this]() { stack->setCurrentWidget(trainHub); });
     }
-    m_stack->setCurrentWidget(m_skySnack);
+    stack->setCurrentWidget(m_skySnack);
     m_skySnack->setFocus();
 }
 
@@ -134,11 +174,10 @@ void Train::onSkySnackFinished(int finalScore, int xpEarned)
     m_pet->increase_happiness(happinessGain);
     m_pet->increase_intelligence(intelligenceGain);
 
-    m_stack->setCurrentWidget(m_menuPage);
+    stack->setCurrentWidget(trainHub);
 
     qDebug() << "[PiCatcher] score:" << finalScore << "xp:" << xpEarned
              << "→ hunger +"       << hungerGain
              << "happiness +"      << happinessGain
              << "intelligence +"   << intelligenceGain;
 }
-*/

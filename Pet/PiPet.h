@@ -28,6 +28,8 @@ private:
     int m_defense = 10;
     int m_hit_points = 100;
 
+    bool m_been_created = false; // Initially false, but becomes true after going through Pet Creation page
+
 public:
     PiPet();
     PiPet(QString, QString, int, int, int, int, int, int, int, int, int, int);
@@ -46,6 +48,7 @@ public:
     int attack();
     int defense();
     int hit_points();
+    bool creation_flag();
 
     // Setters
     void set_name(QString);
@@ -60,6 +63,7 @@ public:
     void set_attack(int);
     void set_defense(int);
     void set_hit_points(int);
+    void set_creation_flag(bool);
 
     // Incrementers
     void increase_days_old(int);

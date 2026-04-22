@@ -43,9 +43,10 @@
         <file>Assets/PiPatterns.png</file>
         <file>Assets/pidash.png</file>
         <file>Assets/gear.png</file>
-        <file>Assets/capplaceholder.png</file>
-        <file>Assets/cowboyhatplaceholder.png</file>
-        <file>Assets/crownplaceholder.png</file>
-        <file>Assets/wizardhatplaceholder</file>
+        <file>Assets/picatcher.png</file>
+        <file>Sprites/pets/icons/wizard_hat.png</file>
+        <file>Sprites/pets/icons/crown_hat.png</file>
+        <file>Sprites/pets/icons/cowboy_hat.png</file>
+        <file>Sprites/pets/icons/santa_hat.png</file>
     </qresource>
 </RCC>

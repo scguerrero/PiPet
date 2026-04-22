@@ -33,7 +33,7 @@ FoodItem::FoodItem(const QString &iconPath, const QString &name,
 void FoodItem::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_offset   = e->position().toPoint();
+        m_offset = e->pos();
         setCursor(Qt::ClosedHandCursor);
         raise();
     }
@@ -41,14 +41,14 @@ void FoodItem::mousePressEvent(QMouseEvent *e) {
 
 void FoodItem::mouseMoveEvent(QMouseEvent *e) {
     if (m_dragging)
-        move(parentWidget()->mapFromGlobal(e->globalPosition().toPoint()) - m_offset);
+        move(parentWidget()->mapFromGlobal(e->globalPos()) - m_offset);
 }
 
 void FoodItem::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
         setCursor(Qt::OpenHandCursor);
-        emit dropped(this, e->globalPosition().toPoint());
+        emit dropped(this, e->globalPos());
     }
 }
 
@@ -57,10 +57,10 @@ bool FoodItem::event(QEvent *e) {
 
     case QEvent::TouchBegin: {
         auto *te  = static_cast<QTouchEvent *>(e);
-        auto  pts = te->points();
+        auto pts = te->touchPoints();
         if (!pts.isEmpty()) {
             m_dragging = true;
-            m_offset   = pts.first().position().toPoint();
+            m_offset = e->pos();
             setCursor(Qt::ClosedHandCursor);
             raise();
         }
@@ -69,7 +69,7 @@ bool FoodItem::event(QEvent *e) {
 
     case QEvent::TouchUpdate: {
         auto *te  = static_cast<QTouchEvent *>(e);
-        auto  pts = te->points();
+        auto pts = te->touchPoints();
         if (m_dragging && !pts.isEmpty()) {
             QPoint globalPos = pts.first().globalPosition().toPoint();
             QPoint newPos    = parentWidget()->mapFromGlobal(globalPos) - m_offset;
@@ -80,7 +80,7 @@ bool FoodItem::event(QEvent *e) {
 
     case QEvent::TouchEnd: {
         auto *te  = static_cast<QTouchEvent *>(e);
-        auto  pts = te->points();
+        auto pts = te->touchPoints();
         if (m_dragging) {
             m_dragging = false;
             setCursor(Qt::OpenHandCursor);
@@ -160,7 +160,7 @@ QRect Feed::characterHitbox() const {
 void Feed::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petY = 40;
+    int petY = 200;
     int petX = (w - kSpriteSize) / 2;
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
     // Hunger display sits just above the actionsBox

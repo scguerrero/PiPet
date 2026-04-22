@@ -167,7 +167,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
 void Groom::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petY = 40;
+    int petY = 250;
     int petX = (w - kSpriteSize) / 2;
     // FIX: set character geometry here so topSpot/bottomSpot are always correct
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
@@ -222,6 +222,7 @@ void Groom::paintEvent(QPaintEvent *e) {
     p.setBrush(QColor(bc.red(), bc.green(), bc.blue(), 60));
     p.drawEllipse(bs);
     p.setPen(QColor(255, 255, 200, 230));
+    p.setFont(QFont("monospace", 12, QFont::Bold));
     p.drawText(bs, Qt::AlignCenter, bottomDone ? "✓" : "2");
 }
 

@@ -130,13 +130,27 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
 }
 
 
+void Train::refreshMindReader()
+{
+    // Only refresh if the widget has been created — it's lazy so it may not
+    // exist yet on first open, in which case openmindReader() handles it.
+    if (m_mindReader)
+        m_mindReader->refreshCharacter();
+}
+
 //  Minigame 3 — mindReader (number guessing) ──────────────────────
 
 void Train::openmindReader()
 {
     if (!m_mindReader) {
-        // Pass Player* so mindReader can read live stats and the equipped hat.
-        m_mindReader = new mindReader(m_player, Character::DragonDog, this);
+        // Derive the correct PetType from the player's actual pet — same
+        // lookup used by Feed, Battle, and every other screen in the project.
+        QString petTypeStr = m_player->getPet().pet_type();
+        Character::PetType petType = Character::DragonDog; // fallback
+        if      (petTypeStr == "ElectricAxolotl") petType = Character::ElectricAxolotl;
+        else if (petTypeStr == "SeelCat")         petType = Character::SeelCat;
+
+        m_mindReader = new mindReader(m_player, petType, this);
         stack->addWidget(m_mindReader);
 
         connect(m_mindReader, &mindReader::gameFinished,
@@ -162,8 +176,9 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
     m_pet->increase_happiness(happinessGain);
     m_pet->increase_hunger(hungerGain);
 
-    stack->setCurrentWidget(trainHub);
-
+    // Do NOT navigate away here — the result panel is still on screen.
+    // The player uses the Back button (already connected in openmindReader)
+    // to return to the hub whenever they're ready.
     qDebug() << "[mindReader] score:" << finalScore << "xp:" << xpEarned
              << "→ intelligence +" << intelligenceGain
              << "happiness +"      << happinessGain

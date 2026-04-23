@@ -226,6 +226,7 @@ void Game::open_sleep() {
 void Game::open_train() {
     showHomeOnly(true);
     b_save_mode->hide();
+    train->refreshMindReader();
     pages->setCurrentIndex(6);
 }
 

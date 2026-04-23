@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/images">
-
-        <!-- Backgrounds -->
         <file>Backgrounds/title_screen.png</file>
         <file>Backgrounds/character_screen.png</file>
         <file>Backgrounds/mode.png</file>
@@ -11,14 +9,9 @@
         <file>Backgrounds/gearStage_16bit.png</file>
         <file>Backgrounds/battle_16bit.png</file>
         <file>Backgrounds/bootscreen.png</file>
-
-        <!-- Logos -->
         <file>Assets/logo.png</file>
         <file>Assets/PiPatterns.png</file>
         <file>Assets/pidash.png</file>
-
-
-        <!-- Icons -->
         <file>Assets/settings.png</file>
         <file>Assets/home.png</file>
         <file>Assets/save.png</file>
@@ -33,13 +26,10 @@
         <file>Assets/happiness_icon.png</file>
         <file>Assets/hunger_icon.png</file>
         <file>Sprites/pets/icons/anger_mark.png</file>
-
         <file>Sprites/pets/icons/cowboy_hat.png</file>
         <file>Sprites/pets/icons/crown_hat.png</file>
         <file>Sprites/pets/icons/santa_hat.png</file>
         <file>Sprites/pets/icons/wizard_hat.png</file>
-
-        <!-- Food / Tools -->
         <file>Sprites/pets/icons/dogtreat.png</file>
         <file>Sprites/pets/icons/pizza.png</file>
         <file>Sprites/pets/icons/apple.png</file>
@@ -48,8 +38,6 @@
         <file>Sprites/pets/icons/soap.png</file>
         <file>Sprites/pets/icons/toothbrush.png</file>
         <file>Sprites/pets/icons/drink.png</file>
-
-        <!-- GIFs -->
         <file>Sprites/pets/axolotl/axolotl_adult_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_idle.gif</file>
         <file>Sprites/pets/axolotl/axolotl_teen_idle.gif</file>
@@ -62,7 +50,6 @@
         <file>Sprites/pets/seelcat/seelcat_idle.gif</file>
         <file>Sprites/pets/seelcat/seelcat_sleep.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_idle.gif</file>
-
         <file>Sprites/pets/axolotl/axolotl_adult_cowboy.gif</file>
         <file>Sprites/pets/axolotl/axolotl_adult_crown.gif</file>
         <file>Sprites/pets/axolotl/axolotl_adult_santa.gif</file>
@@ -74,7 +61,6 @@
         <file>Sprites/pets/axolotl/axolotl_teen_santa.gif</file>
         <file>Sprites/pets/axolotl/axolotl_teen_wizard.gif</file>
         <file>Sprites/pets/axolotl/axolotl_wizard.gif</file>
-
         <file>Sprites/pets/dragondog/dragondog_adult_cowboy.gif</file>
         <file>Sprites/pets/dragondog/dragondog_adult_crown.gif</file>
         <file>Sprites/pets/dragondog/dragondog_adult_santa.gif</file>
@@ -87,7 +73,6 @@
         <file>Sprites/pets/dragondog/dragondog_teen_santa.gif</file>
         <file>Sprites/pets/dragondog/dragondog_teen_wizard.gif</file>
         <file>Sprites/pets/dragondog/dragondog_wizard.gif</file>
-
         <file>Sprites/pets/seelcat/seelcat_adult_crown.gif</file>
         <file>Sprites/pets/seelcat/seelcat_adult_santa.gif</file>
         <file>Sprites/pets/seelcat/seelcat_adult_wizard.gif</file>
@@ -97,6 +82,7 @@
         <file>Sprites/pets/seelcat/seelcat_teen_santa.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_wizard.gif</file>
         <file>Sprites/pets/seelcat/seelcat_wizard.gif</file>
-
+        <file>Assets/MindReader.png</file>
+        <file>Backgrounds/mindReader.png</file>
     </qresource>
 </RCC>

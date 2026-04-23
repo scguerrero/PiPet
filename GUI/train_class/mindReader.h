@@ -1,20 +1,7 @@
 /*
- * mindReader.h - mindReader minigame widget.
+ * mindReader.h - mindReader minigame widget..
  *
- * Tamagotchi-style number guessing game: the pet "thinks" of a number 1–3,
- * and the player must guess which one. Stats and sprite are pulled live from
- * the Player/PiPet so they always match the Mode screen.
- *
- * Signals:
- *   gameFinished(int finalScore, int xpEarned)  — emitted when the session ends.
- *
- * Integration with Train:
- *   Replace every reference to piCatcher / PiCatcher with mindReader / mindReader
- *   in train.h and train.cc (see comments there).  The slot
- *   Train::onSkySnackFinished() becomes Train::onmindReaderFinished() and is
- *   already compatible with the same (finalScore, xpEarned) signature.
- *
- * Author(s): <your name here>
+ * Author(s): Luke Cerwin
  */
 
 #ifndef GUESSER_H
@@ -45,8 +32,11 @@ public:
 
     // Call this whenever the player equips a new hat or the pet ages up so the
     // embedded sprite stays in sync with the Mode screen.
+    // Mirrors Feed::refreshCharacter() — no stat bars to update here.
     void refreshCharacter();
-
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 signals:
     // Emitted once per session (when the player clicks "Done" or runs out of
     // guesses).  Connect to Train::onmindReaderFinished(int,int).
@@ -66,18 +56,14 @@ private:
     int  m_score          = 0;   // correct guesses this session
     int  m_roundsPlayed   = 0;   // total guesses so far
     int  m_streak         = 0;   // current consecutive-correct streak
+    bool m_sessionFinished = false;
     static constexpr int kMaxRounds = 10;  // session length
+    QPixmap             m_bg;
 
     // ── Widgets ──────────────────────────────────────────────────────────────
     Character   *m_character;    // live pet sprite (with hat)
 
-    // Stats panel — mirrors the "Condition" GroupBox in Mode
-    QGroupBox    *m_statsBox;
-    QGridLayout  *m_statsGrid;
-    QLabel       *m_hungerLabel, *m_energyLabel, *m_happinessLabel;
-    QProgressBar *m_hungerBar,   *m_energyBar,   *m_happinessBar;
-
-    // Info panel (score, streak, rounds left)
+    // Info panel (score, streak, rounds left) — pinned to bottom of screen
     QGroupBox *m_infoBox;
     QLabel    *m_scoreLabel;
     QLabel    *m_streakLabel;
@@ -100,15 +86,13 @@ private:
     void buildUi();
     void applyButtonStyle(QPushButton *btn, const QString &extraColor = "");
     void applyUtilityStyle(QPushButton *btn);
-    void updateStatBars();
     void updateInfoPanel();
     void setGuessButtonsEnabled(bool enabled);
     void showResultPanel(bool visible);
 
-    // Hat-aware sprite refresh — same logic as Mode::refreshDisplay()
-    QMovie  *m_cachedHatMovie = nullptr;
-    QString  m_cachedHatPath  = "";
-    void     applyHatSprite();
+    // Hat-aware sprite refresh — mirrors Feed::refreshCharacter() exactly.
+    // No movie cache needed: same simple new/delete pattern as Feed.
+    void applyHatSprite();
 };
 
 #endif // mindReader_H

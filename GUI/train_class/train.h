@@ -46,6 +46,9 @@ public slots:
     void openmindReader();
     void onTrackRushFinished(int finalScore, int xpEarned);
     void onMindReaderFinished(int finalScore, int xpEarned);
+    // Called by game.cc every time the Train screen is opened, so the hat
+    // gif stays in sync — mirrors how open_feed() calls feed->refreshCharacter().
+    void refreshMindReader();
 };
 
 #endif // TRAIN_H

@@ -205,7 +205,7 @@ void Gear::showEvent(QShowEvent *e) {
     QWidget::showEvent(e);
 
     // Position info helper near the top center (right of achievements button)
-    infoHelper->setGeometry((width() - 300) / 2, 40, 300, 50);
+    infoHelper->setGeometry((width() - 300) / 2, 60, 300, 50);
     infoHelper->show();
     infoHelper->raise();
     m_infoTimer->start(3000);

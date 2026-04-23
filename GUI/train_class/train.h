@@ -8,7 +8,7 @@
 #define TRAIN_H
 #include <QtWidgets>
 #include "pipatterns.h"
-#include "guesser.h"
+#include "mindReader.h"
 #include "../../Pet/PiPet.h"
 #include "../../Player/Player.h"
 

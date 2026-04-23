@@ -28,7 +28,6 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     b_minigame1 = new QPushButton("Play PiPatterns!");
     b_minigame2 = new QPushButton("Play PiDash!");
     b_minigame3 = new QPushButton("Play MindReader!");
-    b_back      = new QPushButton("BACK");
 
     // PiPatterns logo
     logo_pipatterns = new QLabel();
@@ -46,10 +45,13 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
 
     // mindReader logo (swap mindReader.png for your real asset when ready)
     logo_mindReader = new QLabel();
-    QImage *img2 = new QImage(":/images/Assets/Mindreader.png");
+    QImage *img2 = new QImage(":/images/Assets/MindReader.png");
     QPixmap pxmap2 = QPixmap::fromImage(img2->scaled(250, 250, Qt::KeepAspectRatio));
     logo_mindReader->setPixmap(pxmap2);
     logo_mindReader->setAlignment(Qt::AlignCenter);
+
+    // Construct b_back BEFORE any setUtilityStyle call that dereferences it
+    b_back = new QPushButton("Back");
 
     // Add logos and buttons to layout
     layout->addWidget(logo_pipatterns);
@@ -58,11 +60,6 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     layout->addWidget(b_minigame2);
     layout->addWidget(logo_mindReader);
     layout->addWidget(b_minigame3);
-    layout->addWidget(b_back);
-
-    // Icons
-    QIcon left_icon(":/images/Assets/left.png");
-    b_back->setIcon(left_icon);
 
     // Button stylesheets
     setUtilityStyle(*b_back);
@@ -133,9 +130,7 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
 }
 
 
-// ══════════════════════════════════════════════════════════════
-//  Minigame 3 — mindReader (number guessing)
-// ══════════════════════════════════════════════════════════════
+//  Minigame 3 — mindReader (number guessing) ──────────────────────
 
 void Train::openmindReader()
 {
@@ -159,7 +154,6 @@ void Train::openmindReader()
 
 void Train::onMindReaderFinished(int finalScore, int xpEarned)
 {
-    // Guessing game → rewards intelligence (thinking!) + happiness + small hunger gain
     int intelligenceGain = qMax(1, xpEarned  / 5);
     int happinessGain    = qMax(1, finalScore / 25);
     int hungerGain       = qMax(1, finalScore / 40);

@@ -13,10 +13,9 @@
 #include <QtMath>
 
 // ── Dummy hit-zone in image-space (0-1 normalised).
-// The red annotation covers roughly x: 52-78 %, y: 30-57 % of the image.
-// We use the centre + spread to spawn particles.
-static constexpr float kDummyNX  = 0.67f;   // normalised centre-x  (right side of image)
-static constexpr float kDummyNY  = 0.43f;   // normalised centre-y  (head / upper chest)
+// Wing Chun dummy: head/chest centre is at roughly x: 22%, y: 42% of the widget.
+static constexpr float kDummyNX  = 0.22f;   // normalised centre-x  (left side — dummy)
+static constexpr float kDummyNY  = 0.42f;   // normalised centre-y  (head / upper chest)
 
 // ── Palette of wood-chip colours ─────────────────────────────────────────
 static const QColor kWoodPalette[] = {
@@ -69,46 +68,41 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         return l;
     };
 
-    hpGrid->addWidget(makeNameLabel("Wing Chun",  Qt::AlignLeft),  0, 0);
-    hpGrid->addWidget(makeNameLabel("You",  Qt::AlignRight), 0, 2);
-
-    playerBar = new QProgressBar();
-    playerBar->setRange(0, maxHP); playerBar->setValue(maxHP);
-    playerBar->setTextVisible(false);
-    playerBar->setInvertedAppearance(true);
-    playerBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
+    // CPU ("Wing Chun") on the LEFT, Player ("You") on the RIGHT
+    hpGrid->addWidget(makeNameLabel("Wing Chun", Qt::AlignLeft),  0, 0);
+    hpGrid->addWidget(makeNameLabel("You",       Qt::AlignRight), 0, 2);
 
     cpuBar = new QProgressBar();
     cpuBar->setRange(0, maxHP); cpuBar->setValue(maxHP);
     cpuBar->setTextVisible(false);
     cpuBar->setInvertedAppearance(false);
-    cpuBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
+    cpuBar->setStyleSheet("QProgressBar::chunk{background:#f44336;}");
 
-    hpGrid->addWidget(playerBar, 1, 0);
+    playerBar = new QProgressBar();
+    playerBar->setRange(0, maxHP); playerBar->setValue(maxHP);
+    playerBar->setTextVisible(false);
+    playerBar->setInvertedAppearance(true);
+    playerBar->setStyleSheet("QProgressBar::chunk{background:#4caf50;}");
+
+    hpGrid->addWidget(cpuBar,    1, 0);
     hpGrid->addWidget(new QLabel("vs"), 1, 1, Qt::AlignCenter);
-    hpGrid->addWidget(cpuBar,    1, 2);
+    hpGrid->addWidget(playerBar, 1, 2);
     hpGrid->setColumnStretch(0, 1); hpGrid->setColumnStretch(2, 1);
 
-    playerHPLabel = new QLabel(); playerHPLabel->setAlignment(Qt::AlignLeft);
-    cpuHPLabel    = new QLabel(); cpuHPLabel->setAlignment(Qt::AlignRight);
-    hpGrid->addWidget(playerHPLabel, 2, 0);
-    hpGrid->addWidget(cpuHPLabel,    2, 2);
+    cpuHPLabel    = new QLabel(); cpuHPLabel->setAlignment(Qt::AlignLeft);
+    playerHPLabel = new QLabel(); playerHPLabel->setAlignment(Qt::AlignRight);
+    hpGrid->addWidget(cpuHPLabel,    2, 0);
+    hpGrid->addWidget(playerHPLabel, 2, 2);
 
-    playerHPLabel->setStyleSheet("font-size: 14px; color: mistyrose; background: transparent;");
     cpuHPLabel->setStyleSheet(   "font-size: 14px; color: mistyrose; background: transparent;");
+    playerHPLabel->setStyleSheet("font-size: 14px; color: mistyrose; background: transparent;");
 
-    sep = new QFrame();
-    sep->setFrameShape(QFrame::HLine); sep->setFrameShadow(QFrame::Sunken);
-    root->addWidget(sep);
-
-    // ── Result / log labels ───────────────────────────────────────────────
-    // Order: sep → logLabel (italic move log) → resultLabel (yellow outcome)
+    // ── Result / log labels constructed here, added just above the buttons ─
     logLabel = new QLabel("");
     logLabel->setAlignment(Qt::AlignCenter);
     logLabel->setStyleSheet(
         "font-size: 12px; font-style: italic; color: mistyrose;"
         "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
-    root->addWidget(logLabel);
 
     resultLabel = new QLabel("Choose your move!");
     resultLabel->setAlignment(Qt::AlignCenter);
@@ -116,14 +110,19 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     resultLabel->setStyleSheet(
         "font-size: 14px; font-weight: bold; color: #ffd700;"
         "background-color: rgba(0,0,0,150); border-radius: 6px; padding: 4px;");
-    root->addWidget(resultLabel);
 
-    // ── Player character sprite (not in layout — rendered via paintEvent) ─
+    // ── Player character sprite
     m_character = new Character(this);
     m_character->setFixedSize(160, 160);
+    root->addSpacing(110);
     root->addWidget(m_character, 0, Qt::AlignRight);
 
     root->addStretch();
+
+    // ── Log + result ────────────────
+    root->addWidget(logLabel);
+    root->addWidget(resultLabel);
+    root->addSpacing(5);
 
     // ── Action buttons ────────────────────────────────────────────────────
     btnRow = new QHBoxLayout();
@@ -257,9 +256,8 @@ void Battle::spawnWoodParticles(int count)
         chip.pos.setX(cx + rng->bounded(40) - 20);
         chip.pos.setY(cy + rng->bounded(40) - 20);
 
-        // Velocity: burst leftward + upward (away from dummy toward player side)
-        // with random spread
-        float angle   = static_cast<float>(rng->bounded(260)) - 220.0f; // -220 .. +40 deg
+        // Velocity: burst rightward + upward (away from dummy toward centre of arena)
+        float angle   = static_cast<float>(rng->bounded(260)) - 40.0f; // -40 .. +220 deg → rightward arc
         float speed   = 2.5f + static_cast<float>(rng->bounded(40)) * 0.15f;
         float rad     = qDegreesToRadians(angle);
         chip.vel.setX(qCos(rad) * speed);

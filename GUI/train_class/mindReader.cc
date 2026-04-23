@@ -18,7 +18,7 @@
  * Author(s): <your name here>
  */
 
-#include "guesser.h"
+#include "mindReader.h"
 #include <QRandomGenerator>
 
 // ─────────────────────────────────────────────────────────────────────────────

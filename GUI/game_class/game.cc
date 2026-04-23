@@ -9,6 +9,9 @@
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QScrollArea>
+#include <QStandardPaths>
+#include <QDir>
+#include <QFileInfo>
 
 static constexpr int kInactivityMs = 30 * 60 * 1000;
 static constexpr int kMarathonMs   = 2  * 60 * 60 * 1000;
@@ -80,10 +83,10 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     m_marathonTimer->start();
 
     // ── Connections ───────────────────────────────────────────────────────
-    if (new_game)
-        connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
-    else
-        connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
+    // Start button routing is wired in loadGame() once we know whether a
+    // save file exists — connecting here would always fire open_create()
+    // because new_game hasn't been resolved yet.
+    connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
 
     connect(b_save_mode, SIGNAL(clicked()), this, SLOT(saveGame()));
     connect(b_home,      SIGNAL(clicked()), this, SLOT(open_mode()));
@@ -426,14 +429,25 @@ void Game::read(const QJsonObject &json) {
 }
 
 bool Game::loadGame() {
-    QFile loadFile("player.json");
+    // Use a stable, OS-appropriate writable location instead of a bare
+    // relative path — the CWD at runtime is not reliable on Linux/macOS.
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+                       + "/player.json";
+    QDir().mkpath(QFileInfo(savePath).absolutePath()); // ensure directory exists
+
+    QFile loadFile(savePath);
     if (!loadFile.open(QIODevice::ReadOnly)) {
-        qWarning("Couldn't open save file.");
+        qWarning("Couldn't open save file — treating as new game.");
+        // Start button already defaults to open_create(); no rewire needed.
         return false;
     }
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
     read(loadDoc.object());
+
+    // Save file found and loaded — rewire Start button to go to Mode, not Create.
+    disconnect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
+    connect   (start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
     // Resolve the pet type from the saved string so every screen gets the
     // correct sprite — not the DragonDog default from construction time.
@@ -457,15 +471,38 @@ bool Game::loadGame() {
 }
 
 bool Game::saveGame() {
-    QFile saveFile("player.json");
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+                       + "/player.json";
+    QDir().mkpath(QFileInfo(savePath).absolutePath());
+
+    QFile saveFile(savePath);
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
         return false;
     }
-    QMessageBox msg(this);
-    msg.setText("Save successful!");
-    msg.exec();
     saveFile.write(QJsonDocument(toJson()).toJson());
+
+    // Show a non-blocking toast — same style as the hunger hint in Mode
+    QLabel *toast = new QLabel("Save successful!", this);
+    toast->setAlignment(Qt::AlignCenter);
+    toast->setStyleSheet(R"(
+        QLabel {
+            background-color: rgba(30,10,60,230);
+            border: 2px solid #FBA8FF;
+            border-radius: 12px;
+            color: mistyrose;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 10px;
+        }
+    )");
+    toast->setFixedWidth(260);
+    toast->adjustSize();
+    toast->setGeometry((width() - 260) / 2, 60, 260, toast->height());
+    toast->raise();
+    toast->show();
+    QTimer::singleShot(2000, toast, &QLabel::deleteLater);
+
     return true;
 }
 

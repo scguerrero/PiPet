@@ -48,7 +48,7 @@ Mode::Mode(Player *player, QWidget *parent)
     hungerHintLabel = new QLabel(this);
     hungerHintLabel->setAlignment(Qt::AlignCenter);
     hungerHintLabel->setWordWrap(true);
-    hungerHintLabel->setText("Your pet is hungry!\nMake sure you feed them!");
+    hungerHintLabel->setText("Your pet is hungry!\n");
     hungerHintLabel->setStyleSheet(
         "QLabel { background-color: rgba(180,30,30,200); border-radius: 8px;"
         "padding: 5px 10px; color: #ffd700; font-size: 13px; font-weight: bold; }");

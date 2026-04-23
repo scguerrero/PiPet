@@ -38,21 +38,21 @@ public:
     ~PiPet();
 
     // Getters
-    QString name();
-    QString age_group();
-    QString pet_type();
-    QString hat();
-    int days_old();
-    int hunger();
-    int energy();
-    int strength();
-    int hygiene();
-    int intelligence();
-    int happiness();
-    int attack();
-    int defense();
-    int hit_points();
-    bool creation_flag();
+    QString name() const;
+    QString age_group() const;
+    QString pet_type() const;
+    QString hat() const;
+    int days_old() const;
+    int hunger() const;
+    int energy() const;
+    int strength() const;
+    int hygiene() const;
+    int intelligence() const;
+    int happiness() const;
+    int attack() const;
+    int defense() const;
+    int hit_points() const;
+    bool creation_flag() const;
 
     // Setters
     void set_name(QString);

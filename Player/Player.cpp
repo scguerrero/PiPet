@@ -44,7 +44,7 @@ Player Player::fromJSON(const QJsonObject &json) {
     PiPet  p;
     Player player(p);
 
-    if (const QJsonValue v = json["Start Date"];       v.isString()) player.startDate        = QDateTime::fromString(v.toString());
+    if (const QJsonValue v = json["Start Date"];       v.isString()) player.startDate        = QDateTime::fromString(v.toString(), Qt::ISODate);
     if (const QJsonValue v = json["Streak"];           v.isDouble()) player.streak           = v.toInt();
     if (const QJsonValue v = json["Good Days"];        v.isDouble()) player.goodDays         = v.toInt();
     if (const QJsonValue v = json["Hours"];            v.isDouble()) player.hours            = v.toInt();
@@ -57,7 +57,7 @@ Player Player::fromJSON(const QJsonObject &json) {
 
 QJsonObject Player::toJson() const {
     QJsonObject json;
-    json["Start Date"]      = startDate.toString();
+    json["Start Date"]      = startDate.toString(Qt::ISODate);
     json["Streak"]          = streak;
     json["Good Days"]       = goodDays;
     json["Hours"]           = hours;

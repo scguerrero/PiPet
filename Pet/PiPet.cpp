@@ -37,21 +37,21 @@ PiPet::PiPet(QString name, QString age_group, int days_old, int hunger, int ener
 PiPet::~PiPet() {}
 
 // Getters
-QString PiPet::name() { return m_name; }
-QString PiPet::age_group() { return m_age_group; }
-QString PiPet::pet_type() { return m_pet_type; }
-QString PiPet::hat() { return m_hat; }
-int PiPet::days_old() { return m_days_old; }
-int PiPet::hunger() { return m_hunger; }
-int PiPet::energy() { return m_energy; }
-int PiPet::strength() { return m_strength; }
-int PiPet::hygiene() { return m_hygiene; }
-int PiPet::intelligence() { return m_intelligence; }
-int PiPet::happiness() { return m_happiness; }
-int PiPet::attack() { return m_attack; }
-int PiPet::defense() { return m_defense; }
-int PiPet::hit_points() { return m_hit_points; }
-bool PiPet::creation_flag() { return m_been_created; }
+QString PiPet::name() const { return m_name; }
+QString PiPet::age_group() const { return m_age_group; }
+QString PiPet::pet_type() const { return m_pet_type; }
+QString PiPet::hat() const { return m_hat; }
+int PiPet::days_old() const { return m_days_old; }
+int PiPet::hunger() const { return m_hunger; }
+int PiPet::energy() const { return m_energy; }
+int PiPet::strength() const { return m_strength; }
+int PiPet::hygiene() const { return m_hygiene; }
+int PiPet::intelligence() const { return m_intelligence; }
+int PiPet::happiness() const { return m_happiness; }
+int PiPet::attack() const { return m_attack; }
+int PiPet::defense() const { return m_defense; }
+int PiPet::hit_points() const { return m_hit_points; }
+bool PiPet::creation_flag() const { return m_been_created; }
 
 // Setters
 void PiPet::set_name(QString name) { m_name = name; }

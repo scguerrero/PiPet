@@ -1,21 +1,6 @@
 /*
  * mindReader.cc - mindReader minigame implementation.
- *
- * Game loop (10 rounds per session):
- *   1. startNewRound() picks a secret number 1–3 and enables the guess buttons.
- *   2. Player taps one of the three buttons → onGuess() compares against secret.
- *   3. Feedback label shows result; streak / score updated; next round starts
- *      after a short delay so the player can read the feedback.
- *   4. After kMaxRounds guesses, endSession() shows the result panel and
- *      emits gameFinished(finalScore, xpEarned).
- *
- * Stat integration:
- *   Stats are read live from Player::getPet() — they always reflect the current
- *   state (including any decay that happened while the player was in the hub).
- *   Stats are NOT modified here; that is handled by Train::onmindReaderFinished()
- *   exactly as the other minigames do it.
- *
- * Author(s): <your name here>
+ * Author(s): Luke Cerwin
  */
 
 #include "mindReader.h"

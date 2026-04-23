@@ -1,20 +1,21 @@
 /*
- * Train class specification file.
+ * Train class implementation file.
  * In Train mode, the Player can play mini-games with their pet to increase the pet's attributes.
  *
  * Author(s): Sasha C. Guerrero
  */
 #include "train.h"
 
-Train::Train(PiPet* pet, QWidget *parent)
-    : QWidget{parent}, m_pet(pet)
+Train::Train(PiPet* pet, Player* player, QWidget *parent)
+    : QWidget{parent}, m_pet(pet), m_player(player)
 {
-    // QStackedWidget contains TrainHub, PiPatterns, and PiDash
-    stack = new QStackedWidget();
-    trainHub = new QWidget();
+    // QStackedWidget contains TrainHub, PiPatterns, and PiDash.
+    // mindReader is added lazily on first openmindReader() call.
+    stack      = new QStackedWidget();
+    trainHub   = new QWidget();
     pipatterns = new PiPatterns();
-    stack->addWidget(trainHub);
-    stack->addWidget(pipatterns);
+    stack->addWidget(trainHub);    // index 0
+    stack->addWidget(pipatterns);  // index 1
 
     // Top-level layout
     main_layout = new QVBoxLayout();
@@ -26,41 +27,40 @@ Train::Train(PiPet* pet, QWidget *parent)
     trainHub->setLayout(layout);
     b_minigame1 = new QPushButton("Play PiPatterns!");
     b_minigame2 = new QPushButton("Play PiDash!");
-    b_minigame3 = new QPushButton("Play PiCatcher!");
-    b_back = new QPushButton("BACK");
+    b_minigame3 = new QPushButton("Play MindReader!");
+    b_back      = new QPushButton("BACK");
 
     // PiPatterns logo
     logo_pipatterns = new QLabel();
     QImage *img0 = new QImage(":/images/Assets/PiPatterns.png");
-    QPixmap pxmap0 = QPixmap::fromImage(img0->scaled(275,275,Qt::KeepAspectRatio));
+    QPixmap pxmap0 = QPixmap::fromImage(img0->scaled(275, 275, Qt::KeepAspectRatio));
     logo_pipatterns->setPixmap(pxmap0);
     logo_pipatterns->setAlignment(Qt::AlignCenter);
 
     // PiDash logo
     logo_pidash = new QLabel();
     QImage *img1 = new QImage(":/images/Assets/pidash.png");
-    QPixmap pxmap1 = QPixmap::fromImage(img1->scaled(200,200,Qt::KeepAspectRatio));
+    QPixmap pxmap1 = QPixmap::fromImage(img1->scaled(200, 200, Qt::KeepAspectRatio));
     logo_pidash->setPixmap(pxmap1);
     logo_pidash->setAlignment(Qt::AlignCenter);
 
-    // PiCatcher logo
-    logo_picatcher = new QLabel();
-    QImage *img2 = new QImage(":/images/Assets/picatcher.png");
-    QPixmap pxmap2 = QPixmap::fromImage(img2->scaled(250,250,Qt::KeepAspectRatio));
-    logo_picatcher->setPixmap(pxmap2);
-    logo_picatcher->setAlignment(Qt::AlignCenter);
-
+    // mindReader logo (swap mindReader.png for your real asset when ready)
+    logo_mindReader = new QLabel();
+    QImage *img2 = new QImage(":/images/Assets/Mindreader.png");
+    QPixmap pxmap2 = QPixmap::fromImage(img2->scaled(250, 250, Qt::KeepAspectRatio));
+    logo_mindReader->setPixmap(pxmap2);
+    logo_mindReader->setAlignment(Qt::AlignCenter);
 
     // Add logos and buttons to layout
     layout->addWidget(logo_pipatterns);
     layout->addWidget(b_minigame1);
     layout->addWidget(logo_pidash);
     layout->addWidget(b_minigame2);
-    layout->addWidget(logo_picatcher);
+    layout->addWidget(logo_mindReader);
     layout->addWidget(b_minigame3);
     layout->addWidget(b_back);
 
-    // Icons for buttons
+    // Icons
     QIcon left_icon(":/images/Assets/left.png");
     b_back->setIcon(left_icon);
 
@@ -69,17 +69,16 @@ Train::Train(PiPet* pet, QWidget *parent)
     setUtilityStyle(*pipatterns->b_back);
 
     // Connect minigame1 button to PiPatterns
-    connect(b_minigame1, SIGNAL( clicked() ), this, SLOT( openPiPatterns() ));
+    connect(b_minigame1, SIGNAL(clicked()), this, SLOT(openPiPatterns()));
 
-    // Connect PiPatterns's back button to Train Hub
-    connect(pipatterns->b_back, SIGNAL( clicked() ), this, SLOT( openTrainHub() ));
+    // Connect PiPatterns back button to Train Hub
+    connect(pipatterns->b_back, SIGNAL(clicked()), this, SLOT(openTrainHub()));
 
-    //Connect minigame2 button to PiDash
+    // Connect minigame2 button to PiDash
     connect(b_minigame2, SIGNAL(clicked()), this, SLOT(openPiDash()));
 
-    //conncet minigame3 button to PiCatcher
-    connect(b_minigame3, SIGNAL(clicked()), this, SLOT(openPiCatcher()));
-
+    // Connect minigame3 button to mindReader
+    connect(b_minigame3, SIGNAL(clicked()), this, SLOT(openmindReader()));
 }
 
 void Train::openTrainHub() {
@@ -108,14 +107,12 @@ void Train::setUtilityStyle(QPushButton &button) {
 void Train::openPiDash()
 {
 //     if (!m_trackRush) {
-//         //pick a size you want here:
 //         m_trackRush = new piDash(m_pet, this, 440, 300);
 //         stack->addWidget(m_trackRush);
-
 //         connect(m_trackRush, &piDash::gameFinished,
 //                 this,         &Train::onTrackRushFinished);
 //         connect(m_trackRush->btnBack, &QPushButton::clicked,
-//                 this, [this]() {stack->setCurrentWidget(trainHub); });
+//                 this, [this]() { stack->setCurrentWidget(trainHub); });
 //     }
 //     stack->setCurrentWidget(m_trackRush);
 //     m_trackRush->setFocus();
@@ -127,57 +124,54 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
 //     int energyGain    = qMax(1, finalScore / 25);
 //     int strengthGain  = qMax(1, xpEarned  / 5);
 //     int attackGain    = xpEarned / 10;
-
 //     m_pet->increase_happiness(happinessGain);
 //     m_pet->increase_energy(energyGain);
 //     m_pet->increase_strength(strengthGain);
 //     m_pet->increase_attack(attackGain);
-
 //     stack->setCurrentWidget(trainHub);
-
-//     qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned
-//              << "→ happiness +" << happinessGain
-//              << "energy +"      << energyGain
-//              << "strength +"    << strengthGain
-//              << "attack +"      << attackGain;
+//     qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned;
 }
 
 
 // ══════════════════════════════════════════════════════════════
-//  Minigame 3 — Sky Snack (food catcher)               ← NEW
+//  Minigame 3 — mindReader (number guessing)
 // ══════════════════════════════════════════════════════════════
 
-void Train::openPiCatcher()
+void Train::openmindReader()
 {
-//     if (!m_skySnack) {
-//         //pick a size you want here
-//         m_skySnack = new piCatcher(m_pet, this, 440, 300);
-//         stack->addWidget(m_skySnack);
+    if (!m_mindReader) {
+        // Pass Player* so mindReader can read live stats and the equipped hat.
+        m_mindReader = new mindReader(m_player, Character::DragonDog, this);
+        stack->addWidget(m_mindReader);
 
-//         connect(m_skySnack, &piCatcher::gameFinished,
-//                 this,        &Train::onSkySnackFinished);
-//         connect(m_skySnack->btnBack, &QPushButton::clicked,
-//                 this, [this]() { stack->setCurrentWidget(trainHub); });
-//     }
-//     stack->setCurrentWidget(m_skySnack);
-//     m_skySnack->setFocus();
+        connect(m_mindReader, &mindReader::gameFinished,
+                this,          &Train::onMindReaderFinished);
+        connect(m_mindReader->b_back, &QPushButton::clicked,
+                this, [this]() { stack->setCurrentWidget(trainHub); });
+    }
+
+    // Sync sprite and hat to whatever the player has equipped right now.
+    m_mindReader->refreshCharacter();
+
+    stack->setCurrentWidget(m_mindReader);
+    m_mindReader->setFocus();
 }
 
-void Train::onSkySnackFinished(int finalScore, int xpEarned)
+void Train::onMindReaderFinished(int finalScore, int xpEarned)
 {
-    // Food game → rewards hunger (feeding!) + happiness + intelligence
-    int hungerGain       = qMax(1, finalScore / 15);
-    int happinessGain    = qMax(1, finalScore / 25);
+    // Guessing game → rewards intelligence (thinking!) + happiness + small hunger gain
     int intelligenceGain = qMax(1, xpEarned  / 5);
+    int happinessGain    = qMax(1, finalScore / 25);
+    int hungerGain       = qMax(1, finalScore / 40);
 
-    m_pet->increase_hunger(hungerGain);
-    m_pet->increase_happiness(happinessGain);
     m_pet->increase_intelligence(intelligenceGain);
+    m_pet->increase_happiness(happinessGain);
+    m_pet->increase_hunger(hungerGain);
 
     stack->setCurrentWidget(trainHub);
 
-    qDebug() << "[PiCatcher] score:" << finalScore << "xp:" << xpEarned
-             << "→ hunger +"       << hungerGain
+    qDebug() << "[mindReader] score:" << finalScore << "xp:" << xpEarned
+             << "→ intelligence +" << intelligenceGain
              << "happiness +"      << happinessGain
-             << "intelligence +"   << intelligenceGain;
+             << "hunger +"         << hungerGain;
 }

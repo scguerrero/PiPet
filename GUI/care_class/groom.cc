@@ -115,7 +115,6 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     hygieneDisplay->setStyleSheet(
         "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
         "padding: 6px; color: mistyrose; font-size: 15px; }");
-    hygieneDisplay->setFixedWidth(300);
     updateHygieneDisplay();
 
     // ── Info helper — shown on open, hides after 3 s ──────────────────────
@@ -170,7 +169,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     connect(m_resetTimer, &QTimer::timeout, this, &Groom::resetSpots);
 
     // ── Tool tray group box (visual backdrop only — tools are free children) ─
-    actionsBox = new QGroupBox("Tools", this);
+    actionsBox = new QGroupBox("■‿■", this);
     actionsBox->setStyleSheet(
         "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
@@ -197,9 +196,9 @@ void Groom::resizeEvent(QResizeEvent *e) {
     // FIX: set character geometry here so topSpot/bottomSpot are always correct
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
     // Hint label floats just below the character GIF
-    hintLabel->setGeometry((w - 300) / 2, petY + kSpriteSize + 6, 300, 30);
+    hintLabel->setGeometry((w - 300) / 2, 80, 300, 30);
     // Hygiene display sits just above the actionsBox
-    hygieneDisplay->setGeometry((w - 300) / 2, h - 170, w-16, 38);
+    hygieneDisplay->setGeometry((w - 360) / 2, h - 170, 360, 38);
     // actionsBox stretches full width with 8px side margins
     actionsBox->setGeometry(8, h - 130, w - 16, 122);
     // Info helper near the top center

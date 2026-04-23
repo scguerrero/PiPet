@@ -42,7 +42,8 @@ private:
 
     QPixmap m_bg, m_kitchenPx, m_bathroomPx, m_bedroomPx;
 
-    QLabel      *petNameLabel, *angerMark;
+    QLabel      *petNameLabel, *angerMark, *hungerHintLabel;
+    QTimer      *m_hungerHintTimer;
     QPixmap      m_angerPx;
     QPushButton *b_settings;
 
@@ -58,6 +59,11 @@ private:
     static constexpr int DECAY_INTERVAL_SECS = 10;
     int     secondsSinceDecay = 0;
     QString m_lastAgeGroup    = "Baby";
+
+    // Hat GIF cache — refreshDisplay() reuses this instead of allocating a
+    // new QMovie every decay tick.  Invalidated when hat, type, or stage changes.
+    QMovie  *m_cachedHatMovie = nullptr;
+    QString  m_cachedHatPath  = "";
 
     void decayStats();
     void updateStatBars();

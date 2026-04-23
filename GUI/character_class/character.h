@@ -3,7 +3,7 @@
  * Displays the correct GIF based on pet type, age group, and emotion.
  * Emotion is driven automatically from stat levels.
  *
- * Author(s): [Luke Cerwin]
+ * Author(s): Luke Cerwin
  */
 
 #ifndef CHARACTER_H

@@ -24,6 +24,7 @@ HEADERS += \
     GUI/train_class/pipatterns.h \
     GUI/train_class/tile.h \
     GUI/train_class/train.h \
+    GUI/train_class/guesser.h \
     GUI/battle_class/battle.h \
     GUI/clock_class/clock.h \
     GUI/achievements_class/achievements.h \
@@ -43,6 +44,7 @@ SOURCES += \
     GUI/care_class/groom.cc \
     GUI/train_class/matrix.cc \
     GUI/train_class/pipatterns.cpp \
+    GUI/train_class/guesser.cc \
     GUI/train_class/tile.cc \
     GUI/train_class/train.cc \
     GUI/battle_class/battle.cc \

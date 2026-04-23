@@ -44,6 +44,23 @@ Mode::Mode(Player *player, QWidget *parent)
     angerMark->setFixedSize(36, 36);
     angerMark->hide();
 
+    // ── Hunger hint label — appears below the character when pet is angry ──
+    hungerHintLabel = new QLabel(this);
+    hungerHintLabel->setAlignment(Qt::AlignCenter);
+    hungerHintLabel->setWordWrap(true);
+    hungerHintLabel->setText("Your pet is hungry!\nMake sure you feed them!");
+    hungerHintLabel->setStyleSheet(
+        "QLabel { background-color: rgba(180,30,30,200); border-radius: 8px;"
+        "padding: 5px 10px; color: #ffd700; font-size: 13px; font-weight: bold; }");
+    hungerHintLabel->hide();
+
+    // Auto-hide after 5 s — restarted each decay tick while still angry
+    m_hungerHintTimer = new QTimer(this);
+    m_hungerHintTimer->setSingleShot(true);
+    m_hungerHintTimer->setInterval(5000);
+    connect(m_hungerHintTimer, &QTimer::timeout,
+            hungerHintLabel, &QLabel::hide);
+
     timekeeper = new Clock();
     time       = new QTime();
     timer      = new QTimer();
@@ -123,6 +140,11 @@ void Mode::layoutWidgets() {
     int charX = (w - kCharSize) / 2;
     character->setGeometry(charX, charY, kCharSize, kCharSize);
     angerMark->setGeometry(charX + kCharSize/2 + 32, charY, 48, 48);
+
+    // Hunger hint floats just below the character, centered
+    int hintW = 220;
+    hungerHintLabel->setGeometry((w - hintW) / 2, charY + kCharSize + 4, hintW, 44);
+
     statsBox->setGeometry(kMargin, statsY, w - kMargin*2, kStatsH);
 
     int bubbleW = (w - kMargin*4) / 3;
@@ -194,16 +216,39 @@ void Mode::refreshDisplay() {
         QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
                             .arg(folder, prefix, infix, hat);
 
-        QMovie *movie = new QMovie(path, QByteArray(), character);
-        if (movie->isValid()) {
+        // Only (re)allocate the QMovie when the path actually changes —
+        // avoids a new heap allocation every 10-second decay tick.
+        if (path != m_cachedHatPath || !m_cachedHatMovie || !m_cachedHatMovie->isValid()) {
+            delete m_cachedHatMovie;
+            m_cachedHatMovie = new QMovie(path, QByteArray(), character);
+            m_cachedHatPath  = path;
+        }
+
+        if (m_cachedHatMovie->isValid()) {
             QLabel *disp = character->findChild<QLabel *>();
             if (disp) {
-                if (disp->movie()) disp->movie()->stop();
-                disp->setMovie(movie);
-                movie->start();
-            } else { delete movie; character->syncWithPlayer(*player, petType); }
-        } else { delete movie; character->syncWithPlayer(*player, petType); }
+                // Only swap the movie if it isn't already playing — avoids
+                // restarting the animation every decay tick.
+                if (disp->movie() != m_cachedHatMovie) {
+                    if (disp->movie()) disp->movie()->stop();
+                    disp->setMovie(m_cachedHatMovie);
+                    m_cachedHatMovie->start();
+                }
+            } else {
+                // Fallback: no internal label found, sync without hat
+                character->syncWithPlayer(*player, petType);
+            }
+        } else {
+            // Hat path invalid — fall back to base idle sprite
+            character->syncWithPlayer(*player, petType);
+        }
     } else {
+        // No hat equipped — clear the cache and show the base idle sprite
+        if (m_cachedHatMovie) {
+            delete m_cachedHatMovie;
+            m_cachedHatMovie = nullptr;
+            m_cachedHatPath  = "";
+        }
         character->syncWithPlayer(*player, petType);
     }
     layoutWidgets();
@@ -224,9 +269,9 @@ void Mode::decayStats() {
     pet.set_energy   (qMax(0, pet.energy()    - 1));
     pet.set_happiness(qMax(0, pet.happiness() - 1));
     player->setPet(pet);
-    updateStatBars();
-    updateIndicators();
-    character->syncWithPlayer(*player, petType);
+    // Route through refreshDisplay() so hat GIFs are preserved.
+    // updateStatBars() and updateIndicators() are called inside refreshDisplay().
+    refreshDisplay();
 }
 
 void Mode::updateStatBars() {
@@ -242,10 +287,23 @@ void Mode::updateIndicators() {
     bool angry    = (pet.hunger() < 25);
     bool sleeping = (pet.energy() < 25);
 
-    if (angry) angerMark->show();
-    else       angerMark->hide();
+    if (angry) {
+        angerMark->show();
+        // Show the hint and restart the auto-hide timer every decay tick
+        // so it stays visible as long as the pet remains hungry.
+        hungerHintLabel->show();
+        hungerHintLabel->raise();
+        m_hungerHintTimer->start();  // restarts if already running
+    } else {
+        angerMark->hide();
+        hungerHintLabel->hide();
+        m_hungerHintTimer->stop();
+    }
 
-    character->updateEmotionFromStats(pet.energy(), pet.hunger());
+    // NOTE: do NOT call character->updateEmotionFromStats() here.
+    // Emotion is resolved inside refreshDisplay() → syncWithPlayer(), so that
+    // the hat GIF path is always chosen AFTER the emotion state is current.
+    // Calling it here would race against / overwrite the hat GIF.
 
     // ── Achievement signals ───────────────────────────────────────────────
     // Temper Tantrum: pet sleeping AND angry at the same time

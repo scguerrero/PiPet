@@ -12,7 +12,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     m_bg.load(":/images/Backgrounds/bedroom_16bit.png");
 
     layout      = new QVBoxLayout();
-    actionsBox  = new QGroupBox("Sleep Actions");
+    actionsBox  = new QGroupBox("■‿■");
     actionsGrid = new QGridLayout();
 
     // ── Character GIF ─────────────────────────────────────────────────────

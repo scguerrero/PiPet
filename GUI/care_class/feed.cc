@@ -126,7 +126,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
         "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
         "padding: 6px; color: mistyrose; font-size: 15px; }");
     infoHelper->setFixedWidth(300);
-    infoHelper->setText("Drag a food item onto your pet to feed it!");
+    infoHelper->setText("Drag a piece of food onto your pet to feed it!");
     infoHelper->hide();
 
     m_infoTimer = new QTimer(this);
@@ -144,7 +144,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     connect(pizzaItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
 
     // ── Food tray group box (visual backdrop only — icons are free children) ─
-    actionsBox = new QGroupBox("Drag A food to Feed your PiPet!", this);
+    actionsBox = new QGroupBox("■‿■", this);
     actionsBox->setStyleSheet(
         "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"

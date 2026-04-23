@@ -8,37 +8,44 @@
 #define TRAIN_H
 #include <QtWidgets>
 #include "pipatterns.h"
+#include "guesser.h"
 #include "../../Pet/PiPet.h"
+#include "../../Player/Player.h"
 
 class Train : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Train(PiPet* pet, QWidget *parent = nullptr);
+    // Player* is required so mindReader (and any future minigame) can read
+    // live stat and hat data.  PiPet* is kept for minigames that still use
+    // it directly (PiDash etc.).
+    explicit Train(PiPet* pet, Player* player, QWidget *parent = nullptr);
     QPushButton *b_back;
+
 private:
     QVBoxLayout *main_layout;
-    PiPet* m_pet;
+    PiPet*  m_pet;
+    Player* m_player;
 
-    // QStackedWidget contains TrainHub, PiPatterns, PiDash, and PiCatcher
+    // QStackedWidget contains TrainHub, PiPatterns, PiDash, and mindReader
     QStackedWidget *stack;
-    QWidget *trainHub;
-    PiPatterns *pipatterns; // Mini-game 1
+    QWidget    *trainHub;
+    PiPatterns *pipatterns;             // Mini-game 1
+    mindReader *m_mindReader = nullptr; // Mini-game 3 (lazy — created on first open)
 
     // TrainHub widgets ----------------------------------------------
-    QVBoxLayout *layout; // Vertically-arrange widgets
-    QPushButton *b_minigame1, *b_minigame2, *b_minigame3; // Buttons leading to each minigame
-    QLabel *logo_pipatterns, *logo_pidash, *logo_picatcher; // Logos for each minigame
+    QVBoxLayout *layout;
+    QPushButton *b_minigame1, *b_minigame2, *b_minigame3;
+    QLabel *logo_pipatterns, *logo_pidash, *logo_mindReader;
 
 public slots:
-    void setUtilityStyle(QPushButton &button); // Button stylesheet
-    void openTrainHub(); // Open Train Hub at index 0 of stack
-    void openPiPatterns(); // Open minigame PiPatterns at index 1 of stack
-    void openPiDash(); // open minigame PiDash at index 2 of stock
-    void openPiCatcher(); // open minigame PiCatcher at index 3 of stock
-    void onTrackRushFinished(int finalScore, int xpEarned); //
-    void onSkySnackFinished(int finalScore, int xpEarned);
-
+    void setUtilityStyle(QPushButton &button);
+    void openTrainHub();
+    void openPiPatterns();
+    void openPiDash();
+    void openmindReader();
+    void onTrackRushFinished(int finalScore, int xpEarned);
+    void onMindReaderFinished(int finalScore, int xpEarned);
 };
 
 #endif // TRAIN_H

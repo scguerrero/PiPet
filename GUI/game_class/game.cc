@@ -33,7 +33,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     feed   = new Feed(player, currentPetType);
     groom  = new Groom(player, currentPetType);
     sleep  = new Sleep(player, currentPetType);
-    train  = new Train(pet);
+    train = new Train(pet, player);
     battle = new Battle();
     gear   = new Gear(player, currentPetType);
 

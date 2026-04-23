@@ -48,18 +48,11 @@ Mode::Mode(Player *player, QWidget *parent)
     hungerHintLabel = new QLabel(this);
     hungerHintLabel->setAlignment(Qt::AlignCenter);
     hungerHintLabel->setWordWrap(true);
-    hungerHintLabel->setText("Your pet is hungry!\n");
+    hungerHintLabel->setText("Your pet is hungry!\nMake sure you feed them!");
     hungerHintLabel->setStyleSheet(
         "QLabel { background-color: rgba(180,30,30,200); border-radius: 8px;"
         "padding: 5px 10px; color: #ffd700; font-size: 13px; font-weight: bold; }");
     hungerHintLabel->hide();
-
-    // Auto-hide after 5 s — restarted each decay tick while still angry
-    m_hungerHintTimer = new QTimer(this);
-    m_hungerHintTimer->setSingleShot(true);
-    m_hungerHintTimer->setInterval(5000);
-    connect(m_hungerHintTimer, &QTimer::timeout,
-            hungerHintLabel, &QLabel::hide);
 
     timekeeper = new Clock();
     time       = new QTime();
@@ -142,8 +135,8 @@ void Mode::layoutWidgets() {
     angerMark->setGeometry(charX + kCharSize/2 + 32, charY, 48, 48);
 
     // Hunger hint floats just below the character, centered
-    int hintW = 220;
-    hungerHintLabel->setGeometry((w - hintW) / 2, charY + kCharSize + 4, hintW, 44);
+    int hintW = w - kMargin * 4;
+    hungerHintLabel->setGeometry((w - hintW) / 2, 40, hintW, 44);
 
     statsBox->setGeometry(kMargin, statsY, w - kMargin*2, kStatsH);
 
@@ -198,9 +191,15 @@ void Mode::setPetType(Character::PetType type) {
     refreshDisplay();
 }
 
+void Mode::resetHintFlag() {
+    m_hintShownThisVisit = false;
+    hungerHintLabel->hide();
+}
+
 void Mode::refreshDisplay() {
     updateStatBars();
     updateIndicators();
+    showHungerHintOnce();
     petNameLabel->setText(player->getPet().name());
 
     QString hat  = player->getPet().hat();
@@ -287,18 +286,7 @@ void Mode::updateIndicators() {
     bool angry    = (pet.hunger() < 25);
     bool sleeping = (pet.energy() < 25);
 
-    if (angry) {
-        angerMark->show();
-        // Show the hint and restart the auto-hide timer every decay tick
-        // so it stays visible as long as the pet remains hungry.
-        hungerHintLabel->show();
-        hungerHintLabel->raise();
-        m_hungerHintTimer->start();  // restarts if already running
-    } else {
-        angerMark->hide();
-        hungerHintLabel->hide();
-        m_hungerHintTimer->stop();
-    }
+    angerMark->setVisible(angry);
 
     // NOTE: do NOT call character->updateEmotionFromStats() here.
     // Emotion is resolved inside refreshDisplay() → syncWithPlayer(), so that
@@ -315,6 +303,17 @@ void Mode::updateIndicators() {
     if (currentAge != m_lastAgeGroup) {
         m_lastAgeGroup = currentAge;
         emit petAgedUp(currentAge);
+    }
+}
+
+void Mode::showHungerHintOnce() {
+    // Only fire if the pet is actually hungry and we haven't shown it this visit
+    if (!m_hintShownThisVisit && player->getPet().hunger() < 25) {
+        m_hintShownThisVisit = true;
+        hungerHintLabel->show();
+        hungerHintLabel->raise();
+        // Hide after 3 seconds — no repeat until next visit
+        QTimer::singleShot(3000, hungerHintLabel, &QLabel::hide);
     }
 }
 

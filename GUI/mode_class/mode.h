@@ -19,6 +19,7 @@ public:
 
     void setPetType(Character::PetType type);
     void refreshDisplay();
+    void resetHintFlag();
 
     QPushButton *b_care, *b_train, *b_battle, *b_gear;
     QLabel *feedBubble, *groomBubble, *sleepBubble;
@@ -43,7 +44,6 @@ private:
     QPixmap m_bg, m_kitchenPx, m_bathroomPx, m_bedroomPx;
 
     QLabel      *petNameLabel, *angerMark, *hungerHintLabel;
-    QTimer      *m_hungerHintTimer;
     QPixmap      m_angerPx;
     QPushButton *b_settings;
 
@@ -57,8 +57,9 @@ private:
     QTime  *time;
 
     static constexpr int DECAY_INTERVAL_SECS = 10;
-    int     secondsSinceDecay = 0;
-    QString m_lastAgeGroup    = "Baby";
+    int     secondsSinceDecay    = 0;
+    QString m_lastAgeGroup       = "Baby";
+    bool    m_hintShownThisVisit = false;
 
     // Hat GIF cache — refreshDisplay() reuses this instead of allocating a
     // new QMovie every decay tick.  Invalidated when hat, type, or stage changes.
@@ -68,6 +69,7 @@ private:
     void decayStats();
     void updateStatBars();
     void updateIndicators();
+    void showHungerHintOnce();
     void layoutWidgets();
     void drawBubble(QPainter &p, QRect rect,
                     const QPixmap &bg, const QString &label, bool dimmed);

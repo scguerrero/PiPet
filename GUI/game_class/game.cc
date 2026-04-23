@@ -9,7 +9,6 @@
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QScrollArea>
-#include <QStandardPaths>
 #include <QDir>
 #include <QFileInfo>
 
@@ -197,6 +196,7 @@ void Game::open_mode() {
     showHomeOnly(false);
     b_save_mode->show();
     b_save_mode->raise();
+    mode->resetHintFlag();
     mode->refreshDisplay();
     pages->setCurrentIndex(2);
     onVeteranCheck();
@@ -431,8 +431,8 @@ void Game::read(const QJsonObject &json) {
 bool Game::loadGame() {
     // Use a stable, OS-appropriate writable location instead of a bare
     // relative path — the CWD at runtime is not reliable on Linux/macOS.
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-                       + "/player.json";
+    QString savePath = QDir::homePath() + "/Desktop/player.json";
+    QDir().mkpath(QDir::homePath() + "/Desktop");
     QDir().mkpath(QFileInfo(savePath).absolutePath()); // ensure directory exists
 
     QFile loadFile(savePath);
@@ -471,10 +471,8 @@ bool Game::loadGame() {
 }
 
 bool Game::saveGame() {
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-                       + "/player.json";
-    QDir().mkpath(QFileInfo(savePath).absolutePath());
-
+    QString savePath = QDir::homePath() + "/Desktop/player.json";
+    QDir().mkpath(QDir::homePath() + "/Desktop");
     QFile saveFile(savePath);
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");

@@ -76,6 +76,29 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
 
     // Connect minigame3 button to mindReader
     connect(b_minigame3, SIGNAL(clicked()), this, SLOT(openmindReader()));
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  LOOTBOX HOOK — for Sahsa!
+    // ──────────────────────────────────────────────────────────────────────
+    // After a minigame finishes (onMindReaderFinished, onTrackRushFinished,
+    // or a dedicated lootbox button here in the TrainHub), call:
+    //
+    //   tryAwardLootbox(score, xpEarned);
+    //
+    // That function (stub below) decides whether to award a hat, calls
+    //   m_player->getPet().unlockHat("crown");   // or "cowboy"
+    //   emit hatUnlocked("crown");
+    // and game.cc picks it up to refresh Gear.
+    //
+    // Suggested placement options:
+    //   A) At the end of onMindReaderFinished() / onTrackRushFinished()
+    //   B) As a dedicated QPushButton "Open Lootbox" in the TrainHub layout
+    //      (add the button between logo_mindReader and b_minigame3 above)
+    //
+    // The two hats tracked in the save file are "crown" and "cowboy".
+    // Any key passed to unlockHat() that matches a kHats entry in gear.cc
+    // will automatically become selectable in the Gear screen.
+    // ══════════════════════════════════════════════════════════════════════
 }
 
 void Train::openTrainHub() {
@@ -98,7 +121,7 @@ void Train::setUtilityStyle(QPushButton &button) {
 
 
 // ══════════════════════════════════════════════════════════════
-//  Minigame 2 — PiDash (runner)
+//  Minigame 2 — PiDash (Tanya)
 // ══════════════════════════════════════════════════════════════
 
 void Train::openPiDash()
@@ -146,7 +169,7 @@ void Train::openmindReader()
         // Derive the correct PetType from the player's actual pet — same
         // lookup used by Feed, Battle, and every other screen in the project.
         QString petTypeStr = m_player->getPet().pet_type();
-        Character::PetType petType = Character::DragonDog; // fallback
+        Character::PetType petType = Character::DragonDog;
         if      (petTypeStr == "ElectricAxolotl") petType = Character::ElectricAxolotl;
         else if (petTypeStr == "SeelCat")         petType = Character::SeelCat;
 
@@ -175,7 +198,7 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
     m_pet->increase_intelligence(intelligenceGain);
     m_pet->increase_happiness(happinessGain);
     m_pet->increase_hunger(hungerGain);
-
+// Sasha!
     // Do NOT navigate away here — the result panel is still on screen.
     // The player uses the Back button (already connected in openmindReader)
     // to return to the hub whenever they're ready.
@@ -183,4 +206,33 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
              << "→ intelligence +" << intelligenceGain
              << "happiness +"      << happinessGain
              << "hunger +"         << hungerGain;
+
+    // ── Lootbox trigger point (option A) ─────────────────────────────────
+    // Your partner can call tryAwardLootbox(finalScore, xpEarned) here
+    // once the lootbox logic is implemented.
+    // ─────────────────────────────────────────────────────────────────────
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  tryAwardLootbox — STUB for your partner to implement
+// ──────────────────────────────────────────────────────────────────────────
+//  Rules to implement inside this function:
+//    1. Decide if the player earns a lootbox roll (e.g. score threshold,
+//       random chance, or a dedicated button press — see the LOOTBOX HOOK
+//       comment in the constructor for placement options).
+//    2. Pick a hat to award. The two save-tracked hats are "crown" and
+//       "cowboy".  Other hat keys ("santa", "wizard") can be added here too.
+//    3. Skip the award if the player already has that hat:
+//         if (m_player->getPet().isHatUnlocked(hatKey)) return;
+//    4. Unlock it and fire the signal so game.cc can refresh Gear:
+//         PiPet p = m_player->getPet();
+//         p.unlockHat(hatKey);
+//         m_player->setPet(p);
+//         emit hatUnlocked(hatKey);
+// ══════════════════════════════════════════════════════════════════════════
+void Train::tryAwardLootbox(int /*score*/, int /*xpEarned*/)
+{
+    // TODO (your partner): implement lootbox roll logic here.
+    // See the comment block above for the full spec.
+    qDebug() << "[Lootbox] tryAwardLootbox called — not yet implemented.";
 }

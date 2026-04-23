@@ -35,9 +35,12 @@ public:
                      QWidget *parent = nullptr);
     QString hatKey() const { return m_key; }
     void setSelected(bool sel);
+    void setLocked(bool locked);   // grey out + 🔒 overlay; blocks clicks
 
 signals:
     void clicked(const QString &hatKey);
+    // Emitted when a locked card is tapped — Gear shows the "locked" info bubble
+    void lockedTapped(const QString &hatKey);
 
 protected:
     void mousePressEvent(QMouseEvent *) override;
@@ -45,6 +48,7 @@ protected:
 private:
     QString m_key;
     bool    m_selected = false;
+    bool    m_locked   = false;   // true = lootbox hat not yet earned
     void    applyStyle();
 };
 
@@ -61,6 +65,10 @@ public:
 
     // Call after loadGame() to restore a previously equipped hat without a particle burst
     void restoreHat(const QString &hatKey);
+
+    // Called by game.cc when Train emits hatUnlocked() — makes the hat card
+    // selectable and updates the lock overlay without reloading everything.
+    void unlockHat(const QString &hatKey);
 
 signals:
     void hatEquipped(const QString &hatKey); // emitted after the particle burst

@@ -3,6 +3,7 @@
  * Author: Sasha C. Guerrero
  * Created: 2/4/2026
  * Last Edited: 3/25/2026
+ * Updated: added m_unlockedHats for lootbox hat tracking (unlockHat, isHatUnlocked)
  * Fixed: m_days_old now initialized to 0 (was uninitialized garbage memory)
 */
 
@@ -32,6 +33,11 @@ private:
 
     bool m_been_created = false; // Initially false, but becomes true after going through Pet Creation page
 
+    // Lootbox-unlocked hats. Persisted under "Unlocked Hats" in the save file.
+    // All four hat keys are tracked: "crown", "cowboy", "santa", "wizard".
+    // A hat only appears in this list once it has been found via the minigames.
+    QStringList m_unlockedHats;
+
 public:
     PiPet();
     PiPet(QString, QString, int, int, int, int, int, int, int, int, int, int);
@@ -54,6 +60,10 @@ public:
     int hit_points() const;
     bool creation_flag() const;
 
+    // Lootbox hat unlock tracking
+    QStringList unlockedHats()                    const;
+    bool        isHatUnlocked(const QString &key) const;
+
     // Setters
     void set_name(QString);
     void set_age_group(QString);
@@ -70,6 +80,9 @@ public:
     void set_defense(int);
     void set_hit_points(int);
     void set_creation_flag(bool);
+
+    // Lootbox: add a hat key to the unlocked list (no-op if already present)
+    void unlockHat(const QString &key);
 
     // Incrementers
     void increase_days_old(int);

@@ -108,7 +108,17 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
     connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
-
+// -------------------------------------------------------
+    // Lootbox: when Train awards a hat, unlock it in the save data and
+    // make it selectable in Gear — no screen navigation required.
+    connect(train, &Train::hatUnlocked, this, [this](const QString &hatKey) {
+        PiPet p = player->getPet();
+        p.unlockHat(hatKey);          // persists to save file
+        player->setPet(p);
+        gear->unlockHat(hatKey);      // refreshes the hat card in Gear UI
+        qDebug() << "[Lootbox] Unlocked hat:" << hatKey;
+    });
+// ---------------------------------------------------------
     // Battle achievement signals
     connect(battle, &Battle::battleWon,   this, &Game::onBattleWon);
     // Sleep achievement signals
@@ -251,6 +261,33 @@ void Game::open_gear() {
 
 void Game::onBattleWon() {
     showAchievementPopup(player->achievements.onBattleWon(++m_totalBattleWins));
+    if (m_totalBattleWins >= 10 && !player->getPet().isHatUnlocked("cowboy")) {
+        PiPet p = player->getPet();
+        p.unlockHat("cowboy");
+        player->setPet(p);
+        gear->unlockHat("cowboy");   // refreshes the hat card in Gear UI immediately
+
+        QLabel *toast = new QLabel("Cowboy hat unlocked!\nWin 10 battles reward!", this);
+        toast->setAlignment(Qt::AlignCenter);
+        toast->setWordWrap(true);
+        toast->setStyleSheet(R"(
+            QLabel {
+                background-color: rgba(30,10,60,230);
+                border: 2px solid #ffd700;
+                border-radius: 12px;
+                color: #ffd700;
+                font-size: 15px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        )");
+        toast->setFixedWidth(300);
+        toast->adjustSize();
+        toast->setGeometry((width() - 300) / 2, 120, 300, toast->height());
+        toast->raise();
+        toast->show();
+        QTimer::singleShot(3500, toast, &QLabel::deleteLater);
+    }
 }
 
 void Game::onFedBone() {

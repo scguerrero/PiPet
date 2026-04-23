@@ -136,7 +136,7 @@ void Mode::layoutWidgets() {
 
     // Hunger hint floats just below the character, centered
     int hintW = w - kMargin * 4;
-    hungerHintLabel->setGeometry((w - hintW) / 2, 40, hintW, 44);
+    hungerHintLabel->setGeometry((w - hintW) / 2, 60, hintW, 44);
 
     statsBox->setGeometry(kMargin, statsY, w - kMargin*2, kStatsH);
 

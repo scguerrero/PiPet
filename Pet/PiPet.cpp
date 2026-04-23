@@ -37,6 +37,8 @@ PiPet::PiPet(QString name, QString age_group, int days_old, int hunger, int ener
 PiPet::~PiPet() {}
 
 // Getters
+QStringList PiPet::unlockedHats() const { return m_unlockedHats; }
+bool        PiPet::isHatUnlocked(const QString &key) const { return m_unlockedHats.contains(key); }
 QString PiPet::name() const { return m_name; }
 QString PiPet::age_group() const { return m_age_group; }
 QString PiPet::pet_type() const { return m_pet_type; }
@@ -54,6 +56,7 @@ int PiPet::hit_points() const { return m_hit_points; }
 bool PiPet::creation_flag() const { return m_been_created; }
 
 // Setters
+void PiPet::unlockHat(const QString &key) { if (!m_unlockedHats.contains(key)) m_unlockedHats.append(key); }
 void PiPet::set_name(QString name) { m_name = name; }
 void PiPet::set_age_group(QString age_group) { m_age_group = age_group; }
 void PiPet::set_pet_type(QString t) { m_pet_type = t; }
@@ -148,6 +151,12 @@ PiPet PiPet::fromJSON(const QJsonObject &json) {
     if (const QJsonValue v = json["Created"]; v.isBool())
         pet.set_creation_flag(v.toBool());
 
+    // hats unlocked via lootbox (crown, cowboy tracked separately from equipped hat)
+    if (const QJsonValue v = json["Unlocked Hats"]; v.isArray()) {
+        for (const QJsonValue &hv : v.toArray())
+            if (hv.isString()) pet.unlockHat(hv.toString());
+    }
+
     return pet;
 }
 
@@ -170,5 +179,11 @@ QJsonObject PiPet::toJSON() const {
     json["Defense"] = m_defense;
     json["Hit Points"] = m_hit_points;
     json["Created"] = m_been_created;
+
+    // hats unlocked via lootbox
+    QJsonArray hatsArr;
+    for (const QString &h : m_unlockedHats) hatsArr.append(h);
+    json["Unlocked Hats"] = hatsArr;
+
     return json;
 }

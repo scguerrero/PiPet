@@ -41,7 +41,29 @@ void HatCard::setSelected(bool sel) {
     applyStyle();
 }
 
+void HatCard::setLocked(bool locked) {
+    m_locked = locked;
+    applyStyle();
+}
+
 void HatCard::applyStyle() {
+    if (m_locked) {
+        // Grey out and show lock emoji — clicks are swallowed in mousePressEvent
+        setStyleSheet(R"(
+            QLabel {
+                background-color: rgba(20,20,20,180);
+                border: 2px solid rgba(100,100,100,100);
+                border-radius: 12px;
+                color: #555;
+                font-size: 22px;
+            }
+        )");
+        // Overlay a lock on top of whatever icon is set
+        setText("🔒");
+        return;
+    }
+    // Clear any lock text so the icon shows through
+    if (!pixmap(Qt::ReturnByValue).isNull()) setText("");
     if (m_selected) {
         setStyleSheet(R"(
             QLabel {
@@ -66,6 +88,10 @@ void HatCard::applyStyle() {
 }
 
 void HatCard::mousePressEvent(QMouseEvent *) {
+    if (m_locked) {
+        emit lockedTapped(m_key);
+        return;
+    }
     emit clicked(m_key);
 }
 
@@ -74,11 +100,13 @@ void HatCard::mousePressEvent(QMouseEvent *) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Hat definitions: key → icon path
-static const QList<QPair<QString,QString>> kHats = {
-    { "cowboy", ":/images/Sprites/pets/icons/cowboy_hat.png" },
-    { "crown",  ":/images/Sprites/pets/icons/crown_hat.png"  },
-    { "santa",  ":/images/Sprites/pets/icons/santa_hat.png"  },
-    { "wizard", ":/images/Sprites/pets/icons/wizard_hat.png" },
+// All four hats must be found via the Train lootbox before they can be equipped.
+struct HatDef { QString key; QString icon; bool lootbox; };
+static const QList<HatDef> kHats = {
+    { "cowboy", ":/images/Sprites/pets/icons/cowboy_hat.png", true },
+    { "crown",  ":/images/Sprites/pets/icons/crown_hat.png",  true },
+    { "santa",  ":/images/Sprites/pets/icons/santa_hat.png",  true },
+    { "wizard", ":/images/Sprites/pets/icons/wizard_hat.png", true },
 };
 
 // Pet folder/prefix lookup (mirrors character.cpp naming)
@@ -159,11 +187,32 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     m_stripLayout->setContentsMargins(8, 8, 8, 8);
     m_stripLayout->setSpacing(22);
 
-    for (auto &[key, icon] : kHats) {
-        HatCard *card = new HatCard(key, icon, m_stripWidget);
+    for (auto &hd : kHats) {
+        HatCard *card = new HatCard(hd.key, hd.icon, m_stripWidget);
         m_hatCards.append(card);
         m_stripLayout->addWidget(card);
-        connect(card, &HatCard::clicked, this, &Gear::onHatSelected);
+
+        // If this hat requires a lootbox unlock, check the player's save data.
+        // Locked cards show a 🔒 overlay; tapping them shows the info bubble.
+        if (hd.lootbox && !m_player->getPet().isHatUnlocked(hd.key)) {
+            card->setLocked(true);
+        }
+
+        connect(card, &HatCard::clicked,      this, &Gear::onHatSelected);
+        connect(card, &HatCard::lockedTapped, this, [this](const QString &hatKey) {
+            // Capitalise the hat name for a friendlier display
+            QString displayName = hatKey;
+            if (!displayName.isEmpty())
+                displayName[0] = displayName[0].toUpper();
+
+            infoHelper->setText(
+                QString("The %1 hat is locked!\nUnlock it in the Minigames!.")
+                    .arg(displayName));
+            infoHelper->show();
+            infoHelper->raise();
+            // Reset the auto-hide timer — keeps the bubble up for 3 s from this tap
+            m_infoTimer->start(3000);
+        });
     }
     // Add a "No hat" card at the front
     {
@@ -204,7 +253,9 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
 void Gear::showEvent(QShowEvent *e) {
     QWidget::showEvent(e);
 
-    // Position info helper near the top center (right of achievements button)
+    // Reset to the default welcome message each time the screen opens,
+    // so a previously shown "locked" message doesn't linger.
+    infoHelper->setText("Tap a hat below to dress up your pet!");
     infoHelper->setGeometry((width() - 300) / 2, 60, 300, 50);
     infoHelper->show();
     infoHelper->raise();
@@ -405,4 +456,27 @@ void Gear::restoreHat(const QString &hatKey) {
     for (HatCard *card : qAsConst(m_hatCards))
         card->setSelected(card->hatKey() == hatKey);
     loadHatGif(hatKey);
+}
+
+// Called by game.cc when Train emits hatUnlocked()
+void Gear::unlockHat(const QString &hatKey) {
+    for (HatCard *card : qAsConst(m_hatCards)) {
+        if (card->hatKey() == hatKey) {
+            card->setLocked(false);
+            // Reload the icon image now that it is unlocked
+            for (const HatDef &hd : kHats) {
+                if (hd.key == hatKey) {
+                    QImage img(hd.icon);
+                    if (!img.isNull()) {
+                        QPixmap px = QPixmap::fromImage(
+                            img.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        card->setPixmap(px);
+                        card->setText("");
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    }
 }

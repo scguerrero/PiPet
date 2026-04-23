@@ -1,9 +1,3 @@
-/*
- * Train class specification file.
- * In Train mode, the Player can play mini-games with their pet to increase the pet's attributes.
- *
- * Author(s): Sasha C. Guerrero, Tanya Magurupira
- */
 #ifndef TRAIN_H
 #define TRAIN_H
 #include <QtWidgets>
@@ -21,6 +15,12 @@ public:
     // it directly (PiDash etc.).
     explicit Train(PiPet* pet, Player* player, QWidget *parent = nullptr);
     QPushButton *b_back;
+
+signals:
+    // Emitted when a lootbox awards a new hat.
+    // game.cc connects this to gear->unlockHat(hatKey) so Gear refreshes
+    // automatically without Train needing to know about Gear directly.
+    void hatUnlocked(const QString &hatKey);
 
 private:
     QVBoxLayout *main_layout;
@@ -49,6 +49,12 @@ public slots:
     // Called by game.cc every time the Train screen is opened, so the hat
     // gif stays in sync — mirrors how open_feed() calls feed->refreshCharacter().
     void refreshMindReader();
+
+    // ── Lootbox ──────────────────────────────────────────────────────────
+    // Your partner implements the body of this in train.cc.
+    // Call it from onMindReaderFinished / onTrackRushFinished (option A),
+    // or from a dedicated button's clicked() signal (option B).
+    void tryAwardLootbox(int score, int xpEarned);
 };
 
 #endif // TRAIN_H

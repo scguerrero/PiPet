@@ -1,14 +1,14 @@
 /*
  * groom.cc - Groom screen two-spot drag mechanic.
  * Fixed: bottomSpot() was calculating outside visible area.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #include "groom.h"
 #include <QPainter>
 #include <QGroupBox>
 static constexpr int kSpriteSize = 160;
 
-// ── GroomItem ──────────────────────────────────────────────────────────────
+// - GroomItem
 GroomItem::GroomItem(const QString &iconPath, const QString &name,
                      QWidget *parent)
     : QLabel(parent), toolName(name)
@@ -98,7 +98,7 @@ bool GroomItem::event(QEvent *e) {
     }
 }
 
-// ── Groom ──────────────────────────────────────────────────────────────────
+// - Groom
 Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     : QWidget{parent}, player(player), petType(petType)
 {
@@ -108,7 +108,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     character->setFixedSize(kSpriteSize, kSpriteSize);
     character->syncWithPlayer(*player, petType);
 
-    // ── Hygiene display — sits above the actionsBox ───────────────────────
+    //Hygiene display - sits above the actionsBox
     hygieneDisplay = new QLabel(this);
     hygieneDisplay->setAlignment(Qt::AlignCenter);
     hygieneDisplay->setWordWrap(true);
@@ -117,7 +117,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
         "padding: 6px; color: mistyrose; font-size: 15px; }");
     updateHygieneDisplay();
 
-    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    // - Info helper: shown on open, hides after 3 seconds
     infoHelper = new QLabel(this);
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
@@ -132,7 +132,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     m_infoTimer->setSingleShot(true);
     connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
 
-    // ── Hint label — pops up below the character, hidden by default ───────
+    //Hint label: pops up below the character, hidden by default
     hintLabel = new QLabel(this);
     hintLabel->setAlignment(Qt::AlignCenter);
     hintLabel->setStyleSheet(
@@ -141,7 +141,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     hintLabel->setFixedWidth(300);
     hintLabel->hide();
 
-    // ── Hint auto-hide timer (3 seconds) ──────────────────────────────────
+    //Hint auto-hide timer (3 seconds)
     m_hintTimer = new QTimer(this);
     m_hintTimer->setSingleShot(true);
     m_hintTimer->setInterval(3000);
@@ -167,8 +167,6 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     m_resetTimer->setSingleShot(true);
     m_resetTimer->setInterval(1800);
     connect(m_resetTimer, &QTimer::timeout, this, &Groom::resetSpots);
-
-    // ── Tool tray group box (visual backdrop only — tools are free children) ─
     actionsBox = new QGroupBox("■‿■", this);
     actionsBox->setStyleSheet(
         "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
@@ -195,13 +193,9 @@ void Groom::resizeEvent(QResizeEvent *e) {
     int petX = (w - kSpriteSize) / 2;
     // FIX: set character geometry here so topSpot/bottomSpot are always correct
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
-    // Hint label floats just below the character GIF
     hintLabel->setGeometry((w - 300) / 2, 80, 300, 30);
-    // Hygiene display sits just above the actionsBox
     hygieneDisplay->setGeometry((w - 360) / 2, h - 170, 360, 38);
-    // actionsBox stretches full width with 8px side margins
     actionsBox->setGeometry(8, h - 130, w - 16, 122);
-    // Info helper near the top center
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
     placeTools();
 }
@@ -220,7 +214,7 @@ void Groom::placeTools() {
         tools[i]->homePos = QPoint(x, y);
         tools[i]->raise();
     }
-    actionsBox->lower();   // keep box behind tools
+    actionsBox->lower();
 }
 
 void Groom::paintEvent(QPaintEvent *e) {
@@ -229,7 +223,7 @@ void Groom::paintEvent(QPaintEvent *e) {
     if (!m_bg.isNull())
         p.drawPixmap(0, 0, width(), height(), m_bg);
 
-    // ── Top spot ──────────────────────────────────────────────────────────
+    // Top spot
     QRect ts = topSpot();
     QColor tc = topDone ? QColor(80, 255, 120, 200)
                         : QColor(255, 220, 50,  160);
@@ -240,7 +234,7 @@ void Groom::paintEvent(QPaintEvent *e) {
     p.setFont(QFont("monospace", 12, QFont::Bold));
     p.drawText(ts, Qt::AlignCenter, topDone ? "✓" : "1");
 
-    // ── Bottom spot ───────────────────────────────────────────────────────
+    // Bottom spot
     QRect bs = bottomSpot();
     QColor bc = bottomDone ? QColor(80, 300, 120, 200)
                            : QColor(255, 220, 50, 160);
@@ -253,7 +247,6 @@ void Groom::paintEvent(QPaintEvent *e) {
 }
 
 // FIX: spots are now calculated relative to character geometry,
-// ensuring both are always within the visible widget area
 QRect Groom::topSpot() const {
     QRect pet = character->geometry();
     int cx = pet.center().x();
@@ -263,7 +256,6 @@ QRect Groom::topSpot() const {
 
 QRect Groom::bottomSpot() const {
     QRect pet = character->geometry();
-    // FIX: was pet.bottom() - 22 which could go below visible area
     int cx = pet.center().x();
     int cy = pet.top() + (pet.height() * 3 / 4);
     return QRect(cx - 28, cy - 28, 56, 56);
@@ -273,7 +265,7 @@ void Groom::showHint(const QString &text) {
     hintLabel->setText(text);
     hintLabel->show();
     hintLabel->raise();
-    m_hintTimer->start();   // restart — resets to 3 s on every new hint
+    m_hintTimer->start();
 }
 
 void Groom::onToolDropped(GroomItem *tool, QPoint globalPos) {
@@ -328,9 +320,8 @@ void Groom::applyGroomAction(const QString &message) {
         QString("%1  Hygiene: %2 / 100").arg(message).arg(player->pet.hygiene()));
 }
 
-// ── Hat-aware character refresh ───────────────────────────────────────────
+// Hat-aware character refresh
 // Called by game.cc each time the groom screen is opened so the equipped
-// hat (if any) is always visible on the character sprite.
 
 void Groom::refreshCharacter() {
     QString hat = player->getPet().hat();

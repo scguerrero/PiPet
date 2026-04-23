@@ -84,5 +84,8 @@
         <file>Sprites/pets/seelcat/seelcat_wizard.gif</file>
         <file>Assets/MindReader.png</file>
         <file>Backgrounds/mindReader.png</file>
+        <file>Sprites/pets/seelcat/seelcat_adult_cowboy.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_cowboy.gif</file>
+        <file>Sprites/pets/seelcat/seelcat_teen_cowboy.gif</file>
     </qresource>
 </RCC>

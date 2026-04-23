@@ -1,8 +1,6 @@
 /*
- * character.cpp - Character display widget implementation.
- * Fixed: removed dynamic resize from switchTo() — widget stays at
- * whatever setFixedSize() was called with so hitboxes are reliable.
- * Author(s): Luke Cerwin, Sasha Guerrero
+ * character.cc - Character display widget implementation.
+ * Author(s): Luke Cerwin
  */
 #include "character.h"
 

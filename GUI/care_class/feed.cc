@@ -1,6 +1,6 @@
 /*
- * feed.cc - Feed screen drag and drop.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * feed.cc - Feed screen drag and drop, Includes hat inheritence and stat logic.
+ * Author(s): Luke Cerwin
  */
 #include "feed.h"
 #include <QPainter>
@@ -9,7 +9,7 @@
 static constexpr int kSpriteSize = 160;
 static constexpr int kHitRadius  = kSpriteSize / 2;
 
-// ── FoodItem ──────────────────────────────────────────────────────────────
+// - FoodItem
 
 FoodItem::FoodItem(const QString &iconPath, const QString &name,
                    int boost, QWidget *parent)
@@ -98,7 +98,7 @@ bool FoodItem::event(QEvent *e) {
     }
 }
 
-// ── Feed ──────────────────────────────────────────────────────────────────
+// - Feed
 
 Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     : QWidget{parent}, player(player), petType(petType)
@@ -118,7 +118,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     hungerDisplay->setFixedWidth(300);
     updateHungerDisplay();
 
-    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    // Info helper — shown on open, hides after 3 seconds
     infoHelper = new QLabel(this);
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
@@ -143,7 +143,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     connect(drinkItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
     connect(pizzaItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
 
-    // ── Food tray group box (visual backdrop only — icons are free children) ─
+    // ─ Food tray group box
     actionsBox = new QGroupBox("■‿■", this);
     actionsBox->setStyleSheet(
         "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
@@ -184,9 +184,9 @@ void Feed::resizeEvent(QResizeEvent *e) {
     int petX = (w - kSpriteSize) / 2;
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
-    // Hunger display sits just above the actionsBox
+    // Hunger display sits above actionsbox
     hungerDisplay->setGeometry((w - 300) / 2, h - 170, 300, 38);
-    // actionsBox stretches full width with 8px side margins
+    // actionsBox width margins
     actionsBox->setGeometry(8, h - 130, w - 16, 122);
     placeIcons();
 }
@@ -277,7 +277,7 @@ void Feed::applyHungerAction(int boost, const QString &message) {
     hungerDisplay->setText(QString("%1  Hunger: %2 / 100").arg(message).arg(newVal));
 }
 
-// ── Hat-aware character refresh ───────────────────────────────────────────
+// ─ Hat-aware character refresh
 // Called by game.cc each time the feed screen is opened so the equipped
 // hat (if any) is always visible on the character sprite.
 

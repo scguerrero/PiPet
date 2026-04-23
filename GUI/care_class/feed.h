@@ -1,7 +1,7 @@
 /*
  * feed.h - Feed screen with drag-and-drop food onto character GIF.
  * Uses standard QWidget mouse events — same as rest of codebase.
- * Author(s): Luke Cerwin, Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #ifndef FEED_H
 #define FEED_H

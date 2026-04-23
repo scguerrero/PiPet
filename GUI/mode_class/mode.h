@@ -1,6 +1,6 @@
 /*
  * mode.h - Mode hub screen.
- * Author(s): Sasha C. Guerrero, Luke Cerwin
+ * Author(s): Luke Cerwin
  */
 #ifndef MODE_H
 #define MODE_H
@@ -25,8 +25,8 @@ public:
     QLabel *feedBubble, *groomBubble, *sleepBubble;
 
 signals:
-    void petAgedUp(const QString &newAgeGroup); // game.cc → onAgeChanged()
-    void temperTantrum();                        // game.cc → achievements check
+    void petAgedUp(const QString &newAgeGroup);
+    void temperTantrum();
 
 protected:
     void paintEvent (QPaintEvent *e) override;

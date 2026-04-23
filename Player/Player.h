@@ -1,4 +1,8 @@
-/* Author: Luke Cerwin */
+/*
+ * Player.h is the Player header file.
+ * Author(s): Luke Cerwin
+ *
+*/
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <QDateTime>

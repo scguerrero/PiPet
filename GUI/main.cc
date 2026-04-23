@@ -15,12 +15,13 @@
 
 int main(int argc, char**argv)
 {
-    // Correct Qt6 attribute name for touch-to-mouse synthesis
+    // qt5.15 Syntax
     QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
 
     qputenv("QT_QPA_PLATFORM", "xcb");
     QApplication app(argc, argv);
 
+    //Style Sheet for Buttons in game
     app.setStyleSheet(R"(
     QWidget {
         font-size: 18px;
@@ -108,7 +109,7 @@ int main(int argc, char**argv)
         background: none;
     }
     )");
-    // ── Boot splash ──────────────────────────────────────────────────────────
+    // Boot splash
     QWidget splash;
     splash.setFixedSize(480, 640);
     splash.setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -127,8 +128,6 @@ int main(int argc, char**argv)
     game.setFixedSize(480, 640);
     game.show();
     app.processEvents();
-
-    // Hold for 3 seconds then just close — game is already underneath
     QEventLoop loop;
     QTimer::singleShot(3000, &loop, &QEventLoop::quit);
     loop.exec();

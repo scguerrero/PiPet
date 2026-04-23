@@ -3,7 +3,7 @@
  * Added: dojo background + wood-chip particle effect on the training dummy,
  *        player Character sprite shown in the arena (hat-aware).
  *
- * Author(s): Camden Gugel, Luke Cerwin
+ * Author(s): Luke Cerwin
  */
 
 #ifndef BATTLE_H
@@ -46,9 +46,6 @@ class Battle : public QWidget
 
 public:
     explicit Battle(QWidget *parent = nullptr);
-
-    // Call this from game.cc each time the battle screen is opened.
-    // Syncs the character sprite to the correct pet type and equipped hat.
     void setPlayerInfo(Player *player, Character::PetType petType);
 
 signals:

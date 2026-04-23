@@ -1,8 +1,6 @@
 /*
  * PiPet.h is the PiPet class specification file.
  * Author: Sasha C. Guerrero
- * Created: 2/4/2026
- * Last Edited: 3/25/2026
  * Updated: added m_unlockedHats for lootbox hat tracking (unlockHat, isHatUnlocked)
  * Fixed: m_days_old now initialized to 0 (was uninitialized garbage memory)
 */
@@ -16,8 +14,8 @@ class PiPet
 private:
     QString m_name = "Rasbaire";
     QString m_age_group = "Baby";
-    QString m_pet_type = "DragonDog"; // "DragonDog" | "ElectricAxolotl" | "SeelCat"
-    QString m_hat = "";               // "" | "cowboy" | "crown" | "santa" | "wizard"
+    QString m_pet_type = "DragonDog";
+    QString m_hat = "";
     int m_days_old = 0;
 
     int m_hunger = 50;
@@ -32,10 +30,6 @@ private:
     int m_hit_points = 100;
 
     bool m_been_created = false; // Initially false, but becomes true after going through Pet Creation page
-
-    // Lootbox-unlocked hats. Persisted under "Unlocked Hats" in the save file.
-    // All four hat keys are tracked: "crown", "cowboy", "santa", "wizard".
-    // A hat only appears in this list once it has been found via the minigames.
     QStringList m_unlockedHats;
 
 public:
@@ -80,8 +74,6 @@ public:
     void set_defense(int);
     void set_hit_points(int);
     void set_creation_flag(bool);
-
-    // Lootbox: add a hat key to the unlocked list (no-op if already present)
     void unlockHat(const QString &key);
 
     // Incrementers

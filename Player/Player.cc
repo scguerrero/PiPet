@@ -1,4 +1,8 @@
-/* Author: Luke Cerwin */
+/*
+ * Player.cc is the Player class implementation file.
+ * Author(s): Luke Cerwin
+ *
+*/
 #include "Player.h"
 
 Player::Player() {

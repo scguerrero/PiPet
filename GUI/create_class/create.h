@@ -1,7 +1,7 @@
 /*
  * create.h - Pet creation screen.
  * Gallery shows animated GIF, no blue box, character_screen.jpg background.
- * Author(s): Sasha C. Guerrero
+ * Author(s): Luke Cerwin
  */
 #ifndef CREATE_H
 #define CREATE_H
@@ -32,7 +32,6 @@ private:
 
     void updateGallery();
 
-    // Gallery — uses QLabel + QMovie for animated GIF
     QLabel       *petImage;
     QMovie       *currentMovie = nullptr;
     QLabel       *petName;

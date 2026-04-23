@@ -2,8 +2,6 @@
  * PiPet.cpp is the PiPet class implementation file.
  * Author(s): Sasha C. Guerrero
  * Source(s): "Saving and Loading a Game" QT Core Example, https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html
- * Created: 2/5/2026
- * Last Edited: 3/25/2026
 */
 #include "PiPet.h"
 

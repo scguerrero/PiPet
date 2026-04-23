@@ -1,6 +1,6 @@
 /*
- * Achievements.cpp - Achievement tracking implementation.
- * Author(s): Sasha Guerrero
+ * Achievements.cc - Achievement tracking implementation.
+ * Author(s): Luke Cerwin
  */
 #include "achievements.h"
 
@@ -29,7 +29,7 @@ Achievements::Achievements() {
     };
 }
 
-// ── Internal unlock helper ────────────────────────────────────────────────
+//  Internal unlock helper
 QString Achievements::unlock(const QString &key) {
     for (Achievement &a : m_achievements) {
         if (a.key == key && !a.unlocked) {
@@ -40,7 +40,7 @@ QString Achievements::unlock(const QString &key) {
     return QString(); // already had it or not found
 }
 
-// ── Check methods ─────────────────────────────────────────────────────────
+//  Check methods
 
 QList<QString> Achievements::onBattleWon(int totalWins) {
     QList<QString> u;

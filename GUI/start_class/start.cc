@@ -1,6 +1,6 @@
 /*
- * start.cc - Start/title screen with title_screen.jpg background.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * start.cc - Start/title screen
+ * Author(s): Luke Cerwin & Sasha Guerrero
  */
 #include "start.h"
 #include <QPainter>
@@ -11,13 +11,13 @@ Start::Start(QWidget *parent) : QWidget{parent} {
     layout  = new QVBoxLayout();
     b_start = new QPushButton("START");
 
-    // Use a spacer instead of a QLabel — spacers are invisible
+    // Use a spacer instead of a QLabel
     layout->addSpacing(400);
     layout->addStretch();
     layout->addWidget(b_start);
 
     this->setLayout(layout);
-
+    // Start Button
     b_start->setStyleSheet(R"(
         QPushButton {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,

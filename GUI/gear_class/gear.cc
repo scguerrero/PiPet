@@ -1,7 +1,7 @@
 /*
- * Gear mode — stage screen implementation.
+ * Gear mode — stage screen implementation. Draggable sequences for hat decorations and achievements page
  *
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 
 #include "gear.h"
@@ -10,30 +10,32 @@
 #include <QTimer>
 #include <QScroller>
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  HatCard
-// ═══════════════════════════════════════════════════════════════════════════
 
+//  HatCard
 HatCard::HatCard(const QString &hatKey, const QString &iconPath, QWidget *parent)
-    : QLabel(parent), m_key(hatKey)
+    : QLabel(parent), m_key(hatKey), m_iconPath(iconPath)
 {
     setFixedSize(110, 110);
     setAlignment(Qt::AlignCenter);
     setScaledContents(false);
 
-    QImage img(iconPath);
-    if (!img.isNull()) {
-        QPixmap px = QPixmap::fromImage(img.scaled(80, 80,
-                                         Qt::KeepAspectRatio,
-                                         Qt::SmoothTransformation));
-        setPixmap(px);
-    } else {
-        setText(hatKey);
-    }
-
+    loadIcon();
 
     setCursor(Qt::PointingHandCursor);
     applyStyle();
+}
+
+void HatCard::loadIcon() {
+    if (m_iconPath.isEmpty()) { setText("\u2715"); return; }  // ✕
+    QImage img(m_iconPath);
+    if (!img.isNull()) {
+        QPixmap px = QPixmap::fromImage(
+            img.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setPixmap(px);
+        setText("");
+    } else {
+        setText(m_key);
+    }
 }
 
 void HatCard::setSelected(bool sel) {
@@ -48,7 +50,6 @@ void HatCard::setLocked(bool locked) {
 
 void HatCard::applyStyle() {
     if (m_locked) {
-        // Grey out and show lock emoji — clicks are swallowed in mousePressEvent
         setStyleSheet(R"(
             QLabel {
                 background-color: rgba(20,20,20,180);
@@ -58,12 +59,11 @@ void HatCard::applyStyle() {
                 font-size: 22px;
             }
         )");
-        // Overlay a lock on top of whatever icon is set
+        // Overlay
         setText("🔒");
         return;
     }
-    // Clear any lock text so the icon shows through
-    if (!pixmap(Qt::ReturnByValue).isNull()) setText("");
+    loadIcon();
     if (m_selected) {
         setStyleSheet(R"(
             QLabel {
@@ -95,12 +95,8 @@ void HatCard::mousePressEvent(QMouseEvent *) {
     emit clicked(m_key);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  Gear
-// ═══════════════════════════════════════════════════════════════════════════
 
-// Hat definitions: key → icon path
-// All four hats must be found via the Train lootbox before they can be equipped.
+//  Gear
 struct HatDef { QString key; QString icon; bool lootbox; };
 static const QList<HatDef> kHats = {
     { "cowboy", ":/images/Sprites/pets/icons/cowboy_hat.png", true },
@@ -118,23 +114,22 @@ static QString petFolder(Character::PetType t) {
     }
 }
 
-// Stage infix: Baby → "", Teen → "teen_", Adult → "adult_"
+// Stage infix: Baby "", Teen "teen_", Adult "adult_"
 static QString stageInfix(const QString &stage) {
     if (stage == "Teen")  return "teen_";
     if (stage == "Adult") return "adult_";
     return "";
 }
 
-// ── Constructor ───────────────────────────────────────────────────────────
+//  Constructor
 Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     : QWidget(parent), m_player(player), m_petType(petType)
 {
     m_stage = player->getPet().age_group();
 
-    // Background
     m_bg.load(":/images/Backgrounds/gearStage_16bit.png");
 
-    // ── Achievements button — top-left, same geometry as b_save_mode ──────
+    //  Achievements button — top-left, same geometry as b_save_mode
     b_achievements = new QPushButton("Achievements", this);
     b_achievements->setIcon(QIcon()); // text only, no icon needed
     b_achievements->setGeometry(8, 8, 160, 36);
@@ -147,11 +142,10 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
             stop:0 #4A71DB, stop:1 #4850DB); })");
     // connected externally from game.cc
 
-    // ── Character widget ──────────────────────────────────────────────────
     m_character = new Character(this);
     m_character->syncWithPlayer(*m_player, m_petType);
 
-    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    // - Info helper: shown on open, hides after 3 seconds
     infoHelper = new QLabel(this);
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
@@ -165,8 +159,6 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     m_infoTimer = new QTimer(this);
     m_infoTimer->setSingleShot(true);
     connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
-
-    // ── Hat scroll strip ──────────────────────────────────────────────────
     m_scrollArea = new QScrollArea(this);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -176,7 +168,7 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
         QScrollArea > QWidget > QWidget { background: transparent; }
     )");
 
-    // Enable touch AND left-mouse (finger) scrolling for touchscreen devices
+    // Enable touch AND left-mouse
     QScroller::grabGesture(m_scrollArea->viewport(), QScroller::TouchGesture);
     QScroller::grabGesture(m_scrollArea->viewport(), QScroller::LeftMouseButtonGesture);
 
@@ -191,9 +183,6 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
         HatCard *card = new HatCard(hd.key, hd.icon, m_stripWidget);
         m_hatCards.append(card);
         m_stripLayout->addWidget(card);
-
-        // If this hat requires a lootbox unlock, check the player's save data.
-        // Locked cards show a 🔒 overlay; tapping them shows the info bubble.
         if (hd.lootbox && !m_player->getPet().isHatUnlocked(hd.key)) {
             card->setLocked(true);
         }
@@ -235,8 +224,7 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
 
     m_stripWidget->setFixedHeight(126);
     m_scrollArea->setWidget(m_stripWidget);
-
-    // ── Particle overlay (transparent, drawn in paintEvent) ───────────────
+    // Particle Effects
     m_particleOverlay = new QLabel(this);
     m_particleOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
     m_particleOverlay->setStyleSheet("background: transparent;");
@@ -249,12 +237,9 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     layoutWidgets();
 }
 
-// ── showEvent ─────────────────────────────────────────────────────────────
+//  showEvent
 void Gear::showEvent(QShowEvent *e) {
     QWidget::showEvent(e);
-
-    // Reset to the default welcome message each time the screen opens,
-    // so a previously shown "locked" message doesn't linger.
     infoHelper->setText("Tap a hat below to dress up your pet!");
     infoHelper->setGeometry((width() - 300) / 2, 60, 300, 50);
     infoHelper->show();
@@ -262,13 +247,9 @@ void Gear::showEvent(QShowEvent *e) {
     m_infoTimer->start(3000);
 }
 
-// ── Geometry helpers ──────────────────────────────────────────────────────
-
-// The pedestal sits roughly at the horizontal center, upper-middle of screen.
-// These proportions are tuned to match the reference screenshot — adjust if needed.
+//  Geometry helpers
 QRect Gear::pedestalCharRect() const {
     int cw = 160, ch = 160;
-    // Horizontally centered; vertically the pedestal top is ~28% from top
     int cx = 160;
     int cy = 190;
     return QRect(cx, cy, cw, ch);
@@ -277,19 +258,15 @@ QRect Gear::pedestalCharRect() const {
 QRect Gear::stripRect() const {
     int h = height();
     int stripH = 126, margin = 8;
-    int visibleW = 3 * (110 + 22) + 55 + 16; // 3.5 cards across ~480px
+    int visibleW = 3 * (110 + 22) + 55 + 16; // 3.5 cards across ~480px "hard math lol"
     return QRect(margin, h - stripH - margin, visibleW, stripH);
 }
 
 void Gear::layoutWidgets() {
     int w = width(), h = height();
 
-    // Achievements button stays fixed top-left — no need to reposition
-    // (setGeometry already called in constructor and stays at 8,8)
-
     m_character->setGeometry(pedestalCharRect());
-
-    // Info helper near the top center
+    // Info Helper Card
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
 
     // Hat strip
@@ -297,9 +274,7 @@ void Gear::layoutWidgets() {
     m_scrollArea->setGeometry(sr);
     int totalW = m_hatCards.size() * (110 + 22) + 16;
     m_stripWidget->setFixedWidth(totalW);
-
-    // Particle overlay fills whole window
-    m_particleOverlay->setGeometry(0, 0, w, h);
+    m_particleOverlay->setGeometry(0, 0, w, h); //Whole window
 }
 
 void Gear::resizeEvent(QResizeEvent *e) {
@@ -307,15 +282,13 @@ void Gear::resizeEvent(QResizeEvent *e) {
     layoutWidgets();
 }
 
-// ── Paint (background + particle burst) ──────────────────────────────────
+//  background + particle burst
 void Gear::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
     QPainter p(this);
 
     if (!m_bg.isNull())
         p.drawPixmap(0, 0, width(), height(), m_bg);
-
-    // Draw particles
     if (!m_particles.isEmpty()) {
         for (int i = 0; i < m_particles.size(); ++i) {
             QColor c = m_particleColors.value(i, QColor(0xFB, 0xA8, 0xFF));
@@ -327,7 +300,7 @@ void Gear::paintEvent(QPaintEvent *e) {
     }
 }
 
-// ── Hat selection ─────────────────────────────────────────────────────────
+//  Hat selection
 void Gear::onHatSelected(const QString &hatKey) {
     m_equippedHat = hatKey;
 
@@ -359,10 +332,6 @@ QString Gear::gifPath(const QString &hatKey) const {
 }
 
 void Gear::loadHatGif(const QString &hatKey) {
-    // We directly set a QMovie on the Character's display label.
-    // Since Character doesn't expose a setCustomMovie() method yet,
-    // we use a new QMovie and install it directly.
-    // If Character gains a setCustomMovie() method later, swap this.
     QString path = gifPath(hatKey);
     QMovie *movie = new QMovie(path, QByteArray(), m_character);
     if (!movie->isValid()) {
@@ -383,7 +352,7 @@ void Gear::loadHatGif(const QString &hatKey) {
     }
 }
 
-// ── Particles ─────────────────────────────────────────────────────────────
+//  Particles
 static const QList<QColor> kParticleColors = {
     QColor(0xFB, 0xA8, 0xFF), QColor(0xFF, 0xD7, 0x00),
     QColor(0x48, 0x50, 0xDB), QColor(0xFF, 0xFF, 0xFF),
@@ -437,7 +406,7 @@ void Gear::tickParticles() {
     }
 }
 
-// ── Public API ────────────────────────────────────────────────────────────
+//  Public API
 void Gear::refresh(Character::PetType petType) {
     m_petType = petType;
     m_stage   = m_player->getPet().age_group();
@@ -458,24 +427,11 @@ void Gear::restoreHat(const QString &hatKey) {
     loadHatGif(hatKey);
 }
 
-// Called by game.cc when Train emits hatUnlocked()
+// Called by game.cc when a hat is earned (battle achievement or lootbox).
 void Gear::unlockHat(const QString &hatKey) {
     for (HatCard *card : qAsConst(m_hatCards)) {
         if (card->hatKey() == hatKey) {
-            card->setLocked(false);
-            // Reload the icon image now that it is unlocked
-            for (const HatDef &hd : kHats) {
-                if (hd.key == hatKey) {
-                    QImage img(hd.icon);
-                    if (!img.isNull()) {
-                        QPixmap px = QPixmap::fromImage(
-                            img.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-                        card->setPixmap(px);
-                        card->setText("");
-                    }
-                    break;
-                }
-            }
+            card->setLocked(false);   // restores icon to unlocked
             break;
         }
     }

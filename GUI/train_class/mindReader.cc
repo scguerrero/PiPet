@@ -1,5 +1,5 @@
 /*
- * mindReader.cc - mindReader minigame implementation.
+ * mindReader.cc - mindReader minigame
  * Author(s): Luke Cerwin
  */
 
@@ -7,10 +7,8 @@
 #include <QRandomGenerator>
 #include <QPainter>
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Construction
-// ─────────────────────────────────────────────────────────────────────────────
 
+//Construction
 mindReader::mindReader(Player *player,
                      Character::PetType petType,
                      QWidget *parent)
@@ -20,15 +18,13 @@ mindReader::mindReader(Player *player,
     startNewRound();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  UI construction  (no root layout — geometry set in resizeEvent, same as Feed)
-// ─────────────────────────────────────────────────────────────────────────────
 
+// UI construction  (no root layout — geometry set in resizeEvent, same as Feed)
 void mindReader::buildUi()
 {
     m_bg.load(":/images/Backgrounds/mindReader.png");
 
-    // ── Session info box ───────────────────────────────────────────────────
+    //  Session info box
     m_infoBox = new QGroupBox("Session", this);
     QGridLayout *infoGrid = new QGridLayout();
     m_infoBox->setLayout(infoGrid);
@@ -52,25 +48,23 @@ void mindReader::buildUi()
     infoGrid->addWidget(m_streakLabel, 0, 1);
     infoGrid->addWidget(m_roundsLabel, 0, 2);
 
-    // ── Back button ────────────────────────────────────────────────────────
+    //  Back button
     b_back = new QPushButton("BACK", this);
     b_back->setIcon(QIcon(":/images/Assets/left.png"));
     applyUtilityStyle(b_back);
 
-    // ── Character sprite ───────────────────────────────────────────────────
+    //  Character sprite
     m_character = new Character(this);
     m_character->setFixedSize(140, 140);
     m_character->syncWithPlayer(*m_player, m_petType);
 
-    // ── "Thinking" label ───────────────────────────────────────────────────
+    //  "Thinking" label
     m_thinkingLabel = new QLabel("Your pet is thinking of a number\u2026", this);
     m_thinkingLabel->setAlignment(Qt::AlignCenter);
     m_thinkingLabel->setWordWrap(true);
     m_thinkingLabel->setStyleSheet(
         "QLabel { color: mistyrose; font-size: 13px; font-style: italic;"
         "background-color: rgba(0,0,0,120); border-radius: 8px; padding: 6px; }");
-
-    // ── Guess buttons  1 · 2 · 3 ──────────────────────────────────────────
     m_btnRow = new QWidget(this);
     QHBoxLayout *btnLayout = new QHBoxLayout(m_btnRow);
     btnLayout->setContentsMargins(0, 0, 0, 0);
@@ -90,7 +84,7 @@ void mindReader::buildUi()
     connect(m_btn2, &QPushButton::clicked, this, [this]{ onGuess(2); });
     connect(m_btn3, &QPushButton::clicked, this, [this]{ onGuess(3); });
 
-    // ── Feedback label ─────────────────────────────────────────────────────
+    //  Feedback label
     m_feedbackLabel = new QLabel("", this);
     m_feedbackLabel->setAlignment(Qt::AlignCenter);
     m_feedbackLabel->setWordWrap(true);
@@ -98,7 +92,7 @@ void mindReader::buildUi()
         "QLabel { color: #ffd700; font-size: 15px; font-weight: bold;"
         "background-color: rgba(0,0,0,150); border-radius: 8px; padding: 4px; }");
 
-    // ── Result panel ───────────────────────────────────────────────────────
+    //  Result panel
     m_resultPanel = new QWidget(this);
     m_resultPanel->setStyleSheet(
         "QWidget { background-color: rgba(18,8,40,230); border-radius: 12px; }");
@@ -119,7 +113,7 @@ void mindReader::buildUi()
         m_score        = 0;
         m_roundsPlayed = 0;
         m_streak       = 0;
-        m_sessionFinished = false;   // allow a fresh session
+        m_sessionFinished = false; //Reset Session
         showResultPanel(false);
         startNewRound();
     });
@@ -129,27 +123,21 @@ void mindReader::buildUi()
     m_resultPanel->hide();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Geometry  — mirrors Feed::resizeEvent(); called automatically by Qt
-// ─────────────────────────────────────────────────────────────────────────────
 
+// Geometry
 void mindReader::resizeEvent(QResizeEvent *e)
 {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-
-    // Session box — full width, pinned to very top
+    // Top cluster
     m_infoBox->setGeometry(8, 8, w - 16, 58);
-
-    // Back button — below session box, left-aligned
     b_back->setGeometry(8, 72, 90, 34);
 
-    // Character — centred, sits in the upper-middle area
+    // Character
     int charX = (w - 140) / 2;
     m_character->setGeometry(charX, 260, 160, 160);
 
-    // Bottom cluster stacked upward from 8 px above the bottom edge:
-    //   feedback (44 px) → buttons (52 px) → thinking label (44 px)
+    // Bottom cluster
     int bottomEdge = h - 8;
     int feedbackY  = bottomEdge - 44;
     int btnY       = feedbackY  - 52 - 6;
@@ -158,17 +146,11 @@ void mindReader::resizeEvent(QResizeEvent *e)
     m_feedbackLabel->setGeometry(8, feedbackY, w - 16, 44);
     m_btnRow->setGeometry(8, btnY, w - 16, 52);
     m_thinkingLabel->setGeometry(8, thinkingY, w - 16, 44);
-
-    // FIX: result panel starts from just below the character so it has
-    // plenty of vertical room instead of being cramped at the bottom.
     int resultTop = 200;   // charY + charH + small gap
     m_resultPanel->setGeometry(8, resultTop, w - 16, bottomEdge - resultTop);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 //  Game loop
-// ─────────────────────────────────────────────────────────────────────────────
-
 void mindReader::startNewRound()
 {
     m_secretNumber = QRandomGenerator::global()->bounded(1, 4); // 1, 2, or 3
@@ -181,9 +163,7 @@ void mindReader::startNewRound()
 
 void mindReader::onGuess(int guess)
 {
-    // Guard: ignore stray signals after session has ended
     if (m_sessionFinished) return;
-
     setGuessButtonsEnabled(false);   // prevent double-tap
     m_roundsPlayed++;
 
@@ -208,8 +188,7 @@ void mindReader::onGuess(int guess)
             "background-color: rgba(80,0,0,180); border-radius: 8px; padding: 4px; }");
     }
 
-    // FIX: update panel BEFORE deciding to end so the final round label
-    // displays correctly (shows "Round: 10/10" not "Round: 11/10").
+    //update panel BEFORE deciding to end so the final round label
     updateInfoPanel();
 
     if (m_roundsPlayed >= kMaxRounds) {
@@ -236,38 +215,27 @@ void mindReader::endSession()
             .arg(xpEarned));
 
     showResultPanel(true);
-
-    // FIX: emit gameFinished only once per session — NOT when Play Again is
-    // pressed — so the parent screen doesn't navigate away on replay.
     emit gameFinished(m_score * 10, xpEarned);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 //  Info panel helper
-// ─────────────────────────────────────────────────────────────────────────────
-
 void mindReader::updateInfoPanel()
 {
     m_scoreLabel->setText(QString("Score:  %1").arg(m_score));
     m_streakLabel->setText(QString("Streak: %1").arg(m_streak));
-
-    // FIX: before any guess m_roundsPlayed == 0 → show "Round: 1 / 10".
-    // After the final guess m_roundsPlayed == kMaxRounds → cap at kMaxRounds
-    // so we never display "Round: 11 / 10".
     int displayRound = qMin(m_roundsPlayed + 1, kMaxRounds);
     m_roundsLabel->setText(
         QString("Round:  %1 / %2").arg(displayRound).arg(kMaxRounds));
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 //  Character / hat sync  — mirrors Feed::refreshCharacter() exactly
-// ─────────────────────────────────────────────────────────────────────────────
-
 void mindReader::refreshCharacter()
 {
     applyHatSprite();
 }
 
+
+// Universal Hat Inheritence from Mode.cc
 void mindReader::applyHatSprite()
 {
     QString hat = m_player->getPet().hat();
@@ -301,10 +269,7 @@ void mindReader::applyHatSprite()
     m_character->syncWithPlayer(*m_player, m_petType);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 //  UI helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
 void mindReader::setGuessButtonsEnabled(bool enabled)
 {
     m_btn1->setEnabled(enabled);
@@ -314,7 +279,7 @@ void mindReader::setGuessButtonsEnabled(bool enabled)
     for (QPushButton *b : {m_btn1, m_btn2, m_btn3})
         applyButtonStyle(b, enabled ? "" : "#333355");
 }
-
+// Results (end of game)
 void mindReader::showResultPanel(bool visible)
 {
     m_resultPanel->setVisible(visible);

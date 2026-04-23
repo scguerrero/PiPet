@@ -2,7 +2,7 @@
  * game.cc - Top-level game widget implementation.
  * Achievements button moved to Gear screen.
  * Bottom bar simplified to Home only at normal size.
- * Author(s): Luke Cerwin, Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #include "game.h"
 #include <QTimer>
@@ -49,7 +49,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(battle);  // 7
     pages->addWidget(gear);    // 8
 
-    // ── Bottom bar — Home only, normal size ───────────────────────────────
+    //  Bottom bar — Home only, normal size
     utilityWidget = new QWidget(this);
     utility_bar   = new QHBoxLayout(utilityWidget);
     utility_bar->setContentsMargins(4, 4, 4, 4);
@@ -60,13 +60,13 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     utility_bar->addWidget(b_home);
     layout->addWidget(utilityWidget);
 
-    // ── Save button on Mode screen top-left ───────────────────────────────
+    //  Save button on Mode screen top-left
     b_save_mode = new QPushButton("SAVE", mode);
     b_save_mode->setIcon(QIcon(":/images/Assets/save.png"));
     b_save_mode->setGeometry(8, 8, 80, 36);
     b_save_mode->hide();
 
-    // ── Timers ────────────────────────────────────────────────────────────
+    //  Timers
     m_inactivityTimer = new QTimer(this);
     m_inactivityTimer->setSingleShot(true);
     m_inactivityTimer->setInterval(kInactivityMs);
@@ -81,7 +81,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
             this, &Game::onMarathonTriggered);
     m_marathonTimer->start();
 
-    // ── Connections ───────────────────────────────────────────────────────
+    //  Connections
     // Start button routing is wired in loadGame() once we know whether a
     // save file exists — connecting here would always fire open_create()
     // because new_game hasn't been resolved yet.
@@ -108,7 +108,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
     connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
-// -------------------------------------------------------
+
     // Lootbox: when Train awards a hat, unlock it in the save data and
     // make it selectable in Gear — no screen navigation required.
     connect(train, &Train::hatUnlocked, this, [this](const QString &hatKey) {
@@ -118,7 +118,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
         gear->unlockHat(hatKey);      // refreshes the hat card in Gear UI
         qDebug() << "[Lootbox] Unlocked hat:" << hatKey;
     });
-// ---------------------------------------------------------
+
     // Battle achievement signals
     connect(battle, &Battle::battleWon,   this, &Game::onBattleWon);
     // Sleep achievement signals
@@ -143,7 +143,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     showUtilityBar(false);
 }
 
-// ── Utility bar ───────────────────────────────────────────────────────────
+//  Utility bar
 
 void Game::showUtilityBar(bool show) {
     utilityWidget->setVisible(show);
@@ -163,7 +163,7 @@ void Game::showHomeOnly(bool activeStyle) {
             })");
 }
 
-// ── Event filter ──────────────────────────────────────────────────────────
+//  Event filter
 
 bool Game::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonRelease ||
@@ -188,7 +188,7 @@ void Game::onMarathonTriggered() {
     showAchievementPopup(player->achievements.onMarathonSession());
 }
 
-// ── Navigation ────────────────────────────────────────────────────────────
+//  Navigation
 
 void Game::open_start() {
     showUtilityBar(false);
@@ -257,17 +257,19 @@ void Game::open_gear() {
     pages->setCurrentIndex(8);
 }
 
-// ── Achievement trigger slots ─────────────────────────────────────────────
+//  Achievement trigger slots
 
 void Game::onBattleWon() {
-    showAchievementPopup(player->achievements.onBattleWon(++m_totalBattleWins));
-    if (m_totalBattleWins >= 10 && !player->getPet().isHatUnlocked("cowboy")) {
+    QList<QString> unlocked = player->achievements.onBattleWon(++m_totalBattleWins);
+    showAchievementPopup(unlocked);
+
+    if (unlocked.contains("Not Too Shabby II") && !player->getPet().isHatUnlocked("cowboy")) {
         PiPet p = player->getPet();
         p.unlockHat("cowboy");
         player->setPet(p);
-        gear->unlockHat("cowboy");   // refreshes the hat card in Gear UI immediately
+        gear->unlockHat("cowboy");  // removes the lock card in Gear immediately
 
-        QLabel *toast = new QLabel("Cowboy hat unlocked!\nWin 10 battles reward!", this);
+        QLabel *toast = new QLabel("Cowboy hat unlocked!\nEarned with \"Not Too Shabby II\"", this);
         toast->setAlignment(Qt::AlignCenter);
         toast->setWordWrap(true);
         toast->setStyleSheet(R"(
@@ -316,7 +318,7 @@ void Game::onVeteranCheck() {
         player->achievements.onDaysOld(player->getPet().days_old()));
 }
 
-// ── Achievement popup toast ───────────────────────────────────────────────
+//  Achievement popup toast
 
 void Game::showAchievementPopup(const QList<QString> &titles) {
     if (titles.isEmpty()) return;
@@ -347,7 +349,7 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
     }
 }
 
-// ── Achievements screen ───────────────────────────────────────────────────
+//  Achievements screen
 
 void Game::showAchievementsScreen() {
     QDialog dlg(this);
@@ -423,7 +425,7 @@ void Game::showAchievementsScreen() {
     dlg.exec();
 }
 
-// ── onCreateDone ──────────────────────────────────────────────────────────
+//  onCreateDone
 
 void Game::onCreateDone() {
     if (create->b_axolotl->isChecked())
@@ -452,7 +454,7 @@ void Game::onCreateDone() {
     open_mode();
 }
 
-// ── Save / Load ───────────────────────────────────────────────────────────
+//  Save / Load
 
 QJsonObject Game::toJson() const {
     QJsonObject json;
@@ -486,8 +488,6 @@ bool Game::loadGame() {
     disconnect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
     connect   (start->b_start, SIGNAL(clicked()), this, SLOT(open_mode()));
 
-    // Resolve the pet type from the saved string so every screen gets the
-    // correct sprite — not the DragonDog default from construction time.
     QString typeStr = player->getPet().pet_type();
     if      (typeStr == "ElectricAxolotl") currentPetType = Character::ElectricAxolotl;
     else if (typeStr == "SeelCat")         currentPetType = Character::SeelCat;
@@ -496,8 +496,6 @@ bool Game::loadGame() {
     mode->setPetType(currentPetType);
     gear->refresh(currentPetType);
 
-    // Rebuild care screens so they hold the correct petType — without this
-    // they keep the DragonDog default they were constructed with.
     rebuildCareScreens();
 
     QString savedHat = player->getPet().hat();
@@ -541,7 +539,7 @@ bool Game::saveGame() {
     return true;
 }
 
-// ── rebuildCareScreens ────────────────────────────────────────────────────
+// rebuildCareScreens
 // Destroys and recreates Feed, Groom, and Sleep with the current petType.
 // Called from both onCreateDone() and loadGame() so the correct sprite is
 // always used regardless of whether this is a new game or a loaded save.

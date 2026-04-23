@@ -1,6 +1,5 @@
 /*
  * Achievements.h - Tracks all player achievements.
- * Pure data class — no widgets, no Qt signals.
  * Saves/loads with Player via JSON.
  * Author(s): Luke Cerwin
  */
@@ -34,7 +33,7 @@ public:
     QList<QString> onTuckIn();
     QList<QString> onBedTimeStory(int totalStories);
     QList<QString> onDaysOld(int days);
-    QList<QString> onMarathonSession();  // call after 2 hours played
+    QList<QString> onMarathonSession();
 
     // ── Gear screen display ───────────────────────────────────────────────
     const QList<Achievement> &all() const { return m_achievements; }
@@ -45,9 +44,7 @@ public:
 
 private:
     QList<Achievement> m_achievements;
-
-    // Unlock by key — returns title if newly unlocked, empty string if already had it
     QString unlock(const QString &key);
 };
 
-#endif // ACHIEVEMENTS_H
+#endif

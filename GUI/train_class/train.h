@@ -1,3 +1,8 @@
+/*
+ * Main hub for minigames Includes implementations from tanya and sasha
+ *
+ * Author(s): Luke Cerwin & Sasha C. Guerrero
+ */
 #ifndef TRAIN_H
 #define TRAIN_H
 #include <QtWidgets>

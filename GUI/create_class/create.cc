@@ -1,6 +1,6 @@
 /*
  * create.cc - Pet creation screen with animated GIF gallery.
- * Author(s): Luke Cerwin, Sasha C. Guerrero
+ * Author(s): Luke Cerwin
  */
 #include "create.h"
 #include <QPainter>
@@ -12,7 +12,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     layout->setSpacing(8);
     layout->setContentsMargins(16, 16, 16, 16);
 
-    // ── Gallery row ───────────────────────────────────────────────────────
+    //Gallery row
     QHBoxLayout *galleryRow = new QHBoxLayout();
 
     b_left  = new QPushButton(this);
@@ -35,7 +35,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     galleryRow->addWidget(b_right,  0, Qt::AlignVCenter);
     layout->addLayout(galleryRow);
 
-    // ── Pet name ──────────────────────────────────────────────────────────
+    //Pet name
     petName = new QLabel(this);
     petName->setAlignment(Qt::AlignCenter);
     petName->setStyleSheet(
@@ -43,7 +43,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
         "padding: 6px; color: #ffd700; font-size: 18px; font-weight: bold; }");
     layout->addWidget(petName);
 
-    // ── Pet description ───────────────────────────────────────────────────
+    //Pet description
     petDescription = new QLabel(this);
     petDescription->setAlignment(Qt::AlignCenter);
     petDescription->setWordWrap(true);
@@ -52,7 +52,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
         "padding: 6px; color: mistyrose; font-size: 13px; }");
     layout->addWidget(petDescription);
 
-    // ── Hidden radio buttons (game.cc reads these) ────────────────────────
+    //Hidden radio buttons (game.cc reads these)
     b_axolotl = new QRadioButton(this);
     b_cat      = new QRadioButton(this);
     b_dog      = new QRadioButton(this);
@@ -60,7 +60,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     b_cat->hide();
     b_dog->hide();
 
-    // ── Name header ───────────────────────────────────────────────────────
+    //Name header
     nameHeader = new QLabel("Choose a name for your PiPet:", this);
     nameHeader->setAlignment(Qt::AlignCenter);
     nameHeader->setStyleSheet(
@@ -68,7 +68,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
         "padding: 4px; color: mistyrose; font-size: 14px; }");
     layout->addWidget(nameHeader);
 
-    // ── Name list ─────────────────────────────────────────────────────────
+    //Name list
     name_list = new QListWidget(this);
     name_list->setViewMode(QListView::ListMode);
     name_list->setFlow(QListView::TopToBottom);
@@ -80,20 +80,15 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     for (int i = 0; i < 26; i++)
         name_list->addItem(new QListWidgetItem(str_names[i]));
     layout->addWidget(name_list);
-
-    // ── DONE button ───────────────────────────────────────────────────────
     b_done = new QPushButton("DONE", this);
     b_done->setEnabled(false);
     b_done->setToolTip("Choose a name first!");
-    layout->addWidget(b_done);
-
-    // ── Connections ───────────────────────────────────────────────────────
+    layout->addWidget(b_done); 
     connect(b_left,    SIGNAL(clicked()), this, SLOT(left_gallery()));
     connect(b_right,   SIGNAL(clicked()), this, SLOT(right_gallery()));
     connect(name_list, SIGNAL(itemClicked(QListWidgetItem*)),
             this,      SLOT(checkDoneEligibility()));
 
-    // ── Button styles ─────────────────────────────────────────────────────
     b_done->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);

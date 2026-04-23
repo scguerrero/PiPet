@@ -1,7 +1,7 @@
 /*
  * sleep.cc - Sleep screen with character GIF.
  * Cuddle replaces Brush Teeth.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #include "sleep.h"
 #include <QPainter>
@@ -15,7 +15,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     actionsBox  = new QGroupBox("■‿■");
     actionsGrid = new QGridLayout();
 
-    // ── Character GIF ─────────────────────────────────────────────────────
+    // - Character GIF
     character = new Character(this);
     character->setFixedSize(160, 160);
     character->syncWithPlayer(*player, petType);
@@ -28,7 +28,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
         "padding: 6px; color: mistyrose; }");
     updateSleepDisplay();
 
-    // ── Info helper — shown on open, hides after 3 s ──────────────────────
+    // - Info helper: shown on open, hides after 3 seconds
     infoHelper = new QLabel(this);
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
@@ -115,15 +115,15 @@ void Sleep::wearPjs() { applySleepAction(5,  "Wear Pjs!"); }
 void Sleep::readBook() {
     applySleepAction(10, "Bed Time Story!");
     m_bedTimeStoryCount++;
-    emit bedTimeStoryUsed(m_bedTimeStoryCount); // → Bookworm
+    emit bedTimeStoryUsed(m_bedTimeStoryCount); // Bookworm
 }
 
 void Sleep::tuckIn() {
     applySleepAction(20, "Tucked In!");
-    emit tuckInUsed(); // → Beauty Sleep
+    emit tuckInUsed(); // Beauty Sleep
 }
 
-// ── Hat-aware character refresh ───────────────────────────────────────────
+// - Hat-aware character refresh
 // Called by game.cc each time the sleep screen is opened so the equipped
 // hat (if any) is always visible on the character sprite.
 

@@ -1,6 +1,7 @@
 /*
- * mode.cc - Mode hub implementation.
- * Author(s): Sasha C. Guerrero, Luke Cerwin
+ * mode.cc - The hub of the entire project.
+ * If I could redo the system I would make the main.cc file has all the conenctions but mode just seemed to fit better overtime
+ * Author(s): Luke Cerwin
  */
 #include "mode.h"
 #include <QPainter>
@@ -8,7 +9,9 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-
+/*
+// Add in comments!!!
+*/
 Mode::Mode(Player *player, QWidget *parent)
     : QWidget{parent}, player(player)
 {
@@ -44,7 +47,7 @@ Mode::Mode(Player *player, QWidget *parent)
     angerMark->setFixedSize(36, 36);
     angerMark->hide();
 
-    // ── Hunger hint label — appears below the character when pet is angry ──
+    //  Hunger hint label — appears below the character when pet is angry
     hungerHintLabel = new QLabel(this);
     hungerHintLabel->setAlignment(Qt::AlignCenter);
     hungerHintLabel->setWordWrap(true);
@@ -215,7 +218,6 @@ void Mode::refreshDisplay() {
         QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
                             .arg(folder, prefix, infix, hat);
 
-        // Only (re)allocate the QMovie when the path actually changes —
         // avoids a new heap allocation every 10-second decay tick.
         if (path != m_cachedHatPath || !m_cachedHatMovie || !m_cachedHatMovie->isValid()) {
             delete m_cachedHatMovie;
@@ -226,7 +228,6 @@ void Mode::refreshDisplay() {
         if (m_cachedHatMovie->isValid()) {
             QLabel *disp = character->findChild<QLabel *>();
             if (disp) {
-                // Only swap the movie if it isn't already playing — avoids
                 // restarting the animation every decay tick.
                 if (disp->movie() != m_cachedHatMovie) {
                     if (disp->movie()) disp->movie()->stop();
@@ -238,7 +239,6 @@ void Mode::refreshDisplay() {
                 character->syncWithPlayer(*player, petType);
             }
         } else {
-            // Hat path invalid — fall back to base idle sprite
             character->syncWithPlayer(*player, petType);
         }
     } else {
@@ -269,7 +269,6 @@ void Mode::decayStats() {
     pet.set_happiness(qMax(0, pet.happiness() - 1));
     player->setPet(pet);
     // Route through refreshDisplay() so hat GIFs are preserved.
-    // updateStatBars() and updateIndicators() are called inside refreshDisplay().
     refreshDisplay();
 }
 
@@ -288,12 +287,7 @@ void Mode::updateIndicators() {
 
     angerMark->setVisible(angry);
 
-    // NOTE: do NOT call character->updateEmotionFromStats() here.
-    // Emotion is resolved inside refreshDisplay() → syncWithPlayer(), so that
-    // the hat GIF path is always chosen AFTER the emotion state is current.
-    // Calling it here would race against / overwrite the hat GIF.
-
-    // ── Achievement signals ───────────────────────────────────────────────
+    //  Achievement signals
     // Temper Tantrum: pet sleeping AND angry at the same time
     if (sleeping && angry)
         emit temperTantrum();
@@ -307,21 +301,19 @@ void Mode::updateIndicators() {
 }
 
 void Mode::showHungerHintOnce() {
-    // Only fire if the pet is actually hungry and we haven't shown it this visit
+    // Only fire if the pet is hungry
     if (!m_hintShownThisVisit && player->getPet().hunger() < 25) {
         m_hintShownThisVisit = true;
         hungerHintLabel->show();
         hungerHintLabel->raise();
-        // Hide after 3 seconds — no repeat until next visit
         QTimer::singleShot(3000, hungerHintLabel, &QLabel::hide);
     }
 }
 
-// ── About page —──────────────────
+//  About page —
 void Mode::openAbout() {
     PiPet pet = player->getPet();
 
-    // Build a QDialog instead of QMessageBox so we can paint a background
     QDialog about(this);
     about.setWindowTitle("About piPet");
     about.setFixedSize(400, 460);
@@ -344,18 +336,18 @@ void Mode::openAbout() {
 
     infoLabel->setText(QString(
                            "<b style='color:#ffd700;font-size:16px;'>piPet About</b><br><br>"
-                           "<b style='color:#ffd700;'>── Session ──</b><br>"
+                           "<b style='color:#ffd700;'> Session </b><br>"
                            "Time Played:  %1s<br><br>"
-                           "<b style='color:#ffd700;'>── Pet ──</b><br>"
+                           "<b style='color:#ffd700;'> Pet </b><br>"
                            "Name:         %2<br>"
                            "Age Group:    %3<br>"
                            "Days Old:     %4<br><br>"
-                           "<b style='color:#ffd700;'>── Condition ──</b><br>"
+                           "<b style='color:#ffd700;'> Condition </b><br>"
                            "Hunger:     %5 / 100<br>"
                            "Energy:     %6 / 100<br>"
                            "Happiness:  %7 / 100<br>"
                            "Hygiene: %8  Strength: %9   Intellect: %10<br><br>"
-                           "<b style='color:#ffd700;'>── Battle Stats ──</b><br>"
+                           "<b style='color:#ffd700;'> Battle Stats </b><br>"
                            "Attack: %12  Defense: %13<br><br>"
                            "<span style='color:#aaa;font-size:11px;'>"
                            "Luke C. · Sasha G. · Cesar R.<br>"

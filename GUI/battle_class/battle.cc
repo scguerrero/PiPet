@@ -1,9 +1,6 @@
 /*
  * In single-player battle, the PiPet battles against the computer.
- * Added: dojo background (battle_16bit.png) painted via paintEvent,
- *        translucent UI overlays, and wood-chip particles that burst from
- *        the dummy's head/chest zone (red-annotated area) on every
- *        landed attack.
+ * Added: Dummy particle area for effect and interactable buttons,
  *
  * Author(s): Luke Cerwin
  */
@@ -13,7 +10,6 @@
 #include <QtMath>
 
 // ── Dummy hit-zone in image-space (0-1 normalised).
-// Wing Chun dummy: head/chest centre is at roughly x: 22%, y: 42% of the widget.
 static constexpr float kDummyNX  = 0.22f;   // normalised centre-x  (left side — dummy)
 static constexpr float kDummyNY  = 0.42f;   // normalised centre-y  (head / upper chest)
 
@@ -26,9 +22,7 @@ static const QColor kWoodPalette[] = {
     QColor(0x5C, 0x33, 0x17),   // very dark
 };
 
-Battle::Battle(QWidget *parent) : QWidget(parent)
-{
-    // Load background
+Battle::Battle(QWidget *parent) : QWidget(parent) {
     m_bg.load(":/images/Backgrounds/battle_16bit.png");
 
     // Particle tick timer (60 fps-ish)
@@ -68,7 +62,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
         return l;
     };
 
-    // CPU ("Wing Chun") on the LEFT, Player ("You") on the RIGHT
+    // CPU left you right
     hpGrid->addWidget(makeNameLabel("Wing Chun", Qt::AlignLeft),  0, 0);
     hpGrid->addWidget(makeNameLabel("You",       Qt::AlignRight), 0, 2);
 
@@ -97,7 +91,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     cpuHPLabel->setStyleSheet(   "font-size: 14px; color: mistyrose; background: transparent;");
     playerHPLabel->setStyleSheet("font-size: 14px; color: mistyrose; background: transparent;");
 
-    // ── Result / log labels constructed here, added just above the buttons ─
+    // ── Result / log labels constructed here
     logLabel = new QLabel("");
     logLabel->setAlignment(Qt::AlignCenter);
     logLabel->setStyleSheet(
@@ -124,7 +118,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     root->addWidget(resultLabel);
     root->addSpacing(5);
 
-    // ── Action buttons ────────────────────────────────────────────────────
+    // ── Action buttons
     btnRow = new QHBoxLayout();
     btnRow->setSpacing(8);
     btnWidget = new QWidget();
@@ -172,10 +166,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent)
     refreshUI();
 }
 
-// ── Hat-aware player info sync ────────────────────────────────────────────
-// Called by game.cc each time the battle screen is opened. Syncs the
-// character sprite to the current pet type and equipped hat (if any).
-
+// Hat-aware player sync
 void Battle::setPlayerInfo(Player *player, Character::PetType petType) {
     m_player  = player;
     m_petType = petType;
@@ -212,7 +203,7 @@ void Battle::setPlayerInfo(Player *player, Character::PetType petType) {
     m_character->syncWithPlayer(*m_player, m_petType);
 }
 
-// ── Background + particle paint ───────────────────────────────────────────
+// Particle Effects
 void Battle::paintEvent(QPaintEvent *e)
 {
     QPainter p(this);
@@ -240,10 +231,9 @@ void Battle::paintEvent(QPaintEvent *e)
     QWidget::paintEvent(e);
 }
 
-// ── Particle spawner ──────────────────────────────────────────────────────
+// Particle spawner
 void Battle::spawnWoodParticles(int count)
 {
-    // Convert normalised dummy position to current widget pixels
     float cx = kDummyNX * width();
     float cy = kDummyNY * height();
 
@@ -255,9 +245,7 @@ void Battle::spawnWoodParticles(int count)
         // Spawn with slight random offset inside the hit zone (~20 px spread)
         chip.pos.setX(cx + rng->bounded(40) - 20);
         chip.pos.setY(cy + rng->bounded(40) - 20);
-
-        // Velocity: burst rightward + upward (away from dummy toward centre of arena)
-        float angle   = static_cast<float>(rng->bounded(260)) - 40.0f; // -40 .. +220 deg → rightward arc
+        float angle   = static_cast<float>(rng->bounded(260)) - 40.0f;
         float speed   = 2.5f + static_cast<float>(rng->bounded(40)) * 0.15f;
         float rad     = qDegreesToRadians(angle);
         chip.vel.setX(qCos(rad) * speed);
@@ -279,7 +267,7 @@ void Battle::spawnWoodParticles(int count)
         m_particleTimer->start();
 }
 
-// ── Particle tick ─────────────────────────────────────────────────────────
+// Particle tick Logic
 void Battle::tickParticles()
 {
     for (int i = m_particles.size() - 1; i >= 0; --i) {
@@ -296,11 +284,12 @@ void Battle::tickParticles()
         m_particleTimer->stop();
 }
 
-// ── Slots ─────────────────────────────────────────────────────────────────
+// Buttons
 void Battle::onAttack()  { playTurn(Move::Attack); }
 void Battle::onCharge()  { playTurn(Move::Charge); }
 void Battle::onDefend()  { playTurn(Move::Defend); }
 
+//Battle Logic Restart
 void Battle::onRestart()
 {
     playerHP = cpuHP = maxHP;
@@ -319,7 +308,7 @@ void Battle::onRestart()
     refreshUI();
 }
 
-// ── CPU AI ────────────────────────────────────────────────────────────────
+// CPU AI
 Move Battle::cpuMove()
 {
     switch (QRandomGenerator::global()->bounded(3)) {
@@ -329,7 +318,6 @@ Move Battle::cpuMove()
     }
 }
 
-// ── Full turn logic ───────────────────────────────────────────────────────
 void Battle::playTurn(Move pm)
 {
     QString result, log;
@@ -453,7 +441,7 @@ void Battle::playTurn(Move pm)
     endGame();
 }
 
-// ── UI refresh ────────────────────────────────────────────────────────────
+// UI refresh
 void Battle::refreshUI()
 {
     playerBar->setValue(playerHP);
@@ -464,7 +452,7 @@ void Battle::refreshUI()
     btnDefend->setEnabled(playerDefends > 0);
 }
 
-// ── End-game check ────────────────────────────────────────────────────────
+// End-game check
 void Battle::endGame()
 {
     if (playerHP > 0 && cpuHP > 0) return;

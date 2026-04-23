@@ -1,20 +1,7 @@
 /*
  * Gear mode — stage screen where the player dresses their PiPet with hats.
  *
- * Layout (bottom-up, matching gearStage_16bit.png):
- *   - Full-window background: gearStage_16bit.png
- *   - Character widget sitting on the pedestal (blue-square region)
- *   - Horizontal drag-scroll hat strip along the bottom (yellow-line region)
- *   - Particle effect overlay label (transparent, full-window)
- *   - Back button bottom-left
- *
- * Hat GIF naming convention assumed:
- *   :/images/Sprites/pets/{folder}/{prefix}_{stageInfix}{hat}.gif
- *   e.g. seelcat/seelcat_teen_santa.gif
- *        dragondog/dragondog_adult_cowboy.gif
- *        axolotl/axolotl_wizard.gif  (baby has no stage infix)
- *
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 
 #ifndef GEAR_H
@@ -30,16 +17,15 @@
 class HatCard : public QLabel {
     Q_OBJECT
 public:
-    explicit HatCard(const QString &hatKey,   // "cowboy" | "crown" | "santa" | "wizard"
+    explicit HatCard(const QString &hatKey,
                      const QString &iconPath,
                      QWidget *parent = nullptr);
     QString hatKey() const { return m_key; }
     void setSelected(bool sel);
-    void setLocked(bool locked);   // grey out + 🔒 overlay; blocks clicks
+    void setLocked(bool locked);
 
 signals:
     void clicked(const QString &hatKey);
-    // Emitted when a locked card is tapped — Gear shows the "locked" info bubble
     void lockedTapped(const QString &hatKey);
 
 protected:
@@ -47,8 +33,10 @@ protected:
 
 private:
     QString m_key;
+    QString m_iconPath;     
     bool    m_selected = false;
-    bool    m_locked   = false;   // true = lootbox hat not yet earned
+    bool    m_locked   = false;  
+    void    loadIcon();          
     void    applyStyle();
 };
 
@@ -65,9 +53,6 @@ public:
 
     // Call after loadGame() to restore a previously equipped hat without a particle burst
     void restoreHat(const QString &hatKey);
-
-    // Called by game.cc when Train emits hatUnlocked() — makes the hat card
-    // selectable and updates the lock overlay without reloading everything.
     void unlockHat(const QString &hatKey);
 
 signals:
@@ -83,22 +68,17 @@ private slots:
 private:
     Player            *m_player;
     Character::PetType m_petType  = Character::DragonDog;
-    QString            m_stage    = "Baby";   // "Baby" | "Teen" | "Adult"
-    QString            m_equippedHat = "";    // "" = no hat / idle gif
+    QString            m_stage    = "Baby";
+    QString            m_equippedHat = "";
     QLabel  *infoHelper;
     QTimer  *m_infoTimer;
-
-    // Background
     QPixmap m_bg;
-
-    // Achievements button — top-left, same style as b_save_mode on Mode
 public:
-    QPushButton *b_achievements; // public so game.cc can connect directly
+    QPushButton *b_achievements;
 private:
 
     Character   *m_character;
 
-    // Hat strip (inside a scroll area)
     QScrollArea *m_scrollArea;
     QWidget     *m_stripWidget;
     QHBoxLayout *m_stripLayout;
@@ -121,8 +101,6 @@ private:
     void loadHatGif(const QString &hatKey); // sets Character GIF
     void spawnParticles();
     void tickParticles();
-
-    // Build a GIF path from current state + hatKey
     QString gifPath(const QString &hatKey) const;
 };
 

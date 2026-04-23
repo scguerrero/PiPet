@@ -1,7 +1,7 @@
 /*
  * groom.h - Groom screen with two-spot drag mechanic.
  * Uses standard QWidget mouse events — same as rest of codebase.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #ifndef GROOM_H
 #define GROOM_H
@@ -42,9 +42,6 @@ public:
     explicit Groom(Player *player, Character::PetType petType,
                    QWidget *parent = nullptr);
     void updateHygieneDisplay();
-
-    // Re-syncs the character sprite to the current pet type and equipped hat.
-    // Call this from game.cc each time the groom screen is opened.
     void refreshCharacter();
 
 protected:
@@ -81,4 +78,4 @@ private:
     void showHint(const QString &text);
 };
 
-#endif // GROOM_H
+#endif

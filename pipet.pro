@@ -28,7 +28,7 @@ HEADERS += \
     GUI/battle_class/battle.h \
     GUI/clock_class/clock.h \
     GUI/achievements_class/achievements.h \
-    Pet/PiPet.h
+    Pet/PiPet.h \
     Player/Player.h
 
 SOURCES += \
@@ -38,7 +38,7 @@ SOURCES += \
     GUI/start_class/start.cc \
     GUI/create_class/create.cc \
     GUI/mode_class/mode.cc \
-    GUI/character_class/character.cpp \
+    GUI/character_class/character.cc \
     GUI/care_class/feed.cc \
     GUI/care_class/sleep.cc \
     GUI/care_class/groom.cc \
@@ -49,6 +49,6 @@ SOURCES += \
     GUI/train_class/train.cc \
     GUI/battle_class/battle.cc \
     GUI/clock_class/clock.cpp \
-    GUI/achievements_class/achievements.cpp \
+    GUI/achievements_class/achievements.cc \
     Pet/PiPet.cpp \
-    Player/Player.cpp
+    Player/Player.cc

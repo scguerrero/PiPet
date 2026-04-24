@@ -78,7 +78,7 @@ int main(int argc, char**argv)
     QScrollBar {
         background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #4850DB,stop:1 #4A71DB);
         border: 1px solid #FBA8FF;
-        width: 20px;
+        width: 30px;
         margin: 22px 0 22px 0;
     }
     QScrollBar::handle {
@@ -126,7 +126,7 @@ int main(int argc, char**argv)
     Game game;
     game.loadGame();
     game.setFixedSize(480, 640);
-    game.show();
+    game.show();//game.showFullScreen();
     app.processEvents();
     QEventLoop loop;
     QTimer::singleShot(3000, &loop, &QEventLoop::quit);

@@ -1,6 +1,6 @@
 /*
  * start.cc - Start/title screen
- * Author(s): Luke Cerwin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 #include "start.h"
 #include <QPainter>

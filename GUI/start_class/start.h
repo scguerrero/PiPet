@@ -1,6 +1,6 @@
 /*
  * start.h - Start/title screen header.
- * Author(s): Luke Cerwin & Sasha Guerrero
+ * Author(s): Luke Cerwin
  */
 
 #ifndef START_H

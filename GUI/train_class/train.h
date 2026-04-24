@@ -22,10 +22,8 @@ public:
     QPushButton *b_back;
 
 signals:
-    // Emitted when a lootbox awards a new hat.
-    // game.cc connects this to gear->unlockHat(hatKey) so Gear refreshes
-    // automatically without Train needing to know about Gear directly.
     void hatUnlocked(const QString &hatKey);
+    void lootboxEarned();
 
 protected:
     void paintEvent(QPaintEvent *e) override;

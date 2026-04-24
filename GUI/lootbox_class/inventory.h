@@ -6,15 +6,13 @@
 
 #ifndef INVENTORY_H
 #define INVENTORY_H
-#include <QWidget>
 #include <vector>
 #include "item.h"
 using namespace std;
 
-class Inventory : public QWidget {
-    Q_OBJECT
+class Inventory {
 public:
-    explicit Inventory(QWidget *parent = nullptr);
+    Inventory();
 
     vector<Item> getItems();
     /*void setItems(vector<Item> items);*/

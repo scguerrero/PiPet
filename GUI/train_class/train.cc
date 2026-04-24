@@ -14,7 +14,7 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     // mindReader is added lazily on first openmindReader() call.
     stack      = new QStackedWidget();
     trainHub   = new QWidget();
-    pipatterns = new PiPatterns();
+    pipatterns = new PiPatterns(player);
     stack->addWidget(trainHub);    // index 0
     stack->addWidget(pipatterns);  // index 1
 
@@ -211,10 +211,7 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
              << "happiness +"      << happinessGain
              << "hunger +"         << hungerGain;
 
-    // ── Lootbox trigger point (option A) ─────────────────────────────────
-    // Your partner can call tryAwardLootbox(finalScore, xpEarned) here
-    // once the lootbox logic is implemented.
-    // ─────────────────────────────────────────────────────────────────────
+    tryAwardLootbox(finalScore, xpEarned);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -234,9 +231,8 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
 //         m_player->setPet(p);
 //         emit hatUnlocked(hatKey);
 // ══════════════════════════════════════════════════════════════════════════
-void Train::tryAwardLootbox(int /*score*/, int /*xpEarned*/)
+void Train::tryAwardLootbox(int /*score*/, int xpEarned)
 {
-    // TODO (your partner): implement lootbox roll logic here.
-    // See the comment block above for the full spec.
-    qDebug() << "[Lootbox] tryAwardLootbox called — not yet implemented.";
+    if (xpEarned > 0)
+        emit lootboxEarned();
 }

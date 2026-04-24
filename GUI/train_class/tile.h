@@ -7,15 +7,19 @@
 #ifndef TILE_H
 #define TILE_H
 #include <QPushButton>
+#include <QTimer>
 
 class Tile : public QPushButton {
     Q_OBJECT
 public:
     explicit Tile(QPushButton *parent = nullptr);
-    void changeState(bool);
+
+    void setHighlighted(bool highlighted);
+    void flashFeedback(bool correct);
     bool getState();
+
 private:
-    bool m_state = false; // State indicates if the tile is highlighted.
+    bool m_state = false;
 };
 
 #endif // TILE_H

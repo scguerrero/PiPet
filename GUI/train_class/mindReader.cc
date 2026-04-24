@@ -208,11 +208,13 @@ void mindReader::endSession()
     else if (m_score >= kMaxRounds * 8 / 10) rating = "Great job! Your pet is proud!";
     else if (m_score >= kMaxRounds / 2)      rating = "Your pet is happy!";
     else                                     rating = "Your pet believes in you!";
-    m_resultLabel->setText(
-        QString("%1\n\nCorrect: %2 / %3\nXP Earned: %4")
+    QString resultText = QString("%1\n\nCorrect: %2 / %3\nXP Earned: %4")
             .arg(rating)
             .arg(m_score).arg(kMaxRounds)
-            .arg(xpEarned));
+            .arg(xpEarned);
+    if (xpEarned > 0)
+        resultText += "\n\nYou earned a lootbox!";
+    m_resultLabel->setText(resultText);
 
     showResultPanel(true);
     emit gameFinished(m_score * 10, xpEarned);

@@ -93,5 +93,10 @@
         <file>Sprites/pets/icons/rubygem.png</file>
         <file>Sprites/pets/icons/shell.png</file>
         <file>Sprites/pets/icons/string.png</file>
+        <file>Sprites/pets/icons/charger.png</file>
+        <file>Sprites/pets/icons/coin.png</file>
+        <file>Sprites/pets/icons/cookie.png</file>
+        <file>Sprites/pets/icons/headphones.png</file>
+        <file>Sprites/pets/icons/hourglass.png</file>
     </qresource>
 </RCC>

@@ -18,7 +18,9 @@ private:
 
 public:
     // Battle and minigame counters tracked here so they persist via JSON
-    int battleWins     = 0;
+    int         battleWins       = 0;
+    int         pendingLootboxes = 0;
+    QStringList wonLootboxItems;
 
     PiPet        pet;
     Achievements achievements;

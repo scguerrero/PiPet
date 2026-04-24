@@ -7,7 +7,7 @@
 #include "inventory.h"
 using namespace std;
 
-Inventory::Inventory(QWidget *parent) : QWidget(parent) {}
+Inventory::Inventory() {}
 
 vector<Item> Inventory::getItems() {
     return m_items;

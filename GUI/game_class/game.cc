@@ -110,6 +110,29 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
     connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
+    connect(train, &Train::lootboxEarned, this, [this]() {
+        lootbox->awardLootbox();
+        QLabel *toast = new QLabel("You won a lootbox!\nVisit Gear → Lootbox to open it.", this);
+        toast->setAlignment(Qt::AlignCenter);
+        toast->setWordWrap(true);
+        toast->setStyleSheet(R"(
+            QLabel {
+                background-color: rgba(72,50,180,220);
+                border: 2px solid #FBA8FF;
+                border-radius: 12px;
+                color: mistyrose;
+                font-size: 15px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        )");
+        toast->setFixedWidth(300);
+        toast->adjustSize();
+        toast->setGeometry((width() - 300) / 2, 120, 300, toast->height());
+        toast->raise();
+        toast->show();
+        QTimer::singleShot(3500, toast, &QLabel::deleteLater);
+    });
 
     // Lootbox: when Train awards a hat, unlock it in the save data and
     // make it selectable in Gear — no screen navigation required.
@@ -140,6 +163,15 @@ Game::Game(QWidget *parent) : QWidget{parent} {
             this, &Game::showAchievementsScreen);
     connect(gear->b_lootboxes, &QPushButton::clicked,
             this, &Game::open_lootbox);
+
+    connect(lootbox, &Lootbox::hatUnlocked, this, [this](const QString &hatKey) {
+        PiPet p = player->getPet();
+        if (!p.isHatUnlocked(hatKey)) {
+            p.unlockHat(hatKey);
+            player->setPet(p);
+            gear->unlockHat(hatKey);
+        }
+    });
 
     setUtilityStyle(*b_save_mode);
     setUtilityStyle(*b_home);
@@ -262,6 +294,7 @@ void Game::open_gear() {
 }
 
 void Game::open_lootbox() {
+    showHomeOnly(true);
     b_save_mode->hide();
     pages->setCurrentIndex(9);
 }
@@ -510,6 +543,8 @@ bool Game::loadGame() {
     QString savedHat = player->getPet().hat();
     if (!savedHat.isEmpty())
         gear->restoreHat(savedHat);
+
+    lootbox->restoreFromPlayer();
 
     return true;
 }

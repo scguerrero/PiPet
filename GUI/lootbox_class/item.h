@@ -6,16 +6,14 @@
 
 #ifndef ITEM_H
 #define ITEM_H
-#include <QWidget>
 #include <QString>
 
-class Item : public QWidget {
-    Q_OBJECT
+class Item {
 public:
     enum Rarity { Copper, Silver, Gold };
 
-    explicit Item(QWidget *parent = nullptr);
-    Item(QString name, QString filepath, QString flavortext, Rarity rarity, QWidget *parent = nullptr);
+    Item();
+    Item(QString name, QString filepath, QString flavortext, Rarity rarity);
     Item(const Item &other);
 
     QString getName();

@@ -6,12 +6,12 @@
 
 #include "item.h"
 
-Item::Item(QWidget *parent) : QWidget(parent) {}
+Item::Item() {}
 
-Item::Item(QString name, QString filepath, QString flavortext, Rarity rarity, QWidget *parent)
-    : QWidget(parent), m_name(name), m_filepath(filepath), m_flavortext(flavortext), m_rarity(rarity) {}
+Item::Item(QString name, QString filepath, QString flavortext, Rarity rarity)
+    : m_name(name), m_filepath(filepath), m_flavortext(flavortext), m_rarity(rarity) {}
 
-Item::Item(const Item &other) : QWidget(nullptr) {
+Item::Item(const Item &other) {
     m_name = other.m_name;
     m_flavortext = other.m_flavortext;
     m_filepath = other.m_filepath;

@@ -52,7 +52,12 @@ Player Player::fromJSON(const QJsonObject &json) {
     if (const QJsonValue v = json["Streak"];           v.isDouble()) player.streak           = v.toInt();
     if (const QJsonValue v = json["Good Days"];        v.isDouble()) player.goodDays         = v.toInt();
     if (const QJsonValue v = json["Hours"];            v.isDouble()) player.hours            = v.toInt();
-    if (const QJsonValue v = json["BattleWins"];       v.isDouble()) player.battleWins       = v.toInt();
+    if (const QJsonValue v = json["BattleWins"];        v.isDouble()) player.battleWins        = v.toInt();
+    if (const QJsonValue v = json["PendingLootboxes"]; v.isDouble()) player.pendingLootboxes  = v.toInt();
+    if (const QJsonValue v = json["WonLootboxItems"];  v.isArray())  {
+        for (const QJsonValue &item : v.toArray())
+            player.wonLootboxItems.append(item.toString());
+    }
     if (const QJsonValue v = json["PiPet"];            v.isObject()) player.pet              = PiPet::fromJSON(v.toObject());
     if (const QJsonValue v = json["Achievements"];     v.isObject()) player.achievements.fromJson(v.toObject());
 
@@ -65,8 +70,13 @@ QJsonObject Player::toJson() const {
     json["Streak"]          = streak;
     json["Good Days"]       = goodDays;
     json["Hours"]           = hours;
-    json["BattleWins"]      = battleWins;
-    json["PiPet"]           = pet.toJSON();
+    json["BattleWins"]       = battleWins;
+    json["PendingLootboxes"] = pendingLootboxes;
+    QJsonArray lootArr;
+    for (const QString &name : wonLootboxItems)
+        lootArr.append(name);
+    json["WonLootboxItems"]  = lootArr;
+    json["PiPet"]            = pet.toJSON();
     json["Achievements"]    = achievements.toJson();
     return json;
 }

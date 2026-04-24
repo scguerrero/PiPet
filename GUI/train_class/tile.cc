@@ -6,27 +6,44 @@
 
 #include "tile.h"
 
-Tile::Tile(QPushButton *parent) : QPushButton(parent) {
-
-    // Square tiles
-    this->setFixedSize(90,90);
-
-    // Stylesheet for default state and pressed state
-    this->setStyleSheet(R"(
+static const char *kDefaultStyle = R"(
     QPushButton {
-        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #e55bde, stop:1 #2d34fc);
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 #e55bde, stop:1 #2d34fc);
         border-radius: 0px;
-        border: 4px inset mistyrose
+        border: 4px inset mistyrose;
     }
     QPushButton:pressed {
-        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #2d34fc, stop:1 #e55bde);
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 #2d34fc, stop:1 #e55bde);
     }
-    )");
+)";
 
+static const char *kHighlightedStyle = R"(
+    QPushButton {
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 #FFD700, stop:1 #FFA500);
+        border-radius: 0px;
+        border: 4px outset #FFFF88;
+    }
+)";
+
+Tile::Tile(QPushButton *parent) : QPushButton(parent) {
+    setFixedSize(90, 90);
+    setStyleSheet(kDefaultStyle);
 }
 
-void Tile::changeState(bool state) {
-    m_state = state;
+void Tile::setHighlighted(bool highlighted) {
+    m_state = highlighted;
+    setStyleSheet(highlighted ? kHighlightedStyle : kDefaultStyle);
+}
+
+void Tile::flashFeedback(bool correct) {
+    QString style = correct
+        ? "QPushButton { background-color: #00CC44; border: 4px outset #88FF88; border-radius: 0px; }"
+        : "QPushButton { background-color: #CC2222; border: 4px outset #FF8888; border-radius: 0px; }";
+    setStyleSheet(style);
+    QTimer::singleShot(350, this, [this]() { setHighlighted(false); });
 }
 
 bool Tile::getState() {

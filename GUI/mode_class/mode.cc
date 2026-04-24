@@ -317,8 +317,14 @@ void Mode::openAbout() {
     QDialog about(this);
     about.setWindowTitle("About piPet");
     about.setFixedSize(400, 460);
-    about.setStyleSheet("QDialog { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
-                        "stop:0 #4850DB, stop:1 #4A71DB); }");
+    QPixmap aboutBg(":/images/Backgrounds/trainbg.png");
+    if (!aboutBg.isNull()) {
+        aboutBg = aboutBg.scaled(about.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QPalette pal = about.palette();
+        pal.setBrush(QPalette::Window, QBrush(aboutBg));
+        about.setPalette(pal);
+        about.setAutoFillBackground(true);
+    }
 
     // Outer layout
     QVBoxLayout *dlgLayout = new QVBoxLayout(&about);
@@ -330,7 +336,7 @@ void Mode::openAbout() {
     infoLabel->setWordWrap(true);
     infoLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     infoLabel->setStyleSheet(
-        "QLabel { background-color: transparent;"
+        "QLabel { background-color: rgba(0,0,0,140); border-radius: 8px; padding: 8px;"
         "color: mistyrose; font-family: monospace; font-size: 13px; }");
 
     QString currentTime = time->currentTime().toString("hh:mm:ss AP");

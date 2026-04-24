@@ -17,12 +17,14 @@ class Lootbox : public QWidget {
     Q_OBJECT
 public:
     explicit Lootbox(Player *player, QWidget *parent = nullptr);
+    int computeReward();
 
 private:
     Player *player;
     Inventory m_copper;
     Inventory m_silver;
     Inventory m_gold;
+    std::vector<Item> m_rewardItems;
 
     QVBoxLayout *m_layout;
     QLabel *m_title;

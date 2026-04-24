@@ -88,5 +88,10 @@
         <file>Sprites/pets/seelcat/seelcat_cowboy.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_cowboy.gif</file>
         <file>Backgrounds/trainbg.png</file>
+        <file>Sprites/pets/icons/javacoffee.png</file>
+        <file>Sprites/pets/icons/key.png</file>
+        <file>Sprites/pets/icons/rubygem.png</file>
+        <file>Sprites/pets/icons/shell.png</file>
+        <file>Sprites/pets/icons/string.png</file>
     </qresource>
 </RCC>

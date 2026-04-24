@@ -8,8 +8,8 @@
 
 Item::Item(QWidget *parent) : QWidget(parent) {}
 
-Item::Item(QString name, QString filepath, QString flavortext, QWidget *parent)
-    : QWidget(parent), m_name(name), m_filepath(filepath), m_flavortext(flavortext) {}
+Item::Item(QString name, QString filepath, QString flavortext, Rarity rarity, QWidget *parent)
+    : QWidget(parent), m_name(name), m_filepath(filepath), m_flavortext(flavortext), m_rarity(rarity) {}
 
 Item::Item(const Item &other) : QWidget(nullptr) {
     m_name = other.m_name;

@@ -15,7 +15,7 @@ public:
     enum Rarity { Copper, Silver, Gold };
 
     explicit Item(QWidget *parent = nullptr);
-    Item(QString name, QString filepath, QString flavortext, QWidget *parent = nullptr);
+    Item(QString name, QString filepath, QString flavortext, Rarity rarity, QWidget *parent = nullptr);
     Item(const Item &other);
 
     QString getName();

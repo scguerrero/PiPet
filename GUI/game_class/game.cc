@@ -305,6 +305,28 @@ void Game::onBattleWon() {
     QList<QString> unlocked = player->achievements.onBattleWon(++m_totalBattleWins);
     showAchievementPopup(unlocked);
 
+    lootbox->awardLootbox();
+    QLabel *lbToast = new QLabel("You won a lootbox!\nVisit Gear → Lootbox to open it.", this);
+    lbToast->setAlignment(Qt::AlignCenter);
+    lbToast->setWordWrap(true);
+    lbToast->setStyleSheet(R"(
+        QLabel {
+            background-color: rgba(72,50,180,220);
+            border: 2px solid #FBA8FF;
+            border-radius: 12px;
+            color: mistyrose;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 10px;
+        }
+    )");
+    lbToast->setFixedWidth(300);
+    lbToast->adjustSize();
+    lbToast->setGeometry((width() - 300) / 2, 120, 300, lbToast->height());
+    lbToast->raise();
+    lbToast->show();
+    QTimer::singleShot(3500, lbToast, &QLabel::deleteLater);
+
     if (unlocked.contains("Not Too Shabby II") && !player->getPet().isHatUnlocked("cowboy")) {
         PiPet p = player->getPet();
         p.unlockHat("cowboy");
@@ -388,7 +410,30 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
         toast->show();
         offset += toast->height() + 8;
         QTimer::singleShot(3000, toast, &QLabel::deleteLater);
+
+        lootbox->awardLootbox();
     }
+
+    QLabel *lbToast = new QLabel("You won a lootbox!\nVisit Gear → Lootbox to open it.", this);
+    lbToast->setAlignment(Qt::AlignCenter);
+    lbToast->setWordWrap(true);
+    lbToast->setStyleSheet(R"(
+        QLabel {
+            background-color: rgba(72,50,180,220);
+            border: 2px solid #FBA8FF;
+            border-radius: 12px;
+            color: mistyrose;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 10px;
+        }
+    )");
+    lbToast->setFixedWidth(300);
+    lbToast->adjustSize();
+    lbToast->setGeometry((width() - 300) / 2, 60 + offset, 300, lbToast->height());
+    lbToast->raise();
+    lbToast->show();
+    QTimer::singleShot(3500, lbToast, &QLabel::deleteLater);
 }
 
 //  Achievements screen
@@ -426,9 +471,10 @@ void Game::showAchievementsScreen() {
 
     QScrollArea *scroll = new QScrollArea(&dlg);
     scroll->setWidgetResizable(true);
-    scroll->setStyleSheet("QScrollArea { border: none; background: transparent; }");
+    scroll->setStyleSheet("QScrollArea { border: none; background: #1a0a2e; } QWidget#qt_scrollarea_viewport { background: #1a0a2e; }");
 
     QWidget     *listWidget = new QWidget();
+    listWidget->setStyleSheet("background: transparent;");
     QVBoxLayout *listLayout = new QVBoxLayout(listWidget);
     listLayout->setSpacing(6);
     listLayout->setContentsMargins(4, 4, 4, 4);
@@ -438,12 +484,12 @@ void Game::showAchievementsScreen() {
         row->setWordWrap(true);
         if (a.unlocked) {
             row->setText(QString("✅  <b>%1</b><br>"
-                                 "<span style='color:#aaa;font-size:11px;'>%2</span>")
+                                 "<span style='color:#FFE4E1;font-size:11px;'>%2</span>")
                              .arg(a.title, a.description));
             row->setStyleSheet(
                 "QLabel { background-color: rgba(72,80,219,120);"
                 "border: 1px solid #ffd700; border-radius: 8px;"
-                "padding: 8px; color: mistyrose; }");
+                "padding: 8px; color: #FFE4E1; }");
         } else {
             row->setText(QString("🔒  <b style='color:#555;'>%1</b><br>"
                                  "<span style='color:#444;font-size:11px;'>%2</span>")

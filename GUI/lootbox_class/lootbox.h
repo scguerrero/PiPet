@@ -34,6 +34,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *e) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void onOpen();
@@ -66,6 +67,7 @@ private:
     QLabel  *m_resultIcon;
     QLabel  *m_resultName;
     QLabel  *m_resultFlavor;
+    QLabel  *m_resultDupe;
 
 };
 

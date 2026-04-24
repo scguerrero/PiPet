@@ -42,8 +42,8 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
     title = new QLabel("Wentz Dojo", this);
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet(
-        "font-size: 22px; font-weight: bold; margin-bottom: 4px;"
-        "color: #ffd700; background-color: rgba(0,0,0,150);"
+        "font-weight: bold; margin-bottom: 4px;"
+        "color: mistyrose; background-color: #0247a7;"
         "border-radius: 8px; padding: 4px 12px;");
     root->addWidget(title);
 
@@ -58,7 +58,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
     auto makeNameLabel = [&](const QString &text, Qt::Alignment align) {
         auto *l = new QLabel(text, this);
         l->setAlignment(align);
-        l->setStyleSheet("font-weight: bold; font-size: 13px; color: mistyrose; background: transparent;");
+        l->setStyleSheet("font-weight: bold; color: mistyrose; background: #4b56d2; padding: 4px; border-radius: 8px");
         return l;
     };
 
@@ -88,22 +88,22 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
     hpGrid->addWidget(cpuHPLabel,    2, 0);
     hpGrid->addWidget(playerHPLabel, 2, 2);
 
-    cpuHPLabel->setStyleSheet(   "font-size: 14px; color: mistyrose; background: transparent;");
-    playerHPLabel->setStyleSheet("font-size: 14px; color: mistyrose; background: transparent;");
+    cpuHPLabel->setStyleSheet("color: mistyrose; background: #1b264f; padding: 4px; border-radius: 8px;");
+    playerHPLabel->setStyleSheet("color: mistyrose; background: #1b264f; padding: 4px; border-radius: 8px;");
 
     // ── Result / log labels constructed here
     logLabel = new QLabel("");
     logLabel->setAlignment(Qt::AlignCenter);
     logLabel->setStyleSheet(
-        "font-size: 12px; font-style: italic; color: mistyrose;"
-        "background-color: rgba(0,0,0,120); border-radius: 6px; padding: 2px;");
+        "font-style: italic; color: mistyrose;"
+        "background-color: #1b264f; border-radius: 6px; padding: 4px;");
 
     resultLabel = new QLabel("Choose your move!");
     resultLabel->setAlignment(Qt::AlignCenter);
     resultLabel->setWordWrap(true);
     resultLabel->setStyleSheet(
-        "font-size: 14px; font-weight: bold; color: #ffd700;"
-        "background-color: rgba(0,0,0,150); border-radius: 6px; padding: 4px;");
+        "font-weight: bold; color: mistyrose;"
+        "background-color: #0247a7; border-radius: 6px; padding: 4px;");
 
     // ── Player character sprite
     m_character = new Character(this);
@@ -128,11 +128,11 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
     auto makeBtn = [&](const QString &text) {
         auto *b = new QPushButton(text, this);
         b->setStyleSheet(
-            "QPushButton{font-size:13px;padding:10px 6px;border-radius:6px;"
+            "QPushButton{padding:10px 6px;border-radius:6px;"
             "background-color:rgba(72,80,219,200); color:mistyrose; font-weight:bold;"
             "border: 2px inset #FBA8FF;}"
             "QPushButton:hover{background:rgba(100,120,240,220);}"
-            "QPushButton:disabled{color:#aaa;background:rgba(80,80,80,160);}");
+            "QPushButton:disabled{background:rgba(80,80,80,160);}");
         return b;
     };
 

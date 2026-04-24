@@ -6,6 +6,9 @@
 
 #include "lootbox.h"
 #include <QRandomGenerator>
+#include <QDialog>
+#include <QMouseEvent>
+#include <QEvent>
 
 static void populateGroupSlots(QGroupBox *group, Inventory &inv, QList<QLabel*> &out) {
     auto *row = new QHBoxLayout(group);
@@ -127,8 +130,16 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     m_resultFlavor->setStyleSheet(
         "QLabel { font-size: 12px; color: mistyrose; border: none; background: transparent; }");
 
+    m_resultDupe = new QLabel("You didn't win anything new!");
+    m_resultDupe->setWordWrap(true);
+    m_resultDupe->setStyleSheet(
+        "QLabel { font-size: 12px; font-style: italic; color: #aaa;"
+        "border: none; background: transparent; }");
+    m_resultDupe->setVisible(false);
+
     textCol->addWidget(m_resultName);
     textCol->addWidget(m_resultFlavor);
+    textCol->addWidget(m_resultDupe);
     textCol->addStretch();
 
     resultLayout->addWidget(m_resultIcon);
@@ -194,6 +205,12 @@ void Lootbox::restoreFromPlayer() {
                     labels[i]->setPixmap(px.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation));
                 labels[i]->setToolTip(items[i].getName());
                 labels[i]->setStyleSheet("QLabel { border: none; background: transparent; }");
+                labels[i]->setProperty("item_name",   items[i].getName());
+                labels[i]->setProperty("item_flavor", items[i].getFlavortext());
+                labels[i]->setProperty("item_path",   items[i].getFilepath());
+                labels[i]->setProperty("item_rarity", static_cast<int>(items[i].getRarity()));
+                labels[i]->setCursor(Qt::PointingHandCursor);
+                labels[i]->installEventFilter(this);
             }
         }
     };
@@ -248,8 +265,12 @@ void Lootbox::onOpen() {
 
     m_resultFrame->setVisible(true);
 
+    bool isDupe = player->wonLootboxItems.contains(won.getName());
+    m_resultDupe->setVisible(isDupe);
+
     // Persist the won item and updated pending count to player
-    player->wonLootboxItems.append(won.getName());
+    if (!isDupe)
+        player->wonLootboxItems.append(won.getName());
     player->pendingLootboxes = m_pendingLootboxes;
 
     // Reveal only the winning slot; all others stay as "?"
@@ -265,6 +286,12 @@ void Lootbox::onOpen() {
             slot->setPixmap(spx.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         slot->setToolTip(won.getName());
         slot->setStyleSheet("QLabel { border: none; background: transparent; }");
+        slot->setProperty("item_name",   won.getName());
+        slot->setProperty("item_flavor", won.getFlavortext());
+        slot->setProperty("item_path",   won.getFilepath());
+        slot->setProperty("item_rarity", static_cast<int>(won.getRarity()));
+        slot->setCursor(Qt::PointingHandCursor);
+        slot->installEventFilter(this);
     }
 
     if (won.getRarity() == Item::Gold)
@@ -278,4 +305,70 @@ void Lootbox::onOpen() {
             ? QString("Open! (%1)").arg(m_pendingLootboxes)
             : "Open!");
     }
+}
+
+bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() != QEvent::MouseButtonPress)
+        return QWidget::eventFilter(obj, event);
+
+    QLabel *slot = qobject_cast<QLabel*>(obj);
+    if (!slot) return QWidget::eventFilter(obj, event);
+
+    QString name   = slot->property("item_name").toString();
+    QString flavor = slot->property("item_flavor").toString();
+    QString path   = slot->property("item_path").toString();
+    int     rarity = slot->property("item_rarity").toInt();
+    if (name.isEmpty()) return QWidget::eventFilter(obj, event);
+
+    QString borderColor;
+    switch (static_cast<Item::Rarity>(rarity)) {
+        case Item::Gold:   borderColor = "#FFD700"; break;
+        case Item::Silver: borderColor = "#C0C0C0"; break;
+        default:           borderColor = "#eda15a"; break;
+    }
+
+    QDialog dlg(this);
+    dlg.setWindowTitle(name);
+    dlg.setModal(true);
+    dlg.setFixedWidth(300);
+    dlg.setStyleSheet(
+        QString("QDialog { background-color: #120828; border: 2px solid %1; border-radius: 12px; }").arg(borderColor));
+
+    auto *layout = new QVBoxLayout(&dlg);
+    layout->setContentsMargins(16, 16, 16, 16);
+    layout->setSpacing(10);
+
+    QLabel *icon = new QLabel(&dlg);
+    icon->setAlignment(Qt::AlignCenter);
+    QPixmap px(path);
+    if (!px.isNull())
+        icon->setPixmap(px.scaled(72, 72, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    layout->addWidget(icon);
+
+    QLabel *nameLabel = new QLabel(name, &dlg);
+    nameLabel->setAlignment(Qt::AlignCenter);
+    nameLabel->setWordWrap(true);
+    nameLabel->setStyleSheet(
+        QString("QLabel { color: %1; font-size: 15px; font-weight: bold;"
+                "background: transparent; border: none; }").arg(borderColor));
+    layout->addWidget(nameLabel);
+
+    QLabel *flavorLabel = new QLabel(flavor, &dlg);
+    flavorLabel->setAlignment(Qt::AlignCenter);
+    flavorLabel->setWordWrap(true);
+    flavorLabel->setStyleSheet(
+        "QLabel { color: #FFE4E1; font-size: 11px; font-style: italic;"
+        "background: transparent; border: none; }");
+    layout->addWidget(flavorLabel);
+
+    QPushButton *closeBtn = new QPushButton("Close", &dlg);
+    closeBtn->setStyleSheet(
+        QString("QPushButton { background-color: rgba(72,50,180,200); color: #FFE4E1;"
+                "border: 1px solid %1; border-radius: 6px; padding: 6px; font-weight: bold; }"
+                "QPushButton:pressed { background-color: rgba(100,70,220,200); }").arg(borderColor));
+    connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
+    layout->addWidget(closeBtn);
+
+    dlg.exec();
+    return true;
 }

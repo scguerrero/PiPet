@@ -190,6 +190,7 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
     m_pet->increase_strength(strengthGain);
     m_pet->increase_attack(attackGain);
     qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned;
+    emit lootboxEarned();
 }
 
 

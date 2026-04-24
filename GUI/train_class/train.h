@@ -8,6 +8,7 @@
 #include <QtWidgets>
 #include "pipatterns.h"
 #include "mindReader.h"
+#include "pidash.h"
 #include "../../Pet/PiPet.h"
 #include "../../Player/Player.h"
 
@@ -39,6 +40,7 @@ private:
     QWidget    *trainHub;
     PiPatterns *pipatterns;             // Mini-game 1
     mindReader *m_mindReader = nullptr; // Mini-game 3 (lazy — created on first open)
+    piDash *m_trackRush = nullptr; // Mini-game 2
 
     // TrainHub widgets ----------------------------------------------
     QVBoxLayout *layout;
@@ -51,6 +53,7 @@ public slots:
     void openPiPatterns();
     void openPiDash();
     void openmindReader();
+    void onPiPatternsFinished(int finalScore, int xpEarned);
     void onTrackRushFinished(int finalScore, int xpEarned);
     void onMindReaderFinished(int finalScore, int xpEarned);
     // Called by game.cc every time the Train screen is opened, so the hat

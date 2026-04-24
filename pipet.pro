@@ -28,6 +28,7 @@ HEADERS += \
     GUI/train_class/tile.h \
     GUI/train_class/train.h \
     GUI/train_class/mindReader.h \
+    GUI/train_class/pidash.h \
     GUI/battle_class/battle.h \
     GUI/clock_class/clock.h \
     GUI/achievements_class/achievements.h \
@@ -52,6 +53,7 @@ SOURCES += \
     GUI/train_class/pipatterns.cpp \
     GUI/train_class/mindReader.cc \
     GUI/train_class/tile.cc \
+    GUI/train_class/pidash.cpp \
     GUI/train_class/train.cc \
     GUI/battle_class/battle.cc \
     GUI/clock_class/clock.cpp \

@@ -72,6 +72,10 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     // Connect PiPatterns back button to Train Hub
     connect(pipatterns->b_back, SIGNAL(clicked()), this, SLOT(openTrainHub()));
 
+    // Connect PiPatterns game result to stat gains + lootbox award
+    connect(pipatterns, &PiPatterns::gameFinished,
+            this, &Train::onPiPatternsFinished);
+
     // Connect minigame2 button to PiDash
     connect(b_minigame2, SIGNAL(clicked()), this, SLOT(openPiDash()));
 
@@ -79,7 +83,7 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     connect(b_minigame3, SIGNAL(clicked()), this, SLOT(openmindReader()));
 
     // ══════════════════════════════════════════════════════════════════════
-    //  LOOTBOX HOOK — for Sahsa!
+    //  LOOTBOX HOOK
     // ──────────────────────────────────────────────────────────────────────
     // After a minigame finishes (onMindReaderFinished, onTrackRushFinished,
     // or a dedicated lootbox button here in the TrainHub), call:
@@ -128,36 +132,64 @@ void Train::setUtilityStyle(QPushButton &button) {
 }
 
 
+void Train::onPiPatternsFinished(int finalScore, int xpEarned)
+{
+    int intelligenceGain = qMax(1, xpEarned  / 5);
+    int happinessGain    = qMax(1, finalScore / 25);
+    int hungerGain       = qMax(1, finalScore / 40);
+    m_pet->increase_intelligence(intelligenceGain);
+    m_pet->increase_happiness(happinessGain);
+    m_pet->increase_hunger(hungerGain);
+    qDebug() << "[PiPatterns] score:" << finalScore << "xp:" << xpEarned;
+
+    tryAwardLootbox(finalScore, xpEarned);
+}
+
 // ══════════════════════════════════════════════════════════════
 //  Minigame 2 — PiDash (Tanya)
 // ══════════════════════════════════════════════════════════════
 
-void Train::openPiDash()
-{
-//     if (!m_trackRush) {
-//         m_trackRush = new piDash(m_pet, this, 440, 300);
-//         stack->addWidget(m_trackRush);
-//         connect(m_trackRush, &piDash::gameFinished,
-//                 this,         &Train::onTrackRushFinished);
-//         connect(m_trackRush->btnBack, &QPushButton::clicked,
-//                 this, [this]() { stack->setCurrentWidget(trainHub); });
-//     }
-//     stack->setCurrentWidget(m_trackRush);
-//     m_trackRush->setFocus();
+void Train::openPiDash() {
+    if (!m_trackRush) {
+        // Use m_player->getPet().pet_type() — same source as openmindReader() —
+        // so both minigames resolve the pet type from the same object.
+        // Using m_pet->pet_type() caused a mismatch when the Player's pet and
+        // the raw PiPet* pointer were out of sync.
+        QString petTypeStr = m_player->getPet().pet_type();
+        Character::PetType petTypeEnum = Character::DragonDog;
+        if      (petTypeStr == "ElectricAxolotl") petTypeEnum = Character::ElectricAxolotl;
+        else if (petTypeStr == "SeelCat")         petTypeEnum = Character::SeelCat;
+
+        m_trackRush = new piDash(
+            m_pet,
+            m_player,
+            petTypeEnum,
+            this,
+            450, 400
+            );
+        stack->addWidget(m_trackRush);
+        connect(m_trackRush, &piDash::gameFinished,
+                this,         &Train::onTrackRushFinished);
+        connect(m_trackRush->btnBack, &QPushButton::clicked,
+                this, [this]() { stack->setCurrentWidget(trainHub); });
+    }
+
+    m_trackRush->refreshCharacter();
+    stack->setCurrentWidget(m_trackRush);
+    m_trackRush->setFocus();
 }
 
 void Train::onTrackRushFinished(int finalScore, int xpEarned)
 {
-//     int happinessGain = qMax(1, finalScore / 20);
-//     int energyGain    = qMax(1, finalScore / 25);
-//     int strengthGain  = qMax(1, xpEarned  / 5);
-//     int attackGain    = xpEarned / 10;
-//     m_pet->increase_happiness(happinessGain);
-//     m_pet->increase_energy(energyGain);
-//     m_pet->increase_strength(strengthGain);
-//     m_pet->increase_attack(attackGain);
-//     stack->setCurrentWidget(trainHub);
-//     qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned;
+    int happinessGain = qMax(1, finalScore / 20);
+    int energyGain    = qMax(1, finalScore / 25);
+    int strengthGain  = qMax(1, xpEarned  / 5);
+    int attackGain    = xpEarned / 10;
+    m_pet->increase_happiness(happinessGain);
+    m_pet->increase_energy(energyGain);
+    m_pet->increase_strength(strengthGain);
+    m_pet->increase_attack(attackGain);
+    qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned;
 }
 
 

@@ -38,6 +38,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     train = new Train(pet, player);
     battle = new Battle();
     gear   = new Gear(player, currentPetType);
+    lootbox = new Lootbox(player);
 
     pages->addWidget(start);   // 0
     pages->addWidget(create);  // 1
@@ -48,6 +49,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     pages->addWidget(train);   // 6
     pages->addWidget(battle);  // 7
     pages->addWidget(gear);    // 8
+    pages->addWidget(lootbox); // 9
 
     //  Bottom bar — Home only, normal size
     utilityWidget = new QWidget(this);
@@ -136,6 +138,8 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     });
     connect(gear->b_achievements, &QPushButton::clicked,
             this, &Game::showAchievementsScreen);
+    connect(gear->b_lootboxes, &QPushButton::clicked,
+            this, &Game::open_lootbox);
 
     setUtilityStyle(*b_save_mode);
     setUtilityStyle(*b_home);
@@ -255,6 +259,11 @@ void Game::open_gear() {
     b_save_mode->hide();
     gear->refresh(currentPetType);
     pages->setCurrentIndex(8);
+}
+
+void Game::open_lootbox() {
+    b_save_mode->hide();
+    pages->setCurrentIndex(9);
 }
 
 //  Achievement trigger slots

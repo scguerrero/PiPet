@@ -14,6 +14,7 @@
 #include "../battle_class/battle.h"
 #include "../gear_class/gear.h"
 #include "../character_class/character.h"
+#include "../lootbox_class/lootbox.h"
 
 class Game : public QWidget {
     Q_OBJECT
@@ -58,6 +59,7 @@ private:
     Train  *train;
     Battle *battle;
     Gear   *gear;
+    Lootbox *lootbox;
 
     // Bottom bar — Home button only, normal size
     QHBoxLayout *utility_bar;
@@ -92,6 +94,7 @@ private slots:
     void onInactivityTriggered();
     void onMarathonTriggered();
     void showAchievementsScreen();
+    void open_lootbox();
 };
 
 #endif

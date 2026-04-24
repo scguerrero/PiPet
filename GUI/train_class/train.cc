@@ -9,6 +9,7 @@
 Train::Train(PiPet* pet, Player* player, QWidget *parent)
     : QWidget{parent}, m_pet(pet), m_player(player)
 {
+    m_bg.load(":/images/Backgrounds/trainbg.png");
     // QStackedWidget contains TrainHub, PiPatterns, and PiDash.
     // mindReader is added lazily on first openmindReader() call.
     stack      = new QStackedWidget();
@@ -99,6 +100,13 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     // Any key passed to unlockHat() that matches a kHats entry in gear.cc
     // will automatically become selectable in the Gear screen.
     // ══════════════════════════════════════════════════════════════════════
+}
+
+void Train::paintEvent(QPaintEvent *e) {
+    Q_UNUSED(e);
+    QPainter p(this);
+    if (!m_bg.isNull())
+        p.drawPixmap(0, 0, width(), height(), m_bg);
 }
 
 void Train::openTrainHub() {

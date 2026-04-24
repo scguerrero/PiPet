@@ -27,7 +27,11 @@ signals:
     // automatically without Train needing to know about Gear directly.
     void hatUnlocked(const QString &hatKey);
 
+protected:
+    void paintEvent(QPaintEvent *e) override;
+
 private:
+    QPixmap m_bg;
     QVBoxLayout *main_layout;
     PiPet*  m_pet;
     Player* m_player;

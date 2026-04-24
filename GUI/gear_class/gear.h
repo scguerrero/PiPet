@@ -75,6 +75,7 @@ private:
     QPixmap m_bg;
 public:
     QPushButton *b_achievements;
+    QPushButton *b_lootboxes;
 private:
 
     Character   *m_character;

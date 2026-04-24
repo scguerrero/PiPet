@@ -13,6 +13,9 @@ RESOURCES += \
 HEADERS += \
     GUI/game_class/game.h \
     GUI/gear_class/gear.h \
+    GUI/lootbox_class/inventory.h \
+    GUI/lootbox_class/item.h \
+    GUI/lootbox_class/lootbox.h \
     GUI/start_class/start.h \
     GUI/create_class/create.h \
     GUI/mode_class/mode.h \
@@ -33,6 +36,9 @@ HEADERS += \
 
 SOURCES += \
     GUI/gear_class/gear.cc \
+    GUI/lootbox_class/inventory.cc \
+    GUI/lootbox_class/item.cc \
+    GUI/lootbox_class/lootbox.cc \
     GUI/main.cc \
     GUI/game_class/game.cc \
     GUI/start_class/start.cc \

@@ -87,5 +87,6 @@
         <file>Sprites/pets/seelcat/seelcat_adult_cowboy.gif</file>
         <file>Sprites/pets/seelcat/seelcat_cowboy.gif</file>
         <file>Sprites/pets/seelcat/seelcat_teen_cowboy.gif</file>
+        <file>Backgrounds/trainbg.png</file>
     </qresource>
 </RCC>

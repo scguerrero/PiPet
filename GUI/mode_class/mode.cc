@@ -317,6 +317,8 @@ void Mode::openAbout() {
     QDialog about(this);
     about.setWindowTitle("About piPet");
     about.setFixedSize(400, 460);
+    about.setStyleSheet("QDialog { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
+                        "stop:0 #4850DB, stop:1 #4A71DB); }");
 
     // Outer layout
     QVBoxLayout *dlgLayout = new QVBoxLayout(&about);
@@ -349,7 +351,7 @@ void Mode::openAbout() {
                            "Hygiene: %8  Strength: %9   Intellect: %10<br><br>"
                            "<b style='color:#ffd700;'> Battle Stats </b><br>"
                            "Attack: %12  Defense: %13<br><br>"
-                           "<span style='color:#aaa;font-size:11px;'>"
+                           "<span style='color:#f7d4fc;font-size:11px;'>"
                            "Luke C. · Sasha G. · Cesar R.<br>"
                            "Camden G. · Tanya M.</span>"
                            )

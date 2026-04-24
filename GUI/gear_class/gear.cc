@@ -142,6 +142,16 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
             stop:0 #4A71DB, stop:1 #4850DB); })");
     // connected externally from game.cc
 
+    b_lootboxes = new QPushButton("Lootboxes", this);
+    b_lootboxes->setStyleSheet(R"(
+        QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4850DB, stop:1 #4A71DB);
+            border: 2px inset #FBA8FF; border-radius: 10px;
+            padding: 4px; font: bold; color: mistyrose; }
+        QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+            stop:0 #4A71DB, stop:1 #4850DB); })");
+    // connected externally from game.cc
+
     m_character = new Character(this);
     m_character->syncWithPlayer(*m_player, m_petType);
 
@@ -265,6 +275,7 @@ QRect Gear::stripRect() const {
 void Gear::layoutWidgets() {
     int w = width(), h = height();
 
+    b_lootboxes->setGeometry(w - 160 - 8, 8, 160, 36);
     m_character->setGeometry(pedestalCharRect());
     // Info Helper Card
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);

@@ -39,8 +39,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     petName = new QLabel(this);
     petName->setAlignment(Qt::AlignCenter);
     petName->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,160); border-radius: 8px;"
-        "padding: 6px; color: #ffd700; font-size: 18px; font-weight: bold; }");
+        "QLabel { background-color: rgba(77, 2, 82, 0.8); border-radius: 8px; padding: 4px; }");
     layout->addWidget(petName);
 
     //Pet description
@@ -48,8 +47,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     petDescription->setAlignment(Qt::AlignCenter);
     petDescription->setWordWrap(true);
     petDescription->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,140); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 13px; }");
+        "QLabel { background-color: rgba(24, 9, 190, 0.8); border-radius: 8px; padding: 4px; }");
     layout->addWidget(petDescription);
 
     //Hidden radio buttons (game.cc reads these)
@@ -64,8 +62,7 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     nameHeader = new QLabel("Choose a name for your PiPet:", this);
     nameHeader->setAlignment(Qt::AlignCenter);
     nameHeader->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,140); border-radius: 6px;"
-        "padding: 4px; color: mistyrose; font-size: 14px; }");
+        "QLabel { background-color: rgba(24, 9, 190, 0.8); border-radius: 4px; padding: 4px; }");
     layout->addWidget(nameHeader);
 
     //Name list
@@ -74,9 +71,9 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     name_list->setFlow(QListView::TopToBottom);
     name_list->setFixedHeight(130);
     name_list->setStyleSheet(
-        "QListWidget { background-color: rgba(0,0,0,150);"
-        "border: 2px solid #FBA8FF; border-radius: 6px; color: mistyrose; }"
-        "QListWidget::item:selected { background-color: rgba(72,80,219,200); }");
+        "QListWidget { background-color: rgba(77, 2, 82, 0.8);"
+        "border: 2px solid #FBA8FF; border-radius: 4px; }"
+        "QListWidget::item:selected { background-color: #B11DD6; }");
     for (int i = 0; i < 26; i++)
         name_list->addItem(new QListWidgetItem(str_names[i]));
     layout->addWidget(name_list);
@@ -92,17 +89,15 @@ Create::Create(QWidget *parent) : QWidget{parent} {
     b_done->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 6px; font: bold; color: mistyrose; }
+            border: 2px inset #FBA8FF; border-radius: 10px; padding: 4px; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); }
         QPushButton:disabled { background-color: #444; color: #888; }
     )");
 
     QString arrowStyle = R"(
-        QPushButton { background-color: rgba(0,0,0,140);
-            border: 2px inset #FBA8FF; border-radius: 8px; padding: 4px; }
-        QPushButton:pressed { background-color: rgba(72,80,219,180); }
+        QPushButton { background-color: rgba(75, 86, 210, 0.8); border: 2px inset #FBA8FF; border-radius: 8px; padding: 4px; }
+        QPushButton:pressed { background-color: rgba(24, 9, 190, 0.8); }
     )";
     b_left->setStyleSheet(arrowStyle);
     b_right->setStyleSheet(arrowStyle);

@@ -140,8 +140,6 @@ void Train::onPiPatternsFinished(int finalScore, int xpEarned)
     m_pet->increase_intelligence(intelligenceGain);
     m_pet->increase_happiness(happinessGain);
     m_pet->increase_hunger(hungerGain);
-    qDebug() << "[PiPatterns] score:" << finalScore << "xp:" << xpEarned;
-
     tryAwardLootbox(finalScore, xpEarned);
 }
 
@@ -189,8 +187,8 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
     m_pet->increase_energy(energyGain);
     m_pet->increase_strength(strengthGain);
     m_pet->increase_attack(attackGain);
-    qDebug() << "[PiDash] score:" << finalScore << "xp:" << xpEarned;
-    emit lootboxEarned();
+    if (xpEarned > 0)
+        emit lootboxEarned();
 }
 
 
@@ -239,10 +237,7 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
     // Do NOT navigate away here — the result panel is still on screen.
     // The player uses the Back button (already connected in openmindReader)
     // to return to the hub whenever they're ready.
-    qDebug() << "[mindReader] score:" << finalScore << "xp:" << xpEarned
-             << "→ intelligence +" << intelligenceGain
-             << "happiness +"      << happinessGain
-             << "hunger +"         << hungerGain;
+
 
     tryAwardLootbox(finalScore, xpEarned);
 }

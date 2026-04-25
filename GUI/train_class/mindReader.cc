@@ -55,7 +55,7 @@ void mindReader::buildUi()
 
     //  Character sprite
     m_character = new Character(this);
-    m_character->setFixedSize(140, 140);
+    m_character->setFixedSize(200, 200);
     m_character->syncWithPlayer(*m_player, m_petType);
 
     //  "Thinking" label
@@ -134,8 +134,8 @@ void mindReader::resizeEvent(QResizeEvent *e)
     b_back->setGeometry(8, 72, 90, 34);
 
     // Character
-    int charX = (w - 140) / 2;
-    m_character->setGeometry(charX, 260, 160, 160);
+    int charX = (w - 200) / 2;
+    m_character->setGeometry(charX, 220, 200, 200);
 
     // Bottom cluster
     int bottomEdge = h - 8;

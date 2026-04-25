@@ -139,7 +139,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
         p.unlockHat(hatKey);          // persists to save file
         player->setPet(p);
         gear->unlockHat(hatKey);      // refreshes the hat card in Gear UI
-        qDebug() << "[Lootbox] Unlocked hat:" << hatKey;
+
     });
 
     // Battle achievement signals

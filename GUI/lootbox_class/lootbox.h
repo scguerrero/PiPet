@@ -67,7 +67,6 @@ private:
     QLabel  *m_resultIcon;
     QLabel  *m_resultName;
     QLabel  *m_resultFlavor;
-    QLabel  *m_resultDupe;
 
 };
 

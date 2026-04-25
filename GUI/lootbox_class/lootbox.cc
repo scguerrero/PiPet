@@ -9,6 +9,7 @@
 #include <QDialog>
 #include <QMouseEvent>
 #include <QEvent>
+#include <QTimer>
 
 static void populateGroupSlots(QGroupBox *group, Inventory &inv, QList<QLabel*> &out) {
     auto *row = new QHBoxLayout(group);
@@ -121,18 +122,12 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     m_resultName->setWordWrap(true);
     m_resultFlavor = new QLabel();
     m_resultFlavor->setWordWrap(true);
+    m_resultFlavor->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     m_resultFlavor->setStyleSheet(
         "QLabel { border: none; background: transparent; }");
 
-    m_resultDupe = new QLabel("You didn't win anything new!");
-    m_resultDupe->setWordWrap(true);
-    m_resultDupe->setStyleSheet(
-        "QLabel { font-style: italic; border: none; background: transparent; }");
-    m_resultDupe->setVisible(false);
-
     textCol->addWidget(m_resultName);
     textCol->addWidget(m_resultFlavor);
-    textCol->addWidget(m_resultDupe);
     textCol->addStretch();
 
     resultLayout->addWidget(m_resultIcon);
@@ -259,7 +254,27 @@ void Lootbox::onOpen() {
     m_resultFrame->setVisible(true);
 
     bool isDupe = player->wonLootboxItems.contains(won.getName());
-    m_resultDupe->setVisible(isDupe);
+    if (isDupe) {
+        QLabel *toast = new QLabel("You didn't win anything new!", this);
+        toast->setAlignment(Qt::AlignCenter);
+        toast->setWordWrap(true);
+        toast->setStyleSheet(R"(
+            QLabel {
+                background-color: rgba(30,10,60,230);
+                border: 2px solid #FBA8FF;
+                border-radius: 12px;
+                padding: 10px;
+                font-style: italic;
+                color: mistyrose;
+            }
+        )");
+        toast->setFixedWidth(260);
+        toast->adjustSize();
+        toast->setGeometry((width() - 260) / 2, height() / 2 - toast->height() / 2, 260, toast->height());
+        toast->raise();
+        toast->show();
+        QTimer::singleShot(3000, toast, &QLabel::deleteLater);
+    }
 
     // Persist the won item and updated pending count to player
     if (!isDupe)

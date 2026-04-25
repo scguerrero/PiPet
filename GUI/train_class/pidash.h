@@ -98,9 +98,10 @@ private:
     QVector<TRCollectible> m_col;
     QVector<TRParticle>    m_par;
 
-    int   m_cw;
-    int   m_ch;
-    float m_groundY;
+    int    m_cw;
+    int    m_ch;
+    float  m_groundY;
+    QPixmap m_bgCache;
     static constexpr float PET_X = 80.f;
 
     void drawBackground (QPainter&) const;
@@ -202,12 +203,13 @@ private:
     int  m_canvasW;
     float m_groundY;
     static constexpr float PET_X    = 80.f;
-    static constexpr int   FRAME_MS = 16;
+    static constexpr int   FRAME_MS = 33;
     static constexpr float GRAVITY  = 0.55f;
     static constexpr float JUMP_VY  = -10.f;
     static constexpr int   SPRITE_SIZE = 64;   // Character widget size on canvas
 
-    bool m_sessionFinished = false;
+    bool  m_sessionFinished = false;
+    float m_lastCharY       = -1.f;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     void startGame();

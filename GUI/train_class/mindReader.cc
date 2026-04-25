@@ -30,19 +30,15 @@ void mindReader::buildUi()
     m_infoBox->setLayout(infoGrid);
     m_infoBox->setStyleSheet(
         "QGroupBox { background-color: rgba(0,0,0,150); border-radius: 8px;"
-        "color: mistyrose; margin-top: 16px; padding-top: 2px; }"
-        "QGroupBox::title { color: #ffd700; font-size: 11px;"
-        "subcontrol-origin: margin; subcontrol-position: top center; }");
+        "margin-top: 16px; padding-top: 2px; }"
+        "QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top center; }");
 
     m_scoreLabel  = new QLabel("Score:  0", this);
     m_streakLabel = new QLabel("Streak: 0", this);
     m_roundsLabel = new QLabel(QString("Round:  1 / %1").arg(kMaxRounds), this);
 
-    for (QLabel *l : {m_scoreLabel, m_streakLabel, m_roundsLabel}) {
-        l->setStyleSheet(
-            "QLabel { color: mistyrose; font-size: 12px;"
-            "background-color: transparent; }");
-    }
+    for (QLabel *l : {m_scoreLabel, m_streakLabel, m_roundsLabel})
+        l->setStyleSheet("QLabel { background-color: transparent; }");
 
     infoGrid->addWidget(m_scoreLabel,  0, 0);
     infoGrid->addWidget(m_streakLabel, 0, 1);
@@ -63,8 +59,7 @@ void mindReader::buildUi()
     m_thinkingLabel->setAlignment(Qt::AlignCenter);
     m_thinkingLabel->setWordWrap(true);
     m_thinkingLabel->setStyleSheet(
-        "QLabel { color: mistyrose; font-size: 13px; font-style: italic;"
-        "background-color: rgba(0,0,0,120); border-radius: 8px; padding: 6px; }");
+        "QLabel { background-color: rgba(0,0,0,120); border-radius: 8px; padding: 6px; }");
     m_btnRow = new QWidget(this);
     QHBoxLayout *btnLayout = new QHBoxLayout(m_btnRow);
     btnLayout->setContentsMargins(0, 0, 0, 0);
@@ -89,8 +84,7 @@ void mindReader::buildUi()
     m_feedbackLabel->setAlignment(Qt::AlignCenter);
     m_feedbackLabel->setWordWrap(true);
     m_feedbackLabel->setStyleSheet(
-        "QLabel { color: #ffd700; font-size: 15px; font-weight: bold;"
-        "background-color: rgba(0,0,0,150); border-radius: 8px; padding: 4px; }");
+        "QLabel { background-color: rgba(0,0,0,150); border-radius: 8px; padding: 4px; }");
 
     //  Result panel
     m_resultPanel = new QWidget(this);
@@ -104,8 +98,7 @@ void mindReader::buildUi()
     m_resultLabel->setAlignment(Qt::AlignCenter);
     m_resultLabel->setWordWrap(true);
     m_resultLabel->setStyleSheet(
-        "QLabel { color: #ffd700; font-size: 16px; font-weight: bold;"
-        "background-color: transparent; }");
+        "QLabel { background-color: transparent; }");
 
     m_playAgainBtn = new QPushButton("Play Again", m_resultPanel);
     applyUtilityStyle(m_playAgainBtn);
@@ -176,16 +169,14 @@ void mindReader::onGuess(int guess)
             QString("\u2705  Correct!  Your pet was thinking of %1!  (Streak: %2)")
                 .arg(m_secretNumber).arg(m_streak));
         m_feedbackLabel->setStyleSheet(
-            "QLabel { color: #00ff88; font-size: 15px; font-weight: bold;"
-            "background-color: rgba(0,80,40,180); border-radius: 8px; padding: 4px; }");
+            "QLabel { background-color: rgba(0,80,40,180); border-radius: 8px; padding: 4px; }");
     } else {
         m_streak = 0;
         m_feedbackLabel->setText(
             QString("\u274c  Not quite!  Your pet was thinking of %1.")
                 .arg(m_secretNumber));
         m_feedbackLabel->setStyleSheet(
-            "QLabel { color: #ff6666; font-size: 15px; font-weight: bold;"
-            "background-color: rgba(80,0,0,180); border-radius: 8px; padding: 4px; }");
+            "QLabel { background-color: rgba(80,0,0,180); border-radius: 8px; padding: 4px; }");
     }
 
     //update panel BEFORE deciding to end so the final round label
@@ -212,8 +203,6 @@ void mindReader::endSession()
             .arg(rating)
             .arg(m_score).arg(kMaxRounds)
             .arg(xpEarned);
-    if (xpEarned > 0)
-        resultText += "\n\nYou earned a lootbox!";
     m_resultLabel->setText(resultText);
 
     showResultPanel(true);
@@ -302,8 +291,6 @@ void mindReader::applyButtonStyle(QPushButton *btn, const QString &extraColor)
             border: 2px inset #FBA8FF;
             border-radius: 10px;
             padding: 6px;
-            font: bold 22px;
-            color: mistyrose;
         }
         QPushButton:pressed {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
@@ -321,8 +308,6 @@ void mindReader::applyUtilityStyle(QPushButton *btn)
             border: 2px inset #FBA8FF;
             border-radius: 10px;
             padding: 4px;
-            font: bold;
-            color: mistyrose;
         }
         QPushButton:pressed {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,

@@ -468,6 +468,12 @@ void Battle::endGame()
         resultLabel->setText("You were defeated! CPU wins.");
     else {
         resultLabel->setText("You won!");
+        if (m_player) {
+            PiPet p = m_player->getPet();
+            p.increase_strength(25);
+            p.increase_happiness(25);
+            m_player->setPet(p);
+        }
         emit battleWon();
     }
 }

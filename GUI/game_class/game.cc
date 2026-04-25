@@ -111,14 +111,14 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     connect(mode->b_gear,    SIGNAL(clicked()), this, SLOT(open_gear()));
 
     connect(train->b_back,   SIGNAL(clicked()), this, SLOT(open_mode()));
-    connect(train, &Train::lootboxEarned, this, [this]() {
+    connect(train, &Train::lootboxEarned, this, [this](const QString &source) {
         lootbox->awardLootbox();
-        QLabel *toast = new QLabel("You won a lootbox!\nVisit Gear → Lootbox to open it.", this);
+        QLabel *toast = new QLabel(QString("You won a lootbox from %1!\nVisit Gear → Lootbox to open it.").arg(source), this);
         toast->setAlignment(Qt::AlignCenter);
         toast->setWordWrap(true);
         toast->setStyleSheet(R"(
             QLabel {
-                background-color: rgba(72,50,180,220);
+                background-color: rgba(30,10,60,230);
                 border: 2px solid #FBA8FF;
                 border-radius: 12px;
                 padding: 10px;
@@ -242,6 +242,7 @@ void Game::open_mode() {
     showHomeOnly(false);
     b_save_mode->show();
     b_save_mode->raise();
+    player->updateDaysOld();
     mode->resetHintFlag();
     mode->refreshDisplay();
     pages->setCurrentIndex(2);
@@ -302,16 +303,16 @@ void Game::open_lootbox() {
 //  Achievement trigger slots
 
 void Game::onBattleWon() {
-    QList<QString> unlocked = player->achievements.onBattleWon(++m_totalBattleWins);
+    QList<QString> unlocked = player->achievements.onBattleWon(++player->battleWins);
     showAchievementPopup(unlocked);
 
     lootbox->awardLootbox();
-    QLabel *lbToast = new QLabel("You won a lootbox!\nVisit Gear → Lootbox to open it.", this);
+    QLabel *lbToast = new QLabel("You won a lootbox from Battle!\nVisit Gear → Lootbox to open it.", this);
     lbToast->setAlignment(Qt::AlignCenter);
     lbToast->setWordWrap(true);
     lbToast->setStyleSheet(R"(
         QLabel {
-            background-color: rgba(72,50,180,220);
+            background-color: rgba(30,10,60,230);
             border: 2px solid #FBA8FF;
             border-radius: 12px;
             padding: 10px;
@@ -336,7 +337,7 @@ void Game::onBattleWon() {
         toast->setStyleSheet(R"(
             QLabel {
                 background-color: rgba(30,10,60,230);
-                border: 2px solid #ffd700;
+                border: 2px solid #FBA8FF;
                 border-radius: 12px;
                 padding: 10px;
             }
@@ -389,7 +390,7 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
         toast->setStyleSheet(R"(
             QLabel {
                 background-color: rgba(30,10,60,230);
-                border: 2px solid #ffd700;
+                border: 2px solid #FBA8FF;
                 border-radius: 12px;
                 padding: 10px;
             }
@@ -405,12 +406,12 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
         lootbox->awardLootbox();
     }
 
-    QLabel *lbToast = new QLabel("You won a lootbox!\nVisit Gear → Lootbox to open it.", this);
+    QLabel *lbToast = new QLabel("You won a lootbox from an Achievement!\nVisit Gear → Lootbox to open it.", this);
     lbToast->setAlignment(Qt::AlignCenter);
     lbToast->setWordWrap(true);
     lbToast->setStyleSheet(R"(
         QLabel {
-            background-color: rgba(72,50,180,220);
+            background-color: rgba(30,10,60,230);
             border: 2px solid #FBA8FF;
             border-radius: 12px;
             padding: 10px;
@@ -574,6 +575,9 @@ bool Game::loadGame() {
     gear->refresh(currentPetType);
 
     rebuildCareScreens();
+
+    for (const QString &hatKey : player->getPet().unlockedHats())
+        gear->unlockHat(hatKey);
 
     QString savedHat = player->getPet().hat();
     if (!savedHat.isEmpty())

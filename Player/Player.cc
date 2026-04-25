@@ -36,6 +36,19 @@ void Player::updateHoursFromStartDate() {
     hours = static_cast<int>(secs / 3600);
 }
 
+void Player::updateDaysOld() {
+    int newDays = static_cast<int>(startDate.daysTo(QDateTime::currentDateTime()));
+    int oldDays = pet.days_old();
+    if (newDays <= oldDays) return;
+
+    static const int kThresholds[] = { 7, 14 };
+    for (int threshold : kThresholds) {
+        if (oldDays < threshold && newDays >= threshold)
+            celebratePetBirthday();
+    }
+    pet.set_days_old(newDays);
+}
+
 bool Player::checkAndAwardGoodDay() {
     QDate today = QDate::currentDate();
     if (pet.happiness() >= 100 && today != lastGoodDayDate) {

@@ -24,8 +24,6 @@ public:
     void read(const QJsonObject &json);
     PiPet  *pet;
     Player *player;
-    int m_totalBattleWins = 0;
-
 public slots:
     bool loadGame();
     bool saveGame();

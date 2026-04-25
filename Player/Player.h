@@ -44,6 +44,7 @@ public:
     void setPet(const PiPet& p);
 
     void updateHoursFromStartDate();
+    void updateDaysOld();
     bool checkAndAwardGoodDay();
 
     void feedPet();

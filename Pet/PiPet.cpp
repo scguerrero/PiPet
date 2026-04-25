@@ -60,28 +60,28 @@ void PiPet::set_age_group(QString age_group) { m_age_group = age_group; }
 void PiPet::set_pet_type(QString t) { m_pet_type = t; }
 void PiPet::set_hat(QString h) { m_hat = h; }
 void PiPet::set_days_old(int days_old) { m_days_old = days_old; }
-void PiPet::set_hunger(int hunger) { m_hunger = hunger; }
-void PiPet::set_energy(int energy) { m_energy = energy; }
-void PiPet::set_strength(int strength) { m_strength = strength; }
-void PiPet::set_hygiene(int hygiene) { m_hygiene = hygiene; }
-void PiPet::set_intelligence(int intelligence) { m_intelligence = intelligence; }
-void PiPet::set_happiness(int happiness) { m_happiness = happiness; }
-void PiPet::set_attack(int attack) { m_attack = attack; }
-void PiPet::set_defense(int defense) { m_defense = defense; }
-void PiPet::set_hit_points(int hit_points) { m_hit_points = hit_points; }
+void PiPet::set_hunger(int hunger) { m_hunger = qMin(100, hunger); }
+void PiPet::set_energy(int energy) { m_energy = qMin(100, energy); }
+void PiPet::set_strength(int strength) { m_strength = qMin(100, strength); }
+void PiPet::set_hygiene(int hygiene) { m_hygiene = qMin(100, hygiene); }
+void PiPet::set_intelligence(int intelligence) { m_intelligence = qMin(100, intelligence); }
+void PiPet::set_happiness(int happiness) { m_happiness = qMin(100, happiness); }
+void PiPet::set_attack(int attack) { m_attack = qMin(100, attack); }
+void PiPet::set_defense(int defense) { m_defense = qMin(100, defense); }
+void PiPet::set_hit_points(int hit_points) { m_hit_points = qMin(100, hit_points); }
 void PiPet::set_creation_flag(bool flag) { m_been_created = flag; }
 
 // Incrementers: Increase the current value of a member variable by a given amount
 void PiPet::increase_days_old(int days_old) { m_days_old += days_old; }
-void PiPet::increase_hunger(int hunger) { m_hunger += hunger; }
-void PiPet::increase_energy(int energy) { m_energy += energy; }
-void PiPet::increase_strength(int strength) { m_strength += strength; }
-void PiPet::increase_hygiene(int hygiene) { m_hygiene += hygiene; }
-void PiPet::increase_intelligence(int intelligence) { m_intelligence += intelligence; }
-void PiPet::increase_happiness(int happiness) { m_happiness += happiness; }
-void PiPet::increase_attack(int attack) { m_attack += attack; }
-void PiPet::increase_defense(int defense) { m_defense += defense; }
-void PiPet::increase_hit_points(int hit_points) { m_hit_points += hit_points; }
+void PiPet::increase_hunger(int hunger) { m_hunger = qMin(100, m_hunger + hunger); }
+void PiPet::increase_energy(int energy) { m_energy = qMin(100, m_energy + energy); }
+void PiPet::increase_strength(int strength) { m_strength = qMin(100, m_strength + strength); }
+void PiPet::increase_hygiene(int hygiene) { m_hygiene = qMin(100, m_hygiene + hygiene); }
+void PiPet::increase_intelligence(int intelligence) { m_intelligence = qMin(100, m_intelligence + intelligence); }
+void PiPet::increase_happiness(int happiness) { m_happiness = qMin(100, m_happiness + happiness); }
+void PiPet::increase_attack(int attack) { m_attack = qMin(100, m_attack + attack); }
+void PiPet::increase_defense(int defense) { m_defense = qMin(100, m_defense + defense); }
+void PiPet::increase_hit_points(int hit_points) { m_hit_points = qMin(100, m_hit_points + hit_points); }
 
 // Create a PiPet object from a JSON file
 // Based on "Saving and Loading a Game" QT Core Example: https://doc.qt.io/qt-6/qtcore-serialization-savegame-example.html

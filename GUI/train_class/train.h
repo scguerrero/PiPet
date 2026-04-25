@@ -24,7 +24,7 @@ public:
 
 signals:
     void hatUnlocked(const QString &hatKey);
-    void lootboxEarned();
+    void lootboxEarned(const QString &source);
 
 protected:
     void paintEvent(QPaintEvent *e) override;
@@ -53,7 +53,7 @@ public slots:
     void openPiPatterns();
     void openPiDash();
     void openmindReader();
-    void onPiPatternsFinished(int finalScore, int xpEarned);
+    void onPiPatternsFinished(int finalScore, int xpEarned, bool perfect);
     void onTrackRushFinished(int finalScore, int xpEarned);
     void onMindReaderFinished(int finalScore, int xpEarned);
     // Called by game.cc every time the Train screen is opened, so the hat
@@ -64,7 +64,7 @@ public slots:
     // Your partner implements the body of this in train.cc.
     // Call it from onMindReaderFinished / onTrackRushFinished (option A),
     // or from a dedicated button's clicked() signal (option B).
-    void tryAwardLootbox(int score, int xpEarned);
+    void tryAwardLootbox(int score, int xpEarned, const QString &source);
 };
 
 #endif // TRAIN_H

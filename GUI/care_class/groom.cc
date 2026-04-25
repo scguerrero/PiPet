@@ -166,9 +166,9 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     connect(m_resetTimer, &QTimer::timeout, this, &Groom::resetSpots);
     actionsBox = new QGroupBox("Hygiene Tools!", this);
     actionsBox->setStyleSheet(
-        "QGroupBox { background-color: #4b56d2; border-radius: 8px;"
+        "QGroupBox { background-color: #1b264f; border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
-        "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
+        "QGroupBox::title { subcontrol-origin: margin;"
         "subcontrol-position: top center; padding: 4px; }");
     actionsBox->lower();
 }

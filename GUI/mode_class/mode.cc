@@ -24,10 +24,6 @@ Mode::Mode(Player *player, QWidget *parent)
     b_settings->setIcon(QIcon(":/images/Assets/settings.png"));
     b_settings->setIconSize(QSize(28, 28));
     b_settings->setFixedSize(38, 38);
-    b_settings->setStyleSheet(
-        "QPushButton { background-color: #0247A7; border-radius: 8px;"
-        "border: 2px solid #FBA8FF; }"
-        "QPushButton:pressed { background-color: rgba(72,80,219,180); }");
     connect(b_settings, SIGNAL(clicked()), this, SLOT(openAbout()));
 
     petNameLabel = new QLabel(this);
@@ -270,9 +266,12 @@ void Mode::updateClock() {
 
 void Mode::decayStats() {
     PiPet pet = player->getPet();
-    pet.set_hunger   (qMax(0, pet.hunger()    - 1)); // FIX: was -100
-    pet.set_energy   (qMax(0, pet.energy()    - 1));
-    pet.set_happiness(qMax(0, pet.happiness() - 1));
+    pet.set_hunger      (qMax(0, pet.hunger()       - 1)); // FIX: was -100
+    pet.set_energy      (qMax(0, pet.energy()       - 1));
+    pet.set_happiness   (qMax(0, pet.happiness()    - 1));
+    pet.set_hygiene     (qMax(0, pet.hygiene()      - 1));
+    pet.set_strength    (qMax(0, pet.strength()     - 1));
+    pet.set_intelligence(qMax(0, pet.intelligence() - 1));
     player->setPet(pet);
     player->updateHoursFromStartDate();
     player->checkAndAwardGoodDay();
@@ -368,8 +367,7 @@ void Mode::openAbout() {
                            "Strength:   %9 / 100<br>"
                            "Intellect:  %10 / 100<br><br>"
                            "<u>Battle Stats</u><br>"
-                           "Attack:     %12<br>"
-                           "Defense:    %13<br><br>"
+                           "Battles Won: %11<br><br>"
                            "<u>Authors</u><br>"
                            "Luke C. · Sasha G. · Cesar R. · Camden G. · Tanya M.")
                            .arg(elapsed)
@@ -377,8 +375,7 @@ void Mode::openAbout() {
                            .arg(pet.days_old())    .arg(pet.hunger())
                            .arg(pet.energy())      .arg(pet.happiness())
                            .arg(pet.hygiene())     .arg(pet.strength())
-                           .arg(pet.intelligence()) .arg(pet.attack())
-                           .arg(pet.defense()));
+                           .arg(pet.intelligence()).arg(player->battleWins));
 
     // Scroll area wrapping the label
     QScrollArea *scroll = new QScrollArea(&about);

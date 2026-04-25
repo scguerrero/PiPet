@@ -15,8 +15,6 @@ static QString buttonStyle() {
             border: 2px inset #FBA8FF;
             border-radius: 10px;
             padding: 6px;
-            font: bold;
-            color: mistyrose;
         }
         QPushButton:pressed {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
@@ -25,7 +23,6 @@ static QString buttonStyle() {
         QPushButton:disabled {
             background-color: rgba(60,60,80,180);
             border: 2px solid #555;
-            color: #777;
         }
     )";
 }
@@ -38,8 +35,7 @@ static QString selectedDiffStyle() {
             border: 2px solid mistyrose;
             border-radius: 10px;
             padding: 6px;
-            font: bold;
-            color: #120828;
+            color: #0d1b4b;
         }
     )";
 }
@@ -80,7 +76,6 @@ PiPatterns::PiPatterns(Player *player, QWidget *parent)
     header->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     header->setStyleSheet(
         "QLabel { background-color: rgba(72,50,180,220);"
-        "color: mistyrose; font-size: 13px;"
         "border: 2px solid rgba(251,168,255,150);"
         "border-radius: 10px; padding: 12px; }");
 
@@ -111,15 +106,13 @@ PiPatterns::PiPatterns(Player *player, QWidget *parent)
     m_statusLabel->setWordWrap(true);
     m_statusLabel->setStyleSheet(
         "QLabel { background-color: rgba(72,50,180,200);"
-        "color: mistyrose; font-size: 14px; font-weight: bold;"
         "border: 2px solid rgba(251,168,255,150);"
         "border-radius: 8px; padding: 8px; }");
 
     m_scoreLabel = new QLabel("Score: 0");
     m_scoreLabel->setAlignment(Qt::AlignCenter);
     m_scoreLabel->setStyleSheet(
-        "QLabel { color: #FFD700; font-size: 16px; font-weight: bold;"
-        "background: transparent; }");
+        "QLabel { background-color: #0d1b4b; }");
 
     // Difficulty buttons
     m_diffBit    = new QPushButton("Bit");
@@ -246,6 +239,7 @@ void PiPatterns::startGame() {
 
     generatePattern();
     resetMatrix();
+    matrix->show();
 
     m_statusLabel->setText("Watch the pattern...");
     m_startBtn->setEnabled(false);
@@ -296,20 +290,29 @@ void PiPatterns::onTileClicked(int index) {
 void PiPatterns::finishRound() {
     m_state = GameState::Result;
 
-    QString msg;
-    if      (m_roundCorrect == 5) msg = "Perfect! Your PiPet is amazed!";
-    else if (m_roundCorrect >= 4) msg = "Great job! So close!";
-    else if (m_roundCorrect >= 3) msg = "Good job! Keep it up!";
-    else if (m_roundCorrect >= 1) msg = "Keep practicing!";
-    else                          msg = "Your pet believes in you!";
+    QString rating;
+    if      (m_roundCorrect == 5) rating = "Perfect! Your PiPet is amazed!";
+    else if (m_roundCorrect >= 4) rating = "Great job! So close!";
+    else if (m_roundCorrect >= 3) rating = "Good job! Keep it up!";
+    else if (m_roundCorrect >= 1) rating = "Keep practicing!";
+    else                          rating = "Your pet believes in you!";
 
-    if (m_roundScore > 0)
-        msg += "\n\nYou earned a lootbox!";
+    int xpEarned       = qMax(0, m_roundScore);
+    int intelligenceDelta = qMax(1, xpEarned / 5) + (m_roundCorrect == 5 ? 25 : 0);
+    int happinessDelta    = m_roundScore / 25;
 
-    m_statusLabel->setText(msg);
+    QString intSign  = QString("+%1").arg(intelligenceDelta);
+    QString hapSign  = (happinessDelta >= 0)
+                       ? QString("+%1").arg(happinessDelta)
+                       : QString::number(happinessDelta);
 
-    int xpEarned = qMax(0, m_roundScore);
-    emit gameFinished(m_roundScore, xpEarned);
+    m_statusLabel->setText(
+        QString("%1\n\nIntelligence: %2\nHappiness: %3")
+            .arg(rating, intSign, hapSign));
+
+    matrix->hide();
+
+    emit gameFinished(m_roundScore, xpEarned, m_roundCorrect == 5);
 
     // Re-enable controls for another round
     m_startBtn->setEnabled(true);

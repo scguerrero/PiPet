@@ -132,15 +132,13 @@ void Train::setUtilityStyle(QPushButton &button) {
 }
 
 
-void Train::onPiPatternsFinished(int finalScore, int xpEarned)
+void Train::onPiPatternsFinished(int finalScore, int xpEarned, bool perfect)
 {
     int intelligenceGain = qMax(1, xpEarned  / 5);
-    int happinessGain    = qMax(1, finalScore / 25);
-    int hungerGain       = qMax(1, finalScore / 40);
+    if (perfect) intelligenceGain += 25;
     m_pet->increase_intelligence(intelligenceGain);
-    m_pet->increase_happiness(happinessGain);
-    m_pet->increase_hunger(hungerGain);
-    tryAwardLootbox(finalScore, xpEarned);
+    m_pet->set_happiness(qMax(0, m_pet->happiness() + finalScore / 25));
+    tryAwardLootbox(finalScore, xpEarned, "PiPatterns");
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -181,14 +179,14 @@ void Train::onTrackRushFinished(int finalScore, int xpEarned)
 {
     int happinessGain = qMax(1, finalScore / 20);
     int energyGain    = qMax(1, finalScore / 25);
-    int strengthGain  = qMax(1, xpEarned  / 5);
+    int strengthGain  = qMax(1, xpEarned  / 5) + (xpEarned > 10 ? 25 : 0);
     int attackGain    = xpEarned / 10;
     m_pet->increase_happiness(happinessGain);
     m_pet->increase_energy(energyGain);
     m_pet->increase_strength(strengthGain);
     m_pet->increase_attack(attackGain);
-    if (xpEarned > 0)
-        emit lootboxEarned();
+    if (xpEarned > 0 && finalScore > 10)
+        emit lootboxEarned("PiDash");
 }
 
 
@@ -229,6 +227,7 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
     int intelligenceGain = qMax(1, xpEarned  / 5);
     int happinessGain    = qMax(1, finalScore / 25);
     int hungerGain       = qMax(1, finalScore / 40);
+    if (finalScore >= 50) intelligenceGain += 25;
 
     m_pet->increase_intelligence(intelligenceGain);
     m_pet->increase_happiness(happinessGain);
@@ -239,7 +238,7 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
     // to return to the hub whenever they're ready.
 
 
-    tryAwardLootbox(finalScore, xpEarned);
+    tryAwardLootbox(finalScore, xpEarned, "MindReader");
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -259,8 +258,8 @@ void Train::onMindReaderFinished(int finalScore, int xpEarned)
 //         m_player->setPet(p);
 //         emit hatUnlocked(hatKey);
 // ══════════════════════════════════════════════════════════════════════════
-void Train::tryAwardLootbox(int /*score*/, int xpEarned)
+void Train::tryAwardLootbox(int /*score*/, int xpEarned, const QString &source)
 {
     if (xpEarned > 0)
-        emit lootboxEarned();
+        emit lootboxEarned(source);
 }

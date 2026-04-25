@@ -21,7 +21,7 @@ public:
     QPushButton *b_back;   // kept public — train.cc connects to openTrainHub()
 
 signals:
-    void gameFinished(int roundScore, int xpEarned);
+    void gameFinished(int roundScore, int xpEarned, bool perfect);
 
 private slots:
     void startGame();

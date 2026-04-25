@@ -31,13 +31,13 @@ int main(int argc, char**argv)
         letter-spacing: 1px;
     }
     QPushButton {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #1327BE, stop: 1 #172FE8);
-        border: 2px inset #7C89DE;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4850DB, stop: 1 #4A71DB);
+        border: 2px inset #FBA8FF;
         border-radius: 10px;
         padding: 4px;
     }
     QPushButton:pressed {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #172FE8, stop: 1 #1327BE);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #4A71DB, stop: 1 #4850DB);
     }
     QGroupBox {
         border: 2px groove #172FE8;
@@ -126,8 +126,14 @@ int main(int argc, char**argv)
     // Load and show the game window while splash is still visible
     Game game;
     game.loadGame();
-    game.setFixedSize(480, 640);
-    game.show();//game.showFullScreen();
+
+    // This size is for Desktop gameplay. Uncomment to build on Desktop.
+    //game.setFixedSize(480, 640);
+    //game.show();
+
+    // This size is for Raspberry Pi gameplay. Comment out the fixedsize snippet above and leave this one in.
+    game.showFullScreen();
+
     app.processEvents();
     QEventLoop loop;
     QTimer::singleShot(3000, &loop, &QEventLoop::quit);

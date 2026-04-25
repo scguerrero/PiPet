@@ -20,9 +20,8 @@ static void populateGroupSlots(QGroupBox *group, Inventory &inv, QList<QLabel*> 
         slot->setAlignment(Qt::AlignCenter);
         slot->setFixedSize(36, 36);
         slot->setStyleSheet(
-            "QLabel { font-size: 20px; font-weight: bold; color: mistyrose;"
-            "background-color: rgba(18,8,40,150);"
-            "border: 1px solid rgba(251,168,255,100); border-radius: 6px; }");
+            "QLabel { background-color: #0247A7;"
+            "border: 2px solid mistyrose; border-radius: 4px; }");
         row->addWidget(slot);
         out.append(slot);
     }
@@ -34,9 +33,8 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     m_title = new QLabel("Mystery Rewards!");
     m_title->setAlignment(Qt::AlignCenter);
     m_title->setStyleSheet(
-        "QLabel { font-size: 22px; font-weight: bold; color: mistyrose;"
-        "background-color: rgba(72,50,180,200);"
-        "border: 2px solid mistyrose; border-radius: 6px; padding: 6px; }");
+        "QLabel { background-color: #0247A7;"
+        "border: 2px solid mistyrose; border-radius: 4px; padding: 4px; }");
 
     m_copperGroup = new QGroupBox("Copper");
     m_silverGroup = new QGroupBox("Silver");
@@ -46,10 +44,9 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
         QGroupBox {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
                 stop:0 #4850DB, stop:1 #FBA8FF);
-            border: 2px solid rgba(251,168,255,150);
+            border: 2px solid mistyrose;
             border-radius: 10px;
             margin-top: 1.5ex;
-            font: bold;
         }
         QGroupBox::title {
             subcontrol-origin: margin;
@@ -89,21 +86,18 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     m_openBtn->setStyleSheet(R"(
         QPushButton {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-                stop:0 #FBA8FF, stop:1 #FFD700);
+                stop:0 #0247A7, stop:1 #1B264F);
             border: 2px solid mistyrose;
             border-radius: 10px;
             padding: 8px;
-            font: bold 16px;
-            color: #120828;
         }
         QPushButton:pressed {
             background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-                stop:0 #FFD700, stop:1 #FBA8FF);
+                stop:0 #1B264F, stop:1 #0247A7);
         }
         QPushButton:disabled {
             background-color: rgba(60,60,80,180);
             border: 2px solid #555;
-            color: #777;
         }
     )");
     m_openBtn->setEnabled(false);
@@ -128,13 +122,12 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     m_resultFlavor = new QLabel();
     m_resultFlavor->setWordWrap(true);
     m_resultFlavor->setStyleSheet(
-        "QLabel { font-size: 12px; color: mistyrose; border: none; background: transparent; }");
+        "QLabel { border: none; background: transparent; }");
 
     m_resultDupe = new QLabel("You didn't win anything new!");
     m_resultDupe->setWordWrap(true);
     m_resultDupe->setStyleSheet(
-        "QLabel { font-size: 12px; font-style: italic; color: #aaa;"
-        "border: none; background: transparent; }");
+        "QLabel { font-style: italic; border: none; background: transparent; }");
     m_resultDupe->setVisible(false);
 
     textCol->addWidget(m_resultName);
@@ -255,7 +248,7 @@ void Lootbox::onOpen() {
 
     m_resultName->setText(won.getName());
     m_resultName->setStyleSheet(
-        QString("QLabel { font-size: 16px; font-weight: bold; color: %1;"
+        QString("QLabel { font-weight: bold; color: %1;"
                 "border: none; background: transparent; }").arg(rarityColor));
     m_resultFlavor->setText(won.getFlavortext());
 
@@ -349,22 +342,20 @@ bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
     nameLabel->setAlignment(Qt::AlignCenter);
     nameLabel->setWordWrap(true);
     nameLabel->setStyleSheet(
-        QString("QLabel { color: %1; font-size: 15px; font-weight: bold;"
-                "background: transparent; border: none; }").arg(borderColor));
+        QString("QLabel { color: %1; background: transparent; border: none; }").arg(borderColor));
     layout->addWidget(nameLabel);
 
     QLabel *flavorLabel = new QLabel(flavor, &dlg);
     flavorLabel->setAlignment(Qt::AlignCenter);
     flavorLabel->setWordWrap(true);
     flavorLabel->setStyleSheet(
-        "QLabel { color: #FFE4E1; font-size: 11px; font-style: italic;"
-        "background: transparent; border: none; }");
+        "QLabel { font-style: italic; background: transparent; border: none; }");
     layout->addWidget(flavorLabel);
 
     QPushButton *closeBtn = new QPushButton("Close", &dlg);
     closeBtn->setStyleSheet(
-        QString("QPushButton { background-color: rgba(72,50,180,200); color: #FFE4E1;"
-                "border: 1px solid %1; border-radius: 6px; padding: 6px; font-weight: bold; }"
+        QString("QPushButton { background-color: rgba(72,50,180,200);"
+                "border: 1px solid %1; border-radius: 6px; padding: 6px; }"
                 "QPushButton:pressed { background-color: rgba(100,70,220,200); }").arg(borderColor));
     connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
     layout->addWidget(closeBtn);

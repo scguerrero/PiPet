@@ -12,7 +12,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     m_bg.load(":/images/Backgrounds/bedroom_16bit.png");
 
     layout      = new QVBoxLayout();
-    actionsBox  = new QGroupBox("■‿■");
+    actionsBox  = new QGroupBox("Encourage your PiPet to sleep!");
     actionsGrid = new QGridLayout();
 
     // - Character GIF
@@ -24,8 +24,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     sleepDisplay->setAlignment(Qt::AlignCenter);
     sleepDisplay->setWordWrap(true);
     sleepDisplay->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,160); border-radius: 6px;"
-        "padding: 6px; color: mistyrose; }");
+        "QLabel { background-color: #0247a7; border-radius: 6px; padding: 4px; }");
     updateSleepDisplay();
 
     // - Info helper: shown on open, hides after 3 seconds
@@ -33,8 +32,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
     infoHelper->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 15px; }");
+        "QLabel { background-color: #4b56d2; border-radius: 8px; padding: 4px; }");
     infoHelper->setFixedWidth(300);
     infoHelper->setText("Use the actions below to help your pet rest!");
     infoHelper->hide();
@@ -43,10 +41,10 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     m_infoTimer->setSingleShot(true);
     connect(m_infoTimer, &QTimer::timeout, infoHelper, &QLabel::hide);
 
-    cuddleBtn   = new QPushButton("🤗 Cuddle Pet");
-    wearPjsBtn  = new QPushButton("👖 Wear Pjs");
-    readBookBtn = new QPushButton("📖 Bed Time Story");
-    tuckInBtn   = new QPushButton("🛌 Tuck In Bed");
+    cuddleBtn   = new QPushButton("Cuddle Pet");
+    wearPjsBtn  = new QPushButton("Wear Pjs");
+    readBookBtn = new QPushButton("Bed Time Story");
+    tuckInBtn   = new QPushButton("Tuck In Bed");
 
     actionsGrid->addWidget(cuddleBtn,   0, 0, Qt::AlignCenter);
     actionsGrid->addWidget(wearPjsBtn,  0, 1, Qt::AlignCenter);
@@ -60,10 +58,10 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
     connect(tuckInBtn,   SIGNAL(clicked()), this, SLOT(tuckIn()));
 
     actionsBox->setStyleSheet(
-        "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
+        "QGroupBox { background-color: #1b264f; border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
-        "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
-        "subcontrol-position: top center; padding: 0 4px; }");
+        "QGroupBox::title { subcontrol-origin: margin;"
+        "subcontrol-position: top center; padding: 4px; }");
 
     // Character GIF at top center, buttons below
     layout->addSpacing(150);

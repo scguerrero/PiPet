@@ -25,6 +25,7 @@ int main(int argc, char**argv)
     app.setStyleSheet(R"(
     QWidget {
         font-size: 18px;
+        font-weight: bold;
         font-family: monospace;
         color: mistyrose;
         letter-spacing: 1px;

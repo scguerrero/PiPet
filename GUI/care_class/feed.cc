@@ -112,8 +112,8 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     hungerDisplay->setAlignment(Qt::AlignCenter);
     hungerDisplay->setWordWrap(true);
     hungerDisplay->setStyleSheet(
-        "QLabel { background-color: #0247a7; border-radius: 8px; padding: 6px; color: mistyrose; }");
-    hungerDisplay->setFixedWidth(300);
+        "QLabel { background-color: #0247a7; border-radius: 8px; padding: 4px; color: mistyrose; }");
+    //hungerDisplay->setFixedWidth(300);
     updateHungerDisplay();
 
     // Info helper — shown on open, hides after 3 seconds
@@ -122,7 +122,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     infoHelper->setWordWrap(true);
     infoHelper->setStyleSheet(
         "QLabel { font-size: 16px; background-color: #0247a7; border-radius: 8px; padding: 6px; color: mistyrose; }");
-    infoHelper->setFixedWidth(300);
+    //infoHelper->setFixedWidth(300);
     infoHelper->setText("Drag a piece of food onto your pet to feed it!");
     infoHelper->hide();
 
@@ -146,7 +146,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
         "QGroupBox { background-color: #1b264f; border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
         "QGroupBox::title { color: mistyrose; subcontrol-origin: margin; padding: 4px;"
-        "subcontrol-position: top center; padding: 0 4px; }");
+        "subcontrol-position: top center; padding: 4px; }");
     actionsBox->lower();
 
     m_crumbTimer = new QTimer(this);
@@ -182,7 +182,7 @@ void Feed::resizeEvent(QResizeEvent *e) {
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
     // Hunger display sits above actionsbox
-    hungerDisplay->setGeometry((w - 300) / 2, h - 170, 300, 38);
+    hungerDisplay->setGeometry((w - 300) / 2, h - 200, 300, 62);
     // actionsBox width margins
     actionsBox->setGeometry(8, h - 130, w - 16, 122);
     placeIcons();

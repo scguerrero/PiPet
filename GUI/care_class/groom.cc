@@ -22,8 +22,7 @@ GroomItem::GroomItem(const QString &iconPath, const QString &name,
     setAlignment(Qt::AlignCenter);
     setCursor(Qt::OpenHandCursor);
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
-    setStyleSheet("QLabel { background-color: rgba(0,0,0,130);"
-                  "border-radius: 10px; color: white; font-size: 11px; }");
+    setStyleSheet("QLabel { background-color: #b8a4fc; border-radius: 10px; }");
     setAttribute(Qt::WA_AcceptTouchEvents);
     grabGesture(Qt::TapAndHoldGesture);
 }
@@ -113,8 +112,7 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     hygieneDisplay->setAlignment(Qt::AlignCenter);
     hygieneDisplay->setWordWrap(true);
     hygieneDisplay->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 15px; }");
+        "QLabel { background-color: #0247a7; border-radius: 8px; padding: 4px; }");
     updateHygieneDisplay();
 
     // - Info helper: shown on open, hides after 3 seconds
@@ -122,9 +120,8 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
     infoHelper->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 15px; }");
-    infoHelper->setFixedWidth(300);
+        "QLabel { background-color: #0247a7; border-radius: 8px; padding: 4px; font-size: 16px; }");
+    //infoHelper->setFixedWidth(300);
     infoHelper->setText("Drag a tool onto spots 1 & 2 to groom your pet!");
     infoHelper->hide();
 
@@ -136,9 +133,9 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     hintLabel = new QLabel(this);
     hintLabel->setAlignment(Qt::AlignCenter);
     hintLabel->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,140); border-radius: 6px;"
-        "padding: 4px; color: #ffd700; font-size: 13px; }");
-    hintLabel->setFixedWidth(300);
+        "QLabel { background-color: #1b264f; border-radius: 8px; padding: 4px; font-size: 16px; }");
+    //hintLabel->setFixedWidth(300);
+    hintLabel->setWordWrap(true);
     hintLabel->hide();
 
     //Hint auto-hide timer (3 seconds)
@@ -167,12 +164,12 @@ Groom::Groom(Player *player, Character::PetType petType, QWidget *parent)
     m_resetTimer->setSingleShot(true);
     m_resetTimer->setInterval(1800);
     connect(m_resetTimer, &QTimer::timeout, this, &Groom::resetSpots);
-    actionsBox = new QGroupBox("■‿■", this);
+    actionsBox = new QGroupBox("Hygiene Tools!", this);
     actionsBox->setStyleSheet(
-        "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
+        "QGroupBox { background-color: #4b56d2; border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
         "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
-        "subcontrol-position: top center; padding: 0 4px; }");
+        "subcontrol-position: top center; padding: 4px; }");
     actionsBox->lower();
 }
 
@@ -193,8 +190,8 @@ void Groom::resizeEvent(QResizeEvent *e) {
     int petX = (w - kSpriteSize) / 2;
     // FIX: set character geometry here so topSpot/bottomSpot are always correct
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
-    hintLabel->setGeometry((w - 300) / 2, 80, 300, 30);
-    hygieneDisplay->setGeometry((w - 360) / 2, h - 170, 360, 38);
+    hintLabel->setGeometry((w - 300) / 2, 80, 300, 55);
+    hygieneDisplay->setGeometry((w - 360) / 2, h - 200, 360, 62);
     actionsBox->setGeometry(8, h - 130, w - 16, 122);
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
     placeTools();

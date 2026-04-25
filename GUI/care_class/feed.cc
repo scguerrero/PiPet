@@ -24,8 +24,7 @@ FoodItem::FoodItem(const QString &iconPath, const QString &name,
     setAlignment(Qt::AlignCenter);
     setCursor(Qt::OpenHandCursor);
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
-    setStyleSheet("QLabel { background-color: rgba(0,0,0,130);"
-                  "border-radius: 10px; color: white; font-size: 11px; }");
+    setStyleSheet("QLabel { background-color: #b8a4fc; border-radius: 10px; }"); //x; color: white; font-size: 11px;
     setAttribute(Qt::WA_AcceptTouchEvents);
     grabGesture(Qt::TapAndHoldGesture);
 }
@@ -113,8 +112,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     hungerDisplay->setAlignment(Qt::AlignCenter);
     hungerDisplay->setWordWrap(true);
     hungerDisplay->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 15px; }");
+        "QLabel { background-color: #0247a7; border-radius: 8px; padding: 6px; color: mistyrose; }");
     hungerDisplay->setFixedWidth(300);
     updateHungerDisplay();
 
@@ -123,8 +121,7 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     infoHelper->setAlignment(Qt::AlignCenter);
     infoHelper->setWordWrap(true);
     infoHelper->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 15px; }");
+        "QLabel { font-size: 16px; background-color: #0247a7; border-radius: 8px; padding: 6px; color: mistyrose; }");
     infoHelper->setFixedWidth(300);
     infoHelper->setText("Drag a piece of food onto your pet to feed it!");
     infoHelper->hide();
@@ -144,11 +141,11 @@ Feed::Feed(Player *player, Character::PetType petType, QWidget *parent)
     connect(pizzaItem, &FoodItem::dropped, this, &Feed::onFoodDropped);
 
     // ─ Food tray group box
-    actionsBox = new QGroupBox("■‿■", this);
+    actionsBox = new QGroupBox("Food for your PiPet!", this);
     actionsBox->setStyleSheet(
-        "QGroupBox { background-color: rgba(0,0,0,155); border-radius: 8px;"
+        "QGroupBox { background-color: #1b264f; border-radius: 8px;"
         "color: mistyrose; margin-top: 30px; }"
-        "QGroupBox::title { color: mistyrose; subcontrol-origin: margin;"
+        "QGroupBox::title { color: mistyrose; subcontrol-origin: margin; padding: 4px;"
         "subcontrol-position: top center; padding: 0 4px; }");
     actionsBox->lower();
 

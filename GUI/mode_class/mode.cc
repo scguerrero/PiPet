@@ -25,19 +25,17 @@ Mode::Mode(Player *player, QWidget *parent)
     b_settings->setIconSize(QSize(28, 28));
     b_settings->setFixedSize(38, 38);
     b_settings->setStyleSheet(
-        "QPushButton { background-color: rgba(0,0,0,140); border-radius: 19px;"
+        "QPushButton { background-color: #0247A7; border-radius: 8px;"
         "border: 2px solid #FBA8FF; }"
         "QPushButton:pressed { background-color: rgba(72,80,219,180); }");
     connect(b_settings, SIGNAL(clicked()), this, SLOT(openAbout()));
 
     petNameLabel = new QLabel(this);
     petNameLabel->setAlignment(Qt::AlignCenter);
-    petNameLabel->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,150); border-radius: 8px;"
-        "padding: 4px 10px; color: #ffd700; font-size: 16px; font-weight: bold; }");
+    petNameLabel->setStyleSheet("QLabel { background-color: #0247A7; border-radius: 8px; padding: 4px 10px; }");
 
     character = new Character(this);
-    character->setFixedSize(160, 160);
+    character->setFixedSize(220, 220);
 
     m_angerPx.load(":/images/Sprites/pets/icons/anger_mark.png");
     angerMark = new QLabel(this);
@@ -53,8 +51,7 @@ Mode::Mode(Player *player, QWidget *parent)
     hungerHintLabel->setWordWrap(true);
     hungerHintLabel->setText("Your pet is hungry!\nMake sure you feed them!");
     hungerHintLabel->setStyleSheet(
-        "QLabel { background-color: rgba(180,30,30,200); border-radius: 8px;"
-        "padding: 5px 10px; color: #ffd700; font-size: 13px; font-weight: bold; }");
+        "QLabel { background-color: #0247A7; border-radius: 8px; padding: 5px 10px; }");
     hungerHintLabel->hide();
 
     timekeeper = new Clock();
@@ -67,26 +64,35 @@ Mode::Mode(Player *player, QWidget *parent)
     statsGrid = new QGridLayout();
     statsBox->setLayout(statsGrid);
     statsBox->setStyleSheet(
-        "QGroupBox { background-color: rgba(0,0,0,150); border-radius: 8px;"
-        "color: mistyrose; margin-top: 22px; }"
-        "QGroupBox::title { color: #ffd700; subcontrol-origin: margin;"
-        "subcontrol-position: top center; }");
+        "QGroupBox { background-color: #0247A7; border-radius: 8px; margin-top: 22px; }"
+        "QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top center; }");
 
-    hunger_label    = new QLabel("Hunger",    this);
-    energy_label    = new QLabel("Energy",    this);
-    happiness_label = new QLabel("Happiness", this);
-    hunger_bar      = new QProgressBar(this);
-    energy_bar      = new QProgressBar(this);
-    happiness_bar   = new QProgressBar(this);
+    hunger_label       = new QLabel("Hunger",    this);
+    energy_label       = new QLabel("Energy",    this);
+    happiness_label    = new QLabel("Happiness", this);
+    hygiene_label      = new QLabel("Hygiene",   this);
+    strength_label     = new QLabel("Strength",  this);
+    intelligence_label = new QLabel("Intellect", this);
+    hunger_bar         = new QProgressBar(this);
+    energy_bar         = new QProgressBar(this);
+    happiness_bar      = new QProgressBar(this);
+    hygiene_bar        = new QProgressBar(this);
+    strength_bar       = new QProgressBar(this);
+    intelligence_bar   = new QProgressBar(this);
 
-    for (QProgressBar *bar : {hunger_bar, energy_bar, happiness_bar}) {
+    for (QProgressBar *bar : {hunger_bar, energy_bar, happiness_bar,
+                               hygiene_bar, strength_bar, intelligence_bar}) {
         bar->setRange(0, 100);
         bar->setTextVisible(true);
+        bar->setMinimumHeight(26);
     }
 
-    statsGrid->addWidget(hunger_label,    0, 0); statsGrid->addWidget(hunger_bar,    0, 1);
-    statsGrid->addWidget(energy_label,    1, 0); statsGrid->addWidget(energy_bar,    1, 1);
-    statsGrid->addWidget(happiness_label, 2, 0); statsGrid->addWidget(happiness_bar, 2, 1);
+    statsGrid->addWidget(hunger_label,       0, 0); statsGrid->addWidget(hunger_bar,       0, 1);
+    statsGrid->addWidget(energy_label,       1, 0); statsGrid->addWidget(energy_bar,       1, 1);
+    statsGrid->addWidget(happiness_label,    2, 0); statsGrid->addWidget(happiness_bar,    2, 1);
+    statsGrid->addWidget(hygiene_label,      3, 0); statsGrid->addWidget(hygiene_bar,      3, 1);
+    statsGrid->addWidget(strength_label,     4, 0); statsGrid->addWidget(strength_bar,     4, 1);
+    statsGrid->addWidget(intelligence_label, 5, 0); statsGrid->addWidget(intelligence_bar, 5, 1);
 
     feedBubble  = new QLabel(this);
     groomBubble = new QLabel(this);
@@ -122,7 +128,7 @@ void Mode::resizeEvent(QResizeEvent *e) { QWidget::resizeEvent(e); layoutWidgets
 
 void Mode::layoutWidgets() {
     int w = width(), h = height();
-    static constexpr int kCharSize = 160, kStatsH = 100, kBubbleH = 80;
+    static constexpr int kCharSize = 220, kStatsH = 210, kBubbleH = 80;
     static constexpr int kBtnH = 36, kMargin = 8, kSpacing = 6;
 
     int btnY    = h - kBtnH    - kMargin;
@@ -268,6 +274,8 @@ void Mode::decayStats() {
     pet.set_energy   (qMax(0, pet.energy()    - 1));
     pet.set_happiness(qMax(0, pet.happiness() - 1));
     player->setPet(pet);
+    player->updateHoursFromStartDate();
+    player->checkAndAwardGoodDay();
     // Route through refreshDisplay() so hat GIFs are preserved.
     refreshDisplay();
 }
@@ -277,6 +285,9 @@ void Mode::updateStatBars() {
     hunger_bar->setValue(pet.hunger());
     energy_bar->setValue(pet.energy());
     happiness_bar->setValue(pet.happiness());
+    hygiene_bar->setValue(pet.hygiene());
+    strength_bar->setValue(pet.strength());
+    intelligence_bar->setValue(pet.intelligence());
 }
 
 void Mode::updateIndicators() {
@@ -329,45 +340,53 @@ void Mode::openAbout() {
     // Outer layout
     QVBoxLayout *dlgLayout = new QVBoxLayout(&about);
     dlgLayout->setContentsMargins(20, 20, 20, 20);
-    dlgLayout->setSpacing(0);
+    dlgLayout->setSpacing(8);
 
     // Text label
-    QLabel *infoLabel = new QLabel(&about);
+    QLabel *infoLabel = new QLabel();
     infoLabel->setWordWrap(true);
     infoLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     infoLabel->setStyleSheet(
-        "QLabel { background-color: rgba(0,0,0,140); border-radius: 8px; padding: 8px;"
-        "color: mistyrose; font-family: monospace; font-size: 13px; }");
+        "QLabel { background-color: transparent; padding: 4px; }");
 
     QString currentTime = time->currentTime().toString("hh:mm:ss AP");
     int elapsed = timekeeper->elapsed_time();
 
     infoLabel->setText(QString(
-                           "<b style='color:#ffd700;font-size:16px;'>piPet About</b><br><br>"
-                           "<b style='color:#ffd700;'> Session </b><br>"
+                           "<u>piPet About</u><br><br>"
+                           "<u>Session</u><br>"
                            "Time Played:  %1s<br><br>"
-                           "<b style='color:#ffd700;'> Pet </b><br>"
+                           "<u>Pet</u><br>"
                            "Name:         %2<br>"
                            "Age Group:    %3<br>"
                            "Days Old:     %4<br><br>"
-                           "<b style='color:#ffd700;'> Condition </b><br>"
+                           "<u>Condition</u><br>"
                            "Hunger:     %5 / 100<br>"
                            "Energy:     %6 / 100<br>"
                            "Happiness:  %7 / 100<br>"
-                           "Hygiene: %8  Strength: %9   Intellect: %10<br><br>"
-                           "<b style='color:#ffd700;'> Battle Stats </b><br>"
-                           "Attack: %12  Defense: %13<br><br>"
-                           "<span style='color:#f7d4fc;font-size:11px;'>"
-                           "Luke C. · Sasha G. · Cesar R.<br>"
-                           "Camden G. · Tanya M.</span>"
-                           )
+                           "Hygiene:    %8 / 100<br>"
+                           "Strength:   %9 / 100<br>"
+                           "Intellect:  %10 / 100<br><br>"
+                           "<u>Battle Stats</u><br>"
+                           "Attack:     %12<br>"
+                           "Defense:    %13<br><br>"
+                           "<u>Authors</u><br>"
+                           "Luke C. · Sasha G. · Cesar R. · Camden G. · Tanya M.")
                            .arg(elapsed)
-                           .arg(pet.name()) .arg(pet.age_group())
+                           .arg(pet.name(), pet.age_group())
                            .arg(pet.days_old())    .arg(pet.hunger())
                            .arg(pet.energy())      .arg(pet.happiness())
                            .arg(pet.hygiene())     .arg(pet.strength())
                            .arg(pet.intelligence()) .arg(pet.attack())
                            .arg(pet.defense()));
+
+    // Scroll area wrapping the label
+    QScrollArea *scroll = new QScrollArea(&about);
+    scroll->setWidget(infoLabel);
+    scroll->setWidgetResizable(true);
+    scroll->setStyleSheet(
+        "QScrollArea { background-color: #0247A7; border-radius: 8px; border: none; }"
+        "QScrollArea > QWidget > QWidget { background-color: #0247A7; }");
 
     // Close button
     QPushButton *closeBtn = new QPushButton("Close", &about);
@@ -380,8 +399,8 @@ void Mode::openAbout() {
         "stop:0 #4A71DB,stop:1 #4850DB); }");
     connect(closeBtn, &QPushButton::clicked, &about, &QDialog::accept);
 
-    dlgLayout->addWidget(infoLabel, 1);
-    dlgLayout->addWidget(closeBtn,  0);
+    dlgLayout->addWidget(scroll,   1);
+    dlgLayout->addWidget(closeBtn, 0);
 
     about.exec();
 }

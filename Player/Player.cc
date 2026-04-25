@@ -17,17 +17,34 @@ Player::Player(const PiPet& petInit)
     startDate = QDateTime::currentDateTime();
 }
 
-QDateTime Player::getStartDate() const { return startDate; }
-int       Player::getStreak()    const { return streak; }
-int       Player::getGoodDays()  const { return goodDays; }
-int       Player::getHours()     const { return hours; }
-PiPet     Player::getPet()       const { return pet; }
+QDateTime Player::getStartDate()   const { return startDate; }
+int       Player::getStreak()      const { return streak; }
+int       Player::getGoodDays()    const { return goodDays; }
+int       Player::getHours()       const { return hours; }
+QDate     Player::getLastGoodDayDate() const { return lastGoodDayDate; }
+PiPet     Player::getPet()         const { return pet; }
 
-void Player::setStartDate(QDateTime t) { startDate = t; }
-void Player::setStreak(int s)          { streak    = s; }
-void Player::setGoodDays(int g)        { goodDays  = g; }
-void Player::setHours(int h)           { hours     = h; }
-void Player::setPet(const PiPet& p)    { pet       = p; }
+void Player::setStartDate(QDateTime t)  { startDate       = t; }
+void Player::setStreak(int s)           { streak          = s; }
+void Player::setGoodDays(int g)         { goodDays        = g; }
+void Player::setHours(int h)            { hours           = h; }
+void Player::setLastGoodDayDate(QDate d){ lastGoodDayDate = d; }
+void Player::setPet(const PiPet& p)     { pet             = p; }
+
+void Player::updateHoursFromStartDate() {
+    qint64 secs = startDate.secsTo(QDateTime::currentDateTime());
+    hours = static_cast<int>(secs / 3600);
+}
+
+bool Player::checkAndAwardGoodDay() {
+    QDate today = QDate::currentDate();
+    if (pet.happiness() >= 100 && today != lastGoodDayDate) {
+        goodDays++;
+        lastGoodDayDate = today;
+        return true;
+    }
+    return false;
+}
 
 void Player::feedPet()          { pet.increase_hunger(10);    }
 void Player::sendPetToSleep()   { pet.increase_energy(10);    }
@@ -51,7 +68,7 @@ Player Player::fromJSON(const QJsonObject &json) {
     if (const QJsonValue v = json["Start Date"];       v.isString()) player.startDate        = QDateTime::fromString(v.toString(), Qt::ISODate);
     if (const QJsonValue v = json["Streak"];           v.isDouble()) player.streak           = v.toInt();
     if (const QJsonValue v = json["Good Days"];        v.isDouble()) player.goodDays         = v.toInt();
-    if (const QJsonValue v = json["Hours"];            v.isDouble()) player.hours            = v.toInt();
+    if (const QJsonValue v = json["LastGoodDayDate"];  v.isString()) player.lastGoodDayDate  = QDate::fromString(v.toString(), Qt::ISODate);
     if (const QJsonValue v = json["BattleWins"];        v.isDouble()) player.battleWins        = v.toInt();
     if (const QJsonValue v = json["PendingLootboxes"]; v.isDouble()) player.pendingLootboxes  = v.toInt();
     if (const QJsonValue v = json["WonLootboxItems"];  v.isArray())  {
@@ -61,6 +78,7 @@ Player Player::fromJSON(const QJsonObject &json) {
     if (const QJsonValue v = json["PiPet"];            v.isObject()) player.pet              = PiPet::fromJSON(v.toObject());
     if (const QJsonValue v = json["Achievements"];     v.isObject()) player.achievements.fromJson(v.toObject());
 
+    player.updateHoursFromStartDate();
     return player;
 }
 
@@ -70,6 +88,7 @@ QJsonObject Player::toJson() const {
     json["Streak"]          = streak;
     json["Good Days"]       = goodDays;
     json["Hours"]           = hours;
+    json["LastGoodDayDate"] = lastGoodDayDate.toString(Qt::ISODate);
     json["BattleWins"]       = battleWins;
     json["PendingLootboxes"] = pendingLootboxes;
     QJsonArray lootArr;

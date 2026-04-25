@@ -6,7 +6,7 @@
 #include "groom.h"
 #include <QPainter>
 #include <QGroupBox>
-static constexpr int kSpriteSize = 160;
+static constexpr int kSpriteSize = 230;
 
 // - GroomItem
 GroomItem::GroomItem(const QString &iconPath, const QString &name,
@@ -186,7 +186,7 @@ void Groom::showEvent(QShowEvent *e) {
 void Groom::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petY = 250;
+    int petY = 150;
     int petX = (w - kSpriteSize) / 2;
     // FIX: set character geometry here so topSpot/bottomSpot are always correct
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);

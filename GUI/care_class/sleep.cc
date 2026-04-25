@@ -17,7 +17,7 @@ Sleep::Sleep(Player *player, Character::PetType petType, QWidget *parent)
 
     // - Character GIF
     character = new Character(this);
-    character->setFixedSize(160, 160);
+    character->setFixedSize(230, 230);
     character->syncWithPlayer(*player, petType);
 
     sleepDisplay = new QLabel();

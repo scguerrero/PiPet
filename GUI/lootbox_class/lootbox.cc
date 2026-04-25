@@ -323,7 +323,8 @@ bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
     QDialog dlg(this);
     dlg.setWindowTitle(name);
     dlg.setModal(true);
-    dlg.setFixedWidth(300);
+    dlg.setMinimumWidth(420);
+    dlg.setMaximumWidth(520);
     dlg.setStyleSheet(
         QString("QDialog { background-color: #120828; border: 2px solid %1; border-radius: 12px; }").arg(borderColor));
 
@@ -348,6 +349,7 @@ bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
     QLabel *flavorLabel = new QLabel(flavor, &dlg);
     flavorLabel->setAlignment(Qt::AlignCenter);
     flavorLabel->setWordWrap(true);
+    flavorLabel->setFixedWidth(388);
     flavorLabel->setStyleSheet(
         "QLabel { font-style: italic; background: transparent; border: none; }");
     layout->addWidget(flavorLabel);
@@ -360,6 +362,7 @@ bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
     connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
     layout->addWidget(closeBtn);
 
+    dlg.adjustSize();
     dlg.exec();
     return true;
 }

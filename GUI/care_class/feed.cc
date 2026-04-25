@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <QRandomGenerator>
 
-static constexpr int kSpriteSize = 160;
+static constexpr int kSpriteSize = 230;
 static constexpr int kHitRadius  = kSpriteSize / 2;
 
 // - FoodItem
@@ -177,7 +177,7 @@ QRect Feed::characterHitbox() const {
 void Feed::resizeEvent(QResizeEvent *e) {
     QWidget::resizeEvent(e);
     int w = width(), h = height();
-    int petY = 200;
+    int petY = 120;
     int petX = (w - kSpriteSize) / 2;
     character->setGeometry(petX, petY, kSpriteSize, kSpriteSize);
     infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);

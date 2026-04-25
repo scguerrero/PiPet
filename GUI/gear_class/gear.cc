@@ -203,6 +203,8 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
             infoHelper->setText(
                 QString("The %1 hat is locked!\nUnlock it in the Minigames!.")
                     .arg(displayName));
+            infoHelper->adjustSize();
+            infoHelper->move((width() - infoHelper->width()) / 2, 60);
             infoHelper->show();
             infoHelper->raise();
             // Reset the auto-hide timer — keeps the bubble up for 3 s from this tap
@@ -244,7 +246,8 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
 void Gear::showEvent(QShowEvent *e) {
     QWidget::showEvent(e);
     infoHelper->setText("Tap a hat below to dress up your pet!");
-    infoHelper->setGeometry((width() - 300) / 2, 60, 300, 50);
+    infoHelper->adjustSize();
+    infoHelper->move((width() - infoHelper->width()) / 2, 60);
     infoHelper->show();
     infoHelper->raise();
     m_infoTimer->start(3000);
@@ -252,9 +255,9 @@ void Gear::showEvent(QShowEvent *e) {
 
 //  Geometry helpers
 QRect Gear::pedestalCharRect() const {
-    int cw = 160, ch = 160;
-    int cx = 160;
-    int cy = 190;
+    int cw = 200, ch = 200;
+    int cx = 140;
+    int cy = 170;
     return QRect(cx, cy, cw, ch);
 }
 
@@ -271,7 +274,8 @@ void Gear::layoutWidgets() {
     b_lootboxes->setGeometry(w - 160 - 8, 8, 160, 36);
     m_character->setGeometry(pedestalCharRect());
     // Info Helper Card
-    infoHelper->setGeometry((w - 300) / 2, 20, 300, 50);
+    infoHelper->adjustSize();
+    infoHelper->move((w - infoHelper->width()) / 2, 20);
 
     // Hat strip
     QRect sr = stripRect();

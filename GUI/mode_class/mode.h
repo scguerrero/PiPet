@@ -50,7 +50,9 @@ private:
     QGroupBox    *statsBox;
     QGridLayout  *statsGrid;
     QLabel       *hunger_label, *energy_label, *happiness_label;
+    QLabel       *hygiene_label, *strength_label, *intelligence_label;
     QProgressBar *hunger_bar,   *energy_bar,   *happiness_bar;
+    QProgressBar *hygiene_bar,  *strength_bar, *intelligence_bar;
 
     Clock  *timekeeper;
     QTimer *timer;

@@ -15,6 +15,7 @@ private:
     int streak;
     int goodDays;
     int hours;
+    QDate lastGoodDayDate;
 
 public:
     // Battle and minigame counters tracked here so they persist via JSON
@@ -28,17 +29,22 @@ public:
     Player();
     Player(const PiPet& petInit);
 
-    QDateTime getStartDate() const;
-    int getStreak()    const;
-    int getGoodDays()  const;
-    int getHours()     const;
-    PiPet getPet()     const;
+    QDateTime getStartDate()      const;
+    int getStreak()               const;
+    int getGoodDays()             const;
+    int getHours()                const;
+    QDate getLastGoodDayDate()    const;
+    PiPet getPet()                const;
 
     void setStartDate(QDateTime t);
     void setStreak(int s);
     void setGoodDays(int g);
     void setHours(int h);
+    void setLastGoodDayDate(QDate d);
     void setPet(const PiPet& p);
+
+    void updateHoursFromStartDate();
+    bool checkAndAwardGoodDay();
 
     void feedPet();
     void sendPetToSleep();

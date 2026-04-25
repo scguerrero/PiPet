@@ -101,6 +101,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     // Mode signals
     connect(mode, &Mode::petAgedUp,     this, &Game::onAgeChanged);
     connect(mode, &Mode::temperTantrum, this, [this]() {
+        if (!m_achievementsEnabled) return;
         auto u = player->achievements.onTemperTantrum(true, true);
         showAchievementPopup(u);
     });
@@ -214,10 +215,12 @@ void Game::resetInactivityTimer() {
 }
 
 void Game::onInactivityTriggered() {
+    if (!m_achievementsEnabled) return;
     showAchievementPopup(player->achievements.onInactive());
 }
 
 void Game::onMarathonTriggered() {
+    if (!m_achievementsEnabled) return;
     showAchievementPopup(player->achievements.onMarathonSession());
 }
 
@@ -500,6 +503,7 @@ void Game::showAchievementsScreen() {
 //  onCreateDone
 
 void Game::onCreateDone() {
+    m_achievementsEnabled = true;
     if (create->b_axolotl->isChecked())
         currentPetType = Character::ElectricAxolotl;
     else if (create->b_cat->isChecked())
@@ -555,6 +559,7 @@ bool Game::loadGame() {
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
     read(loadDoc.object());
+    m_achievementsEnabled = true;
 
     // Save file found and loaded — rewire Start button to go to Mode, not Create.
     disconnect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));

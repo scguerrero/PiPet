@@ -76,6 +76,7 @@ private:
     // is always used regardless of new game vs loaded save.
     void rebuildCareScreens();
 
+    bool    m_achievementsEnabled = false;
     QTimer *m_inactivityTimer;
     void    resetInactivityTimer();
     QTimer *m_marathonTimer;

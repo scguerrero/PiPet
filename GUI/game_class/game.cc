@@ -120,9 +120,6 @@ Game::Game(QWidget *parent) : QWidget{parent} {
                 background-color: rgba(72,50,180,220);
                 border: 2px solid #FBA8FF;
                 border-radius: 12px;
-                color: mistyrose;
-                font-size: 15px;
-                font-weight: bold;
                 padding: 10px;
             }
         )");
@@ -195,7 +192,7 @@ void Game::showHomeOnly(bool activeStyle) {
             QPushButton {
                 background-color: rgba(60,60,60,180);
                 border: 2px inset #888888; border-radius: 10px;
-                padding: 4px; font: bold; color: #888888;
+                padding: 4px;
             })");
 }
 
@@ -314,9 +311,6 @@ void Game::onBattleWon() {
             background-color: rgba(72,50,180,220);
             border: 2px solid #FBA8FF;
             border-radius: 12px;
-            color: mistyrose;
-            font-size: 15px;
-            font-weight: bold;
             padding: 10px;
         }
     )");
@@ -341,9 +335,6 @@ void Game::onBattleWon() {
                 background-color: rgba(30,10,60,230);
                 border: 2px solid #ffd700;
                 border-radius: 12px;
-                color: #ffd700;
-                font-size: 15px;
-                font-weight: bold;
                 padding: 10px;
             }
         )");
@@ -389,7 +380,7 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
     int offset = 0;
     for (const QString &title : titles) {
         QLabel *toast = new QLabel(this);
-        toast->setText(QString("🏆 Achievement Unlocked!\n\"%1\"").arg(title));
+        toast->setText(QString("Achievement Unlocked!\n\"%1\"").arg(title));
         toast->setAlignment(Qt::AlignCenter);
         toast->setWordWrap(true);
         toast->setStyleSheet(R"(
@@ -397,9 +388,6 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
                 background-color: rgba(30,10,60,230);
                 border: 2px solid #ffd700;
                 border-radius: 12px;
-                color: #ffd700;
-                font-size: 15px;
-                font-weight: bold;
                 padding: 10px;
             }
         )");
@@ -422,9 +410,6 @@ void Game::showAchievementPopup(const QList<QString> &titles) {
             background-color: rgba(72,50,180,220);
             border: 2px solid #FBA8FF;
             border-radius: 12px;
-            color: mistyrose;
-            font-size: 15px;
-            font-weight: bold;
             padding: 10px;
         }
     )");
@@ -444,19 +429,18 @@ void Game::showAchievementsScreen() {
     dlg.setFixedSize(400, 520);
     dlg.setStyleSheet(
         "QDialog { background-color: #120828; }"
-        "QLabel  { background-color: transparent; color: mistyrose;"
-        "          font-family: monospace; font-size: 13px; }"
+        "QLabel  { background-color: transparent; }"
         "QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,"
         "  stop:0 #4850DB,stop:1 #4A71DB); border:2px inset #FBA8FF;"
-        "  border-radius:10px; padding:4px; font:bold; color:mistyrose; }");
+        "  border-radius:10px; padding:4px; }");
 
     QVBoxLayout *dlgLayout = new QVBoxLayout(&dlg);
     dlgLayout->setContentsMargins(16, 16, 16, 16);
     dlgLayout->setSpacing(8);
 
-    QLabel *header = new QLabel("🏆  Achievements", &dlg);
+    QLabel *header = new QLabel("Achievements", &dlg);
     header->setAlignment(Qt::AlignCenter);
-    header->setStyleSheet("QLabel { color:#ffd700; font-size:18px; font-weight:bold; }");
+    header->setStyleSheet("QLabel { color:#ffd700; }");
     dlgLayout->addWidget(header);
 
     int unlocked = 0;
@@ -466,7 +450,7 @@ void Game::showAchievementsScreen() {
         QString("%1 / %2 unlocked")
             .arg(unlocked).arg(player->achievements.all().size()), &dlg);
     progress->setAlignment(Qt::AlignCenter);
-    progress->setStyleSheet("QLabel { color:#aaa; font-size:12px; }");
+    progress->setStyleSheet("QLabel { color:#aaa; }");
     dlgLayout->addWidget(progress);
 
     QScrollArea *scroll = new QScrollArea(&dlg);
@@ -483,16 +467,16 @@ void Game::showAchievementsScreen() {
         QLabel *row = new QLabel(listWidget);
         row->setWordWrap(true);
         if (a.unlocked) {
-            row->setText(QString("✅  <b>%1</b><br>"
-                                 "<span style='color:#FFE4E1;font-size:11px;'>%2</span>")
+            row->setText(QString("<b>%1</b><br>"
+                                 "<span>%2</span>")
                              .arg(a.title, a.description));
             row->setStyleSheet(
                 "QLabel { background-color: rgba(72,80,219,120);"
                 "border: 1px solid #ffd700; border-radius: 8px;"
                 "padding: 8px; color: #FFE4E1; }");
         } else {
-            row->setText(QString("🔒  <b style='color:#555;'>%1</b><br>"
-                                 "<span style='color:#444;font-size:11px;'>%2</span>")
+            row->setText(QString("<b style='color:#555;'>%1</b><br>"
+                                 "<span>%2</span>")
                              .arg(a.title, a.description));
             row->setStyleSheet(
                 "QLabel { background-color: rgba(0,0,0,100);"
@@ -613,9 +597,6 @@ bool Game::saveGame() {
             background-color: rgba(30,10,60,230);
             border: 2px solid #FBA8FF;
             border-radius: 12px;
-            color: mistyrose;
-            font-size: 15px;
-            font-weight: bold;
             padding: 10px;
         }
     )");
@@ -660,7 +641,7 @@ void Game::setUtilityStyle(QPushButton &button) {
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
             border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
+            padding: 4px; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); })");
 }

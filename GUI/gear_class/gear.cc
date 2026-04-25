@@ -55,8 +55,6 @@ void HatCard::applyStyle() {
                 background-color: rgba(20,20,20,180);
                 border: 2px solid rgba(100,100,100,100);
                 border-radius: 12px;
-                color: #555;
-                font-size: 22px;
             }
         )");
         // Overlay
@@ -136,8 +134,7 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     b_achievements->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
+            border: 2px inset #FBA8FF; border-radius: 10px; padding: 4px; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); })");
     // connected externally from game.cc
@@ -146,8 +143,7 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     b_lootboxes->setStyleSheet(R"(
         QPushButton { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4850DB, stop:1 #4A71DB);
-            border: 2px inset #FBA8FF; border-radius: 10px;
-            padding: 4px; font: bold; color: mistyrose; }
+            border: 2px inset #FBA8FF; border-radius: 10px; padding: 4px; }
         QPushButton:pressed { background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
             stop:0 #4A71DB, stop:1 #4850DB); })");
     // connected externally from game.cc
@@ -161,7 +157,7 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
     infoHelper->setWordWrap(true);
     infoHelper->setStyleSheet(
         "QLabel { background-color: rgba(0,0,0,170); border-radius: 8px;"
-        "padding: 6px; color: mistyrose; font-size: 15px; }");
+        "padding: 4px; }");
     infoHelper->setFixedWidth(300);
     infoHelper->setText("Tap a hat below to dress up your pet!");
     infoHelper->hide();
@@ -222,9 +218,6 @@ Gear::Gear(Player *player, Character::PetType petType, QWidget *parent)
                 background-color: rgba(0,0,0,140);
                 border: 2px solid rgba(251,168,255,80);
                 border-radius: 12px;
-                color: mistyrose;
-                font-size: 22px;
-                font-weight: bold;
             }
         )");
         m_stripLayout->insertWidget(0, noneCard);

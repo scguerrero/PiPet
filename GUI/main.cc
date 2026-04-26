@@ -1,6 +1,6 @@
 /*
  * main.cc - Main file for the PIPET game.
- * Author(s): Luke Cewin & Sasha Guerrero
+ * Author(s): Luke Cerwin & Sasha Guerrero
  */
 
 #include <QtWidgets>
@@ -12,16 +12,15 @@
 #include <QTimer>
 #include <QEventLoop>
 #include <QPropertyAnimation>
+#include <QScreen>
 
 int main(int argc, char**argv)
 {
-    // qt5.15 Syntax
     QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
 
     qputenv("QT_QPA_PLATFORM", "xcb");
     QApplication app(argc, argv);
 
-    //Style Sheet for Buttons in game
     app.setStyleSheet(R"(
     QWidget {
         font-size: 18px;
@@ -110,6 +109,7 @@ int main(int argc, char**argv)
         background: none;
     }
     )");
+
     // Boot splash
     QWidget splash;
     splash.setFixedSize(480, 640);
@@ -123,17 +123,22 @@ int main(int argc, char**argv)
     splash.show();
     app.processEvents();
 
-    // Load and show the game window while splash is still visible
+    // Game window
     Game game;
     game.loadGame();
 
-    // This size is for Desktop gameplay. Uncomment to build on Desktop.
-    //game.setFixedSize(480, 640);
-    //game.show();
+    // Auto-detect Pi vs laptop by checking screen width.
+    int screenW = QApplication::primaryScreen()->geometry().width();
+    if (screenW <= 800) {
+        // Pi fill the entire screen
+        game.showFullScreen();
+    } else {
+        // Laptop  fixed development window
+        game.setFixedSize(480, 640);
+        game.show();
+    }
 
-    // This size is for Raspberry Pi gameplay. Comment out the fixedsize snippet above and leave this one in.
-    game.showFullScreen();
-
+    // Keep splash visible for 3 seconds
     app.processEvents();
     QEventLoop loop;
     QTimer::singleShot(3000, &loop, &QEventLoop::quit);

@@ -81,6 +81,7 @@ private:
     QLabel *hungerDisplay;
     QList<Crumb> m_crumbs;
     QTimer      *m_crumbTimer;
+    QMovie      *m_hatMovie = nullptr;
     void spawnCrumbs(QPoint center);
     void applyHungerAction(int boost, const QString &message);
 };

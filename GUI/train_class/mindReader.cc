@@ -229,6 +229,9 @@ void mindReader::refreshCharacter()
 // Universal Hat Inheritence from Mode.cc
 void mindReader::applyHatSprite()
 {
+    delete m_hatMovie;
+    m_hatMovie = nullptr;
+
     QString hat = m_player->getPet().hat();
     if (hat.isEmpty()) {
         m_character->syncWithPlayer(*m_player, m_petType);
@@ -246,13 +249,14 @@ void mindReader::applyHatSprite()
     QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
                         .arg(folder, prefix, infix, hat);
 
-    QMovie *movie = new QMovie(path, QByteArray(), m_character);
+    QMovie *movie = new QMovie(path, QByteArray(), this);
     if (movie->isValid()) {
         QLabel *disp = m_character->findChild<QLabel *>();
         if (disp) {
             if (disp->movie()) disp->movie()->stop();
             disp->setMovie(movie);
             movie->start();
+            m_hatMovie = movie;
             return;
         }
     }

@@ -38,28 +38,19 @@ protected:
 private:
     QLabel *display;
 
-    // DragonDog GIFs
-    QMovie *dd_baby_normal;
-    QMovie *dd_teen_normal;
-    QMovie *dd_adult_normal;
-    QMovie *dd_sleepy;
-
-    // ElectricAxolotl GIFs
-    QMovie *ax_baby_normal;
-    QMovie *ax_teen_normal;
-    QMovie *ax_adult_normal;
-    QMovie *ax_sleepy;
-
-    // SeelCat GIFs
-    QMovie *sc_baby_normal;
-    QMovie *sc_teen_normal;
-    QMovie *sc_adult_normal;
-    QMovie *sc_sleepy;
+    // Only the 4 movies for the currently-loaded pet type are alive at once.
+    QMovie *m_idle_baby  = nullptr;
+    QMovie *m_idle_teen  = nullptr;
+    QMovie *m_idle_adult = nullptr;
+    QMovie *m_sleepy     = nullptr;
+    PetType m_loadedType = (PetType)-1;
 
     PetType currentType    = DragonDog;
     Emotion currentEmotion = Normal;
     QString currentStage   = "Baby";
 
+    void    loadMoviesForType(PetType type);
+    void    unloadMovies();
     QMovie *currentMovie();
     void    switchTo(QMovie *movie);
 };

@@ -101,6 +101,7 @@ private:
     Character          *m_character = nullptr;
     Player             *m_player    = nullptr;
     Character::PetType  m_petType;
+    QMovie             *m_hatMovie  = nullptr;
 
     // Background
     QPixmap m_bg;

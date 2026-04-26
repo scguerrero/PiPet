@@ -381,47 +381,38 @@ void Game::onVeteranCheck() {
 
 void Game::showAchievementPopup(const QList<QString> &titles) {
     if (titles.isEmpty()) return;
-    int offset = 0;
-    for (const QString &title : titles) {
-        QLabel *toast = new QLabel(this);
-        toast->setText(QString("Achievement Unlocked!\n\"%1\"").arg(title));
-        toast->setAlignment(Qt::AlignCenter);
-        toast->setWordWrap(true);
-        toast->setStyleSheet(R"(
-            QLabel {
-                background-color: rgba(30,10,60,230);
-                border: 2px solid #FBA8FF;
-                border-radius: 12px;
-                padding: 10px;
-            }
-        )");
-        toast->setFixedWidth(300);
-        toast->adjustSize();
-        toast->setGeometry((width() - 300) / 2, 60 + offset, 300, toast->height());
-        toast->raise();
-        toast->show();
-        offset += toast->height() + 8;
-        QTimer::singleShot(3000, toast, &QLabel::deleteLater);
 
-        lootbox->awardLootbox();
-    }
-
-    QLabel *lbToast = new QLabel("You won a lootbox from an Achievement!\nVisit Gear → Lootbox to open it.", this);
-    lbToast->setAlignment(Qt::AlignCenter);
-    lbToast->setWordWrap(true);
-    lbToast->setStyleSheet(R"(
+    static const char *kStyle = R"(
         QLabel {
             background-color: rgba(30,10,60,230);
             border: 2px solid #FBA8FF;
             border-radius: 12px;
             padding: 10px;
         }
-    )");
-    lbToast->setFixedWidth(300);
-    lbToast->adjustSize();
-    lbToast->setGeometry((width() - 300) / 2, 60 + offset, 300, lbToast->height());
-    lbToast->raise();
-    lbToast->show();
+    )";
+    auto makeToast = [&](const QString &text, int y) -> QLabel * {
+        QLabel *t = new QLabel(text, this);
+        t->setAlignment(Qt::AlignCenter);
+        t->setWordWrap(true);
+        t->setStyleSheet(kStyle);
+        t->setFixedWidth(300);
+        t->adjustSize();
+        t->setGeometry((width() - 300) / 2, y, 300, t->height());
+        t->raise();
+        t->show();
+        return t;
+    };
+
+    int y = 60;
+    for (const QString &title : titles) {
+        QLabel *toast = makeToast(QString("Achievement Unlocked!\n\"%1\"").arg(title), y);
+        y += toast->height() + 8;
+        QTimer::singleShot(3000, toast, &QLabel::deleteLater);
+        lootbox->awardLootbox();
+    }
+
+    QLabel *lbToast = makeToast(
+        "You won a lootbox from an Achievement!\nVisit Gear → Lootbox to open it.", y);
     QTimer::singleShot(3500, lbToast, &QLabel::deleteLater);
 }
 

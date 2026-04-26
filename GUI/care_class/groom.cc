@@ -15,7 +15,7 @@ GroomItem::GroomItem(const QString &iconPath, const QString &name,
 {
     QPixmap px(iconPath);
     if (!px.isNull())
-        setPixmap(px.scaled(56, 56, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setPixmap(px.scaled(56, 56, Qt::KeepAspectRatio, Qt::FastTransformation));
     else
         setText(name);
     setFixedSize(64, 64);
@@ -321,6 +321,9 @@ void Groom::applyGroomAction(const QString &message) {
 // Called by game.cc each time the groom screen is opened so the equipped
 
 void Groom::refreshCharacter() {
+    delete m_hatMovie;
+    m_hatMovie = nullptr;
+
     QString hat = player->getPet().hat();
     if (hat.isEmpty()) {
         character->syncWithPlayer(*player, petType);
@@ -338,13 +341,14 @@ void Groom::refreshCharacter() {
     QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
                         .arg(folder, prefix, infix, hat);
 
-    QMovie *movie = new QMovie(path, QByteArray(), character);
+    QMovie *movie = new QMovie(path, QByteArray(), this);
     if (movie->isValid()) {
         QLabel *disp = character->findChild<QLabel *>();
         if (disp) {
             if (disp->movie()) disp->movie()->stop();
             disp->setMovie(movie);
             movie->start();
+            m_hatMovie = movie;
             return;
         }
     }

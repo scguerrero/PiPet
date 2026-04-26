@@ -11,24 +11,7 @@ Character::Character(QWidget *parent)
     display->setAlignment(Qt::AlignCenter);
     display->setScaledContents(true);
     display->setStyleSheet("QLabel { background-color: transparent; }");
-
-    // DragonDog
-    dd_baby_normal  = new QMovie(":/images/Sprites/pets/dragondog/dragondog_idle.gif",       QByteArray(), this);
-    dd_teen_normal  = new QMovie(":/images/Sprites/pets/dragondog/purpledragondog_idle.gif",  QByteArray(), this);
-    dd_adult_normal = new QMovie(":/images/Sprites/pets/dragondog/dragondog_adult_idle.gif",  QByteArray(), this);
-    dd_sleepy       = new QMovie(":/images/Sprites/pets/dragondog/purpledragondog_sleep.gif", QByteArray(), this);
-    // ElectricAxolotl
-    ax_baby_normal  = new QMovie(":/images/Sprites/pets/axolotl/axolotl_idle.gif",           QByteArray(), this);
-    ax_teen_normal  = new QMovie(":/images/Sprites/pets/axolotl/axolotl_teen_idle.gif",      QByteArray(), this);
-    ax_adult_normal = new QMovie(":/images/Sprites/pets/axolotl/axolotl_adult_idle.gif",     QByteArray(), this);
-    ax_sleepy       = new QMovie(":/images/Sprites/pets/axolotl/electric_axolotl_sleep.gif", QByteArray(), this);
-    // SeelCat
-    sc_baby_normal  = new QMovie(":/images/Sprites/pets/seelcat/seelcat_idle.gif",           QByteArray(), this);
-    sc_teen_normal  = new QMovie(":/images/Sprites/pets/seelcat/seelcat_teen_idle.gif",      QByteArray(), this);
-    sc_adult_normal = new QMovie(":/images/Sprites/pets/seelcat/seelcat_adult_idle.gif",     QByteArray(), this);
-    sc_sleepy       = new QMovie(":/images/Sprites/pets/seelcat/seelcat_sleep.gif",          QByteArray(), this);
-
-    playIdle();
+    // Movies are loaded on demand in setPetType() / syncWithPlayer().
 }
 
 void Character::resizeEvent(QResizeEvent *e) {
@@ -37,7 +20,44 @@ void Character::resizeEvent(QResizeEvent *e) {
     display->setGeometry(0, 0, width(), height());
 }
 
+void Character::loadMoviesForType(PetType type) {
+    unloadMovies();
+    auto make = [this](const char *path) {
+        return new QMovie(path, QByteArray(), this);
+    };
+    if (type == DragonDog) {
+        m_idle_baby  = make(":/images/Sprites/pets/dragondog/dragondog_idle.gif");
+        m_idle_teen  = make(":/images/Sprites/pets/dragondog/purpledragondog_idle.gif");
+        m_idle_adult = make(":/images/Sprites/pets/dragondog/dragondog_adult_idle.gif");
+        m_sleepy     = make(":/images/Sprites/pets/dragondog/purpledragondog_sleep.gif");
+    } else if (type == ElectricAxolotl) {
+        m_idle_baby  = make(":/images/Sprites/pets/axolotl/axolotl_idle.gif");
+        m_idle_teen  = make(":/images/Sprites/pets/axolotl/axolotl_teen_idle.gif");
+        m_idle_adult = make(":/images/Sprites/pets/axolotl/axolotl_adult_idle.gif");
+        m_sleepy     = make(":/images/Sprites/pets/axolotl/electric_axolotl_sleep.gif");
+    } else {
+        m_idle_baby  = make(":/images/Sprites/pets/seelcat/seelcat_idle.gif");
+        m_idle_teen  = make(":/images/Sprites/pets/seelcat/seelcat_teen_idle.gif");
+        m_idle_adult = make(":/images/Sprites/pets/seelcat/seelcat_adult_idle.gif");
+        m_sleepy     = make(":/images/Sprites/pets/seelcat/seelcat_sleep.gif");
+    }
+    m_loadedType = type;
+}
+
+void Character::unloadMovies() {
+    if (display->movie()) {
+        display->movie()->stop();
+        display->setMovie(nullptr);
+    }
+    delete m_idle_baby;  m_idle_baby  = nullptr;
+    delete m_idle_teen;  m_idle_teen  = nullptr;
+    delete m_idle_adult; m_idle_adult = nullptr;
+    delete m_sleepy;     m_sleepy     = nullptr;
+}
+
 void Character::setPetType(PetType type) {
+    if (type != m_loadedType)
+        loadMoviesForType(type);
     currentType = type;
     playIdle();
 }
@@ -54,6 +74,8 @@ void Character::updateEmotionFromStats(int energyLevel, int hungerLevel) {
 }
 
 void Character::syncWithPlayer(const Player &player, PetType type) {
+    if (type != m_loadedType)
+        loadMoviesForType(type);
     currentType = type;
     setStageFromString(player.getPet().age_group());
     updateEmotionFromStats(player.getPet().energy(), player.getPet().hunger());
@@ -64,24 +86,10 @@ void Character::playIdle() {
 }
 
 QMovie *Character::currentMovie() {
-    if (currentEmotion == Sleepy) {
-        if (currentType == DragonDog)       return dd_sleepy;
-        if (currentType == ElectricAxolotl) return ax_sleepy;
-        return sc_sleepy;
-    }
-    if (currentType == DragonDog) {
-        if (currentStage == "Teen")  return dd_teen_normal;
-        if (currentStage == "Adult") return dd_adult_normal;
-        return dd_baby_normal;
-    }
-    if (currentType == ElectricAxolotl) {
-        if (currentStage == "Teen")  return ax_teen_normal;
-        if (currentStage == "Adult") return ax_adult_normal;
-        return ax_baby_normal;
-    }
-    if (currentStage == "Teen")  return sc_teen_normal;
-    if (currentStage == "Adult") return sc_adult_normal;
-    return sc_baby_normal;
+    if (currentEmotion == Sleepy) return m_sleepy;
+    if (currentStage == "Teen")  return m_idle_teen;
+    if (currentStage == "Adult") return m_idle_adult;
+    return m_idle_baby;
 }
 
 void Character::switchTo(QMovie *movie) {

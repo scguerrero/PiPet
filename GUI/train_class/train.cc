@@ -10,13 +10,9 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
     : QWidget{parent}, m_pet(pet), m_player(player)
 {
     m_bg.load(":/images/Backgrounds/trainbg.png");
-    // QStackedWidget contains TrainHub, PiPatterns, and PiDash.
-    // mindReader is added lazily on first openmindReader() call.
-    stack      = new QStackedWidget();
-    trainHub   = new QWidget();
-    pipatterns = new PiPatterns(player);
-    stack->addWidget(trainHub);    // index 0
-    stack->addWidget(pipatterns);  // index 1
+    stack    = new QStackedWidget();
+    trainHub = new QWidget();
+    stack->addWidget(trainHub); // index 0; minigames added lazily on first open
 
     // Top-level layout
     main_layout = new QVBoxLayout();
@@ -32,23 +28,20 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
 
     // PiPatterns logo
     logo_pipatterns = new QLabel();
-    QImage *img0 = new QImage(":/images/Assets/PiPatterns.png");
-    QPixmap pxmap0 = QPixmap::fromImage(img0->scaled(275, 275, Qt::KeepAspectRatio));
-    logo_pipatterns->setPixmap(pxmap0);
+    logo_pipatterns->setPixmap(QPixmap(":/images/Assets/PiPatterns.png")
+                                   .scaled(275, 275, Qt::KeepAspectRatio, Qt::FastTransformation));
     logo_pipatterns->setAlignment(Qt::AlignCenter);
 
     // PiDash logo
     logo_pidash = new QLabel();
-    QImage *img1 = new QImage(":/images/Assets/pidash.png");
-    QPixmap pxmap1 = QPixmap::fromImage(img1->scaled(200, 200, Qt::KeepAspectRatio));
-    logo_pidash->setPixmap(pxmap1);
+    logo_pidash->setPixmap(QPixmap(":/images/Assets/pidash.png")
+                               .scaled(200, 200, Qt::KeepAspectRatio, Qt::FastTransformation));
     logo_pidash->setAlignment(Qt::AlignCenter);
 
-    // mindReader logo (swap mindReader.png for your real asset when ready)
+    // mindReader logo
     logo_mindReader = new QLabel();
-    QImage *img2 = new QImage(":/images/Assets/MindReader.png");
-    QPixmap pxmap2 = QPixmap::fromImage(img2->scaled(250, 250, Qt::KeepAspectRatio));
-    logo_mindReader->setPixmap(pxmap2);
+    logo_mindReader->setPixmap(QPixmap(":/images/Assets/MindReader.png")
+                                   .scaled(300, 300, Qt::KeepAspectRatio, Qt::FastTransformation));
     logo_mindReader->setAlignment(Qt::AlignCenter);
 
     // Construct b_back BEFORE any setUtilityStyle call that dereferences it
@@ -64,19 +57,8 @@ Train::Train(PiPet* pet, Player* player, QWidget *parent)
 
     // Button stylesheets
     setUtilityStyle(*b_back);
-    setUtilityStyle(*pipatterns->b_back);
 
-    // Connect minigame1 button to PiPatterns
     connect(b_minigame1, SIGNAL(clicked()), this, SLOT(openPiPatterns()));
-
-    // Connect PiPatterns back button to Train Hub
-    connect(pipatterns->b_back, SIGNAL(clicked()), this, SLOT(openTrainHub()));
-
-    // Connect PiPatterns game result to stat gains + lootbox award
-    connect(pipatterns, &PiPatterns::gameFinished,
-            this, &Train::onPiPatternsFinished);
-
-    // Connect minigame2 button to PiDash
     connect(b_minigame2, SIGNAL(clicked()), this, SLOT(openPiDash()));
 
     // Connect minigame3 button to mindReader
@@ -118,7 +100,15 @@ void Train::openTrainHub() {
 }
 
 void Train::openPiPatterns() {
-    stack->setCurrentIndex(1);
+    if (!pipatterns) {
+        pipatterns = new PiPatterns(m_player);
+        stack->addWidget(pipatterns);
+        setUtilityStyle(*pipatterns->b_back);
+        connect(pipatterns->b_back, SIGNAL(clicked()), this, SLOT(openTrainHub()));
+        connect(pipatterns, &PiPatterns::gameFinished,
+                this, &Train::onPiPatternsFinished);
+    }
+    stack->setCurrentWidget(pipatterns);
 }
 
 void Train::setUtilityStyle(QPushButton &button) {

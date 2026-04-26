@@ -1,5 +1,9 @@
 /*
- * mode.h - Mode hub screen.
+ * mode.h - The main hub screen shown after pet creation.
+ * Displays the pet character, stat bars, room bubbles for care actions,
+ * and navigation buttons for Train, Battle, and Theater.
+ * Also drives the 10-second stat decay timer and age-up detection.
+ *
  * Author(s): Luke Cerwin
  */
 #ifndef MODE_H
@@ -43,7 +47,7 @@ private:
 
     QPixmap m_bg;
     QPixmap m_kitchenPx, m_bathroomPx, m_bedroomPx;
-    // Pre-scaled to exact bubble size — recomputed only on resize.
+    // Pre-scaled to the exact bubble size -- recomputed only on resize.
     QPixmap m_kitchenBubble, m_bathroomBubble, m_bedroomBubble;
     QSize   m_bubbleSize;
 
@@ -67,8 +71,8 @@ private:
     QString m_lastAgeGroup       = "Baby";
     bool    m_hintShownThisVisit = false;
 
-    // Hat GIF cache — refreshDisplay() reuses this instead of allocating a
-    // new QMovie every decay tick.  Invalidated when hat, type, or stage changes.
+    // Hat GIF cache -- refreshDisplay() reuses this instead of allocating a
+    // new QMovie every decay tick. Invalidated when hat, type, or stage changes.
     QMovie  *m_cachedHatMovie = nullptr;
     QString  m_cachedHatPath  = "";
 

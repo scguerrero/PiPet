@@ -1,5 +1,6 @@
 /*
- * Inventory holds a collection of Item objects.
+ * Inventory holds a collection of Item objects for a single rarity tier.
+ * Used by Lootbox to separate Copper, Silver, and Gold item pools.
  *
  * Author: Sasha C. Guerrero
  */
@@ -15,8 +16,6 @@ public:
     Inventory();
 
     vector<Item> getItems();
-    /*void setItems(vector<Item> items);*/
-
     void addItem(Item item);
     Item grabItemAt(int index);
 

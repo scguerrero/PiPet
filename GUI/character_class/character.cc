@@ -20,6 +20,7 @@ void Character::resizeEvent(QResizeEvent *e) {
     display->setGeometry(0, 0, width(), height());
 }
 
+    //All Sprite Movies for Pet
 void Character::loadMoviesForType(PetType type) {
     unloadMovies();
     auto make = [this](const char *path) {

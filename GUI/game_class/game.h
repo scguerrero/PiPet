@@ -1,5 +1,5 @@
 /*
- * game.h - Top-level game widget.
+ * game.h - Top-level game widget. The Header for 90% of the game.
  * Author(s): Luke Cerwin
  */
 #ifndef GAME_H
@@ -61,8 +61,8 @@ private:
 
     // Bottom bar — Home button only, normal size
     QHBoxLayout *utility_bar;
-    QPushButton *b_save_mode; // top-left on Mode screen
-    QPushButton *b_home;      // bottom bar, all screens except start/create
+    QPushButton *b_save_mode;
+    QPushButton *b_home;
     QWidget     *utilityWidget;
 
     void showUtilityBar(bool show);
@@ -78,7 +78,7 @@ private:
     QTimer *m_inactivityTimer;
     void    resetInactivityTimer();
     QTimer *m_marathonTimer;
-
+// Private slots for the systems buttons
 private slots:
     void open_start();
     void open_create();

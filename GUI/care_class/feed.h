@@ -19,7 +19,7 @@ struct Crumb {
     int     life;
 };
 
-// ── Draggable food icon ───────────────────────────────────────────────────
+// Draggable food icon
 class FoodItem : public QLabel {
     Q_OBJECT
 public:
@@ -40,7 +40,7 @@ private:
     bool   m_dragging = false;
 };
 
-// ── Feed widget ───────────────────────────────────────────────────────────
+// Feed widget
 class Feed : public QWidget
 {
     Q_OBJECT

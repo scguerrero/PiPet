@@ -1,6 +1,7 @@
 /*
- * PiPatterns is a minigame that improves the PiPet's intelligence.
- * The PiPet must memorize a given pattern of tiles and recreate it from memory to earn lootboxes.
+ * PiPatterns is a minigame that trains the PiPet's intelligence.
+ * The player watches a 5-tile sequence light up on a 4x4 matrix, then recreates it from memory.
+ * A perfect round awards a lootbox. Score accumulates across rounds within a session.
  *
  * Author: Sasha C. Guerrero
  */
@@ -18,7 +19,7 @@ public:
     explicit PiPatterns(Player *player, QWidget *parent = nullptr);
 
     Matrix      *matrix;
-    QPushButton *b_back;   // kept public — train.cc connects to openTrainHub()
+    QPushButton *b_back;   // kept public -- train.cc connects to openTrainHub()
 
 signals:
     void gameFinished(int roundScore, int xpEarned, bool perfect);
@@ -40,8 +41,8 @@ private:
     QList<int>  m_pattern;
     int         m_showStep     = 0;
     int         m_playerStep   = 0;
-    int         m_score        = 0;   // cumulative session score (display)
-    int         m_roundScore   = 0;   // current round delta (for gameFinished)
+    int         m_score        = 0;   // cumulative session score (display only)
+    int         m_roundScore   = 0;   // current round delta emitted via gameFinished
     int         m_roundCorrect = 0;
 
     QStackedWidget *m_stack;

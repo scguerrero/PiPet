@@ -28,7 +28,7 @@
 
 enum class Move { Attack, Charge, Defend };
 
-// ── Wood chip particle ────────────────────────────────────────────────────
+// Wood chip particle
 struct WoodParticle {
     QPointF pos;
     QPointF vel;

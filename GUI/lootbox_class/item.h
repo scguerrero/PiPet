@@ -1,5 +1,6 @@
 /*
- * Item represents a collectible reward with a name, flavor text, image, and rarity.
+ * Item represents a collectible reward with a name, flavor text, image path, and rarity tier.
+ * Items belong to an Inventory and are displayed in the Lootbox screen.
  *
  * Author: Sasha C. Guerrero
  */
@@ -30,9 +31,9 @@ public:
 
 private:
     QString m_name;
-    QString m_flavortext;
     QString m_filepath;
-    Rarity m_rarity;
+    QString m_flavortext;
+    Rarity  m_rarity;
 };
 
 #endif // ITEM_H

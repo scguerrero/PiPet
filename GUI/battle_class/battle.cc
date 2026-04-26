@@ -9,11 +9,11 @@
 #include <QFrame>
 #include <QtMath>
 
-// ── Dummy hit-zone in image-space (0-1 normalised).
+//  Dummy hit-zone in image-space (0-1 normalised).
 static constexpr float kDummyNX  = 0.22f;   // normalised centre-x  (left side — dummy)
 static constexpr float kDummyNY  = 0.42f;   // normalised centre-y  (head / upper chest)
 
-// ── Palette of wood-chip colours ─────────────────────────────────────────
+//  Palette of wood-chip colours
 static const QColor kWoodPalette[] = {
     QColor(0x6B, 0x3E, 0x26),   // dark brown
     QColor(0x8B, 0x5E, 0x3C),   // mid brown
@@ -38,7 +38,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
     root->setSpacing(4);
     this->setLayout(root);
 
-    // ── Title ─────────────────────────────────────────────────────────────
+    //  Title
     title = new QLabel("Wentz Dojo", this);
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet(
@@ -47,7 +47,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
         "border-radius: 8px; padding: 4px 12px;");
     root->addWidget(title);
 
-    // ── HP bars ───────────────────────────────────────────────────────────
+    //  HP bars
     hpWidget = new QWidget();
     hpWidget->setAttribute(Qt::WA_TranslucentBackground);
     hpGrid = new QGridLayout();
@@ -91,7 +91,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
     cpuHPLabel->setStyleSheet("color: mistyrose; background: #1b264f; padding: 4px; border-radius: 8px;");
     playerHPLabel->setStyleSheet("color: mistyrose; background: #1b264f; padding: 4px; border-radius: 8px;");
 
-    // ── Result / log labels constructed here
+    //  Result / log labels constructed here
     logLabel = new QLabel("");
     logLabel->setAlignment(Qt::AlignCenter);
     logLabel->setStyleSheet(
@@ -105,7 +105,7 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
         "font-weight: bold; color: mistyrose;"
         "background-color: #0247a7; border-radius: 6px; padding: 4px;");
 
-    // ── Player character sprite
+    //  Player character sprite
     m_character = new Character(this);
     m_character->setFixedSize(160, 160);
     root->addSpacing(110);
@@ -113,12 +113,12 @@ Battle::Battle(QWidget *parent) : QWidget(parent) {
 
     root->addStretch();
 
-    // ── Log + result ────────────────
+    //  Log + result
     root->addWidget(logLabel);
     root->addWidget(resultLabel);
     root->addSpacing(5);
 
-    // ── Action buttons
+    //  Action buttons
     btnRow = new QHBoxLayout();
     btnRow->setSpacing(8);
     btnWidget = new QWidget();

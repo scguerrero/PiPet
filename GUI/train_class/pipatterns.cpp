@@ -1,5 +1,7 @@
 /*
- * PiPatterns is a minigame that improves the PiPet's intelligence.
+ * PiPatterns is a minigame that trains the PiPet's intelligence.
+ * The player watches a 5-tile sequence on a 4x4 matrix and recreates it from memory.
+ * Score is cumulative across rounds. A perfect round awards a lootbox.
  *
  * Author: Sasha C. Guerrero
  */
@@ -50,7 +52,7 @@ PiPatterns::PiPatterns(Player *player, QWidget *parent)
     m_stack = new QStackedWidget();
     topLayout->addWidget(m_stack);
 
-    // ── Page 0: Hub ───────────────────────────────────────────────────────
+    // Page 0: Hub — intro description, difficulty info, and Play button
     QWidget     *hubPage   = new QWidget();
     QVBoxLayout *hubLayout = new QVBoxLayout(hubPage);
     hubLayout->setContentsMargins(24, 24, 24, 24);
@@ -94,7 +96,7 @@ PiPatterns::PiPatterns(Player *player, QWidget *parent)
     hubLayout->addWidget(b_back);
     hubLayout->addStretch();
 
-    // ── Page 1: Matrix ────────────────────────────────────────────────────
+    // Page 1: Matrix — difficulty selector, 4x4 grid, status/score labels, and Start button
     QWidget     *matrixPage   = new QWidget();
     QVBoxLayout *matrixLayout = new QVBoxLayout(matrixPage);
     matrixLayout->setContentsMargins(8, 8, 8, 8);
@@ -153,22 +155,22 @@ PiPatterns::PiPatterns(Player *player, QWidget *parent)
     matrixLayout->addWidget(matrix, 1);
     matrixLayout->addWidget(bottomRow);
 
-    // ── Stack pages ───────────────────────────────────────────────────────
+    // Stack pages
     m_stack->addWidget(hubPage);     // 0
     m_stack->addWidget(matrixPage);  // 1
 
-    // ── Pattern timer ─────────────────────────────────────────────────────
+    // Pattern timer — fires once per tile during the show phase
     m_patternTimer = new QTimer(this);
     m_patternTimer->setInterval(800);
     connect(m_patternTimer, &QTimer::timeout, this, &PiPatterns::showNextPatternTile);
 
-    // ── Tile click connections ────────────────────────────────────────────
+    // Wire each tile's click through its index so onTileClicked knows which was pressed
     for (int i = 0; i < 16; ++i) {
         connect(matrix->elements[i], &QPushButton::clicked,
                 this, [this, i]() { onTileClicked(i); });
     }
 
-    // ── Button connections ────────────────────────────────────────────────
+    // Button connections
     connect(b_play, &QPushButton::clicked, this, [this]() {
         // Reset session score when entering from hub
         m_score = 0;
@@ -196,7 +198,7 @@ PiPatterns::PiPatterns(Player *player, QWidget *parent)
     // b_back wired by train.cc to openTrainHub()
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
+// Helpers
 
 int PiPatterns::pointsPerTile() const {
     switch (m_difficulty) {
@@ -228,7 +230,7 @@ void PiPatterns::updateDiffButtons() {
     m_diffByte->setStyleSheet(   m_difficulty == Difficulty::Byte   ? selectedDiffStyle() : buttonStyle());
 }
 
-// ── Game flow ─────────────────────────────────────────────────────────────
+// Game flow
 
 void PiPatterns::startGame() {
     m_roundScore   = 0;
@@ -248,6 +250,8 @@ void PiPatterns::startGame() {
     m_patternTimer->start();
 }
 
+// Steps through the pattern one tile per timer tick, un-highlighting the previous
+// tile before lighting the next. Hands control to the player after all 5 are shown.
 void PiPatterns::showNextPatternTile() {
     // Un-highlight the tile shown last tick
     if (m_showStep > 0)
@@ -287,6 +291,7 @@ void PiPatterns::onTileClicked(int index) {
         QTimer::singleShot(400, this, &PiPatterns::finishRound);
 }
 
+// Evaluates the completed round, updates stats, and re-enables controls for another round.
 void PiPatterns::finishRound() {
     m_state = GameState::Result;
 

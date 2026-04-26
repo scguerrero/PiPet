@@ -84,9 +84,7 @@ Game::Game(QWidget *parent) : QWidget{parent} {
     m_marathonTimer->start();
 
     //  Connections
-    // Start button routing is wired in loadGame() once we know whether a
-    // save file exists — connecting here would always fire open_create()
-    // because new_game hasn't been resolved yet.
+    // Start button routing is wired in loadGame() once we know whether a save file exists — connecting here would always fire open_create()
     connect(start->b_start, SIGNAL(clicked()), this, SLOT(open_create()));
 
     connect(b_save_mode, SIGNAL(clicked()), this, SLOT(saveGame()));
@@ -276,7 +274,6 @@ void Game::open_sleep() {
 void Game::open_train() {
     showHomeOnly(true);
     b_save_mode->hide();
-    train->refreshMindReader();
     pages->setCurrentIndex(6);
 }
 

@@ -11,6 +11,8 @@
 #include <QEvent>
 #include <QTimer>
 
+// Builds a row of "?" mystery slots inside a rarity group box.
+// Slots are revealed individually when the player wins that item.
 static void populateGroupSlots(QGroupBox *group, Inventory &inv, QList<QLabel*> &out) {
     auto *row = new QHBoxLayout(group);
     row->setAlignment(Qt::AlignCenter);
@@ -59,7 +61,7 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     m_silverGroup->setStyleSheet(groupBoxBase + "QGroupBox::title { color: #C0C0C0; }");
     m_goldGroup->setStyleSheet(groupBoxBase   + "QGroupBox::title { color: #FFD700; }");
 
-    // Populate item pools
+    // Populate item pools by rarity tier
     m_copper.addItem(Item("Hourglass Almost Empty",      ":/images/Sprites/pets/icons/hourglass.png",  "The sand runs down at exactly the rate you expect it to. That's the terrifying part.",                                                                                                 Item::Copper));
     m_copper.addItem(Item("Noise-Cancelling Headphones", ":/images/Sprites/pets/icons/headphones.png", "Blocks out everything except your own thoughts. Whether that's a feature or a bug depends entirely on your thoughts.",                                                                Item::Copper));
     m_copper.addItem(Item("Charger (Vehicle)",           ":/images/Sprites/pets/icons/charger.png",    "Zero to sixty in a time that depends on whether you meant the car or the cable. Both will leave you waiting longer than expected.",                                                   Item::Copper));
@@ -147,6 +149,8 @@ Lootbox::Lootbox(Player *player, QWidget *parent) : QWidget(parent), player(play
     setLayout(m_layout);
 }
 
+// Rolls a weighted random tier (70% Copper, 20% Silver, 10% Gold) and picks
+// a random item from that pool. Stores the result for onOpen() to reveal.
 int Lootbox::computeReward() {
     m_rewardItems.clear();
     m_lastWonIndex = -1;
@@ -171,6 +175,8 @@ int Lootbox::computeReward() {
     return static_cast<int>(m_rewardItems.size());
 }
 
+// Called externally (e.g. from PiPatterns) when the player earns a lootbox.
+// Increments the pending count and enables the open button.
 void Lootbox::awardLootbox() {
     m_pendingLootboxes++;
     player->pendingLootboxes = m_pendingLootboxes;
@@ -183,6 +189,8 @@ void Lootbox::awardLootbox() {
         : "Open!");
 }
 
+// On load, reveals any previously won items from the player's saved list
+// and restores pending lootbox count so the open button state is correct.
 void Lootbox::restoreFromPlayer() {
     auto revealMatching = [&](QList<QLabel*> &labels, Inventory &inv) {
         auto items = inv.getItems();
@@ -222,6 +230,8 @@ void Lootbox::paintEvent(QPaintEvent *e) {
         p.drawPixmap(0, 0, width(), height(), m_bg);
 }
 
+// Opens one pending lootbox, rolls a reward, and reveals the result.
+// Duplicate wins show a toast but still record the open.
 void Lootbox::onOpen() {
     if (m_pendingLootboxes <= 0) return;
     if (computeReward() == 0) return;
@@ -315,6 +325,8 @@ void Lootbox::onOpen() {
     }
 }
 
+// Intercepts clicks on revealed item slots and shows a detail dialog
+// with the item's icon, name, rarity color, and flavor text.
 bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() != QEvent::MouseButtonPress)
         return QWidget::eventFilter(obj, event);

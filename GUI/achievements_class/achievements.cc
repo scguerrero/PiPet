@@ -40,7 +40,7 @@ QString Achievements::unlock(const QString &key) {
     return QString(); // already had it or not found
 }
 
-//  Check methods
+//  Check methods for actual achievements
 
 QList<QString> Achievements::onBattleWon(int totalWins) {
     QList<QString> u;

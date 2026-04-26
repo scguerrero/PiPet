@@ -22,7 +22,7 @@ class Achievements
 public:
     Achievements();
 
-    // ── Check methods — call these after relevant actions ─────────────────
+    // Check methods — call these after relevant actions
     // Returns list of newly unlocked achievement titles (empty if none)
     QList<QString> onBattleWon(int totalWins);
     QList<QString> onFedBone(const QString &petType);
@@ -35,10 +35,10 @@ public:
     QList<QString> onDaysOld(int days);
     QList<QString> onMarathonSession();
 
-    // ── Gear screen display ───────────────────────────────────────────────
+    // Gear screen display
     const QList<Achievement> &all() const { return m_achievements; }
 
-    // ── JSON ──────────────────────────────────────────────────────────────
+    // JSON Save File
     QJsonObject toJson()  const;
     void fromJson(const QJsonObject &json);
 

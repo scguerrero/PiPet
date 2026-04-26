@@ -14,7 +14,7 @@
 #include "../../Player/Player.h"
 #include "../character_class/character.h"
 
-// ── Draggable Item ────────────────────────────────────────────────────────
+// Draggable Item
 class GroomItem : public QLabel {
     Q_OBJECT
 public:
@@ -34,7 +34,7 @@ private:
     bool   m_dragging = false;
 };
 
-// ── Groom widget ──────────────────────────────────────────────────────────
+// Groom widget
 class Groom : public QWidget
 {
     Q_OBJECT

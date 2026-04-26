@@ -20,16 +20,6 @@ GameCanvas::GameCanvas(int width, int height, QWidget* parent)
     setFixedSize(m_cw, m_ch);
     setCursor(Qt::PointingHandCursor);
     setFocusPolicy(Qt::NoFocus);
-
-    m_bgCache = QPixmap(m_cw, m_ch);
-    QPainter bgP(&m_bgCache);
-    QLinearGradient bg(0, 0, 0, m_ch);
-    bg.setColorAt(0.0,  QColor("#00C8FF"));
-    bg.setColorAt(0.4,  QColor("#006DFF"));
-    bg.setColorAt(0.75, QColor("#1A1F7A"));
-    bg.setColorAt(1.0,  QColor("#0A0D33"));
-    bgP.fillRect(QRect(0, 0, m_cw, m_ch), bg);
-    bgP.fillRect(QRect(0, 0, m_cw, m_ch), QColor(0, 0, 40, 70));
 }
 
 void GameCanvas::syncState(float petY, bool jumping, int frame, float speed,
@@ -68,7 +58,15 @@ void GameCanvas::paintEvent(QPaintEvent*)
 
 void GameCanvas::drawBackground(QPainter& p) const
 {
-    p.drawPixmap(0, 0, m_bgCache);
+    QLinearGradient bg(0, 0, 0, m_ch);
+    bg.setColorAt(0.0,  QColor("#00C8FF"));
+    bg.setColorAt(0.4,  QColor("#006DFF"));
+    bg.setColorAt(0.75, QColor("#1A1F7A"));
+    bg.setColorAt(1.0,  QColor("#0A0D33"));
+    p.fillRect(rect(), bg);
+
+    QColor vignette(0, 0, 40, 70);
+    p.fillRect(rect(), vignette);
 }
 
 void GameCanvas::drawTrack(QPainter& p) const
@@ -219,6 +217,8 @@ piDash::piDash(PiPet*  pet,
             border: 2px inset #FBA8FF;
             border-radius: 10px;
             padding: 4px;
+            font: bold;
+            color: mistyrose;
         }
         QPushButton:pressed {
             background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
@@ -228,7 +228,7 @@ piDash::piDash(PiPet*  pet,
 
     title = new QLabel("PiDash", this);
     title->setAlignment(Qt::AlignCenter);
-    title->setStyleSheet("background-color: #0d1b4b; margin-bottom: 4px;");
+    title->setStyleSheet("font-size: 22px; font-weight: bold; margin-bottom: 4px;");
 
     topLayout->addWidget(btnBack);
     topLayout->addWidget(title, 1);
@@ -245,7 +245,7 @@ piDash::piDash(PiPet*  pet,
     auto makeHUDLabel = [&](const QString& text) {
         auto* l = new QLabel(text, this);
         l->setAlignment(Qt::AlignCenter);
-        l->setStyleSheet("background-color: #0d1b4b;");
+        l->setStyleSheet("font-weight: bold; font-size: 13px;");
         return l;
     };
     scoreLabel = makeHUDLabel("Score: 0");
@@ -305,7 +305,7 @@ piDash::piDash(PiPet*  pet,
     resultLabel->setAlignment(Qt::AlignCenter);
     resultLabel->setWordWrap(true);
     resultLabel->setStyleSheet(
-        "QLabel { background: transparent; }");
+        "QLabel { color: #ffd700; font-size: 15px; font-weight: bold; background: transparent; }");
 
     resLayout->addWidget(resultLabel);
     resultPanel->hide();
@@ -316,10 +316,12 @@ piDash::piDash(PiPet*  pet,
     statusLabel = new QLabel("Click the canvas or press Space to start!", this);
     statusLabel->setAlignment(Qt::AlignCenter);
     statusLabel->setWordWrap(true);
+    statusLabel->setStyleSheet("font-size: 14px; font-weight: bold;");
     root->addWidget(statusLabel);
 
     logLabel = new QLabel("", this);
     logLabel->setAlignment(Qt::AlignCenter);
+    logLabel->setStyleSheet("font-size: 12px; font-style: italic;");
     root->addWidget(logLabel);
 
     root->addStretch();
@@ -338,6 +340,8 @@ piDash::piDash(PiPet*  pet,
                 border: 2px inset #FBA8FF;
                 border-radius: 10px;
                 padding: 6px;
+                font: bold 14px;
+                color: mistyrose;
             }
             QPushButton:pressed {
                 background-color: qlineargradient(x1:0,y1:0,x2:1,y2:1,
@@ -418,8 +422,6 @@ void piDash::applyHatSprite()
 void piDash::positionCharacterWidget()
 {
     if (!m_character) return;
-    if (m_petY == m_lastCharY) return;
-    m_lastCharY = m_petY;
     int x = static_cast<int>(PET_X) - SPRITE_SIZE / 2;
     int y = static_cast<int>(m_petY) - SPRITE_SIZE;
     y = qMax(y, 0);
@@ -705,17 +707,12 @@ void piDash::endGame()
     else if (m_score > 600)  rating = "Your pet is happy!";
     else                     rating = "Your pet believes in you!";
 
-    QString threshold = (m_score <= 10 || m_xp == 0)
-        ? "<br><span style='color:#AFA9EC;font-size:12px;'>Score over 10 to earn a lootbox</span>"
-        : "";
-
     resultLabel->setText(
         QString("<span style='color:#E24B4A;font-size:18px;'>GAME OVER</span>"
                 "<br><br>%1<br><br>"
-                "Score: %2 &nbsp;&nbsp; XP Earned: %3"
-                "%4<br>"
+                "Score: %2 &nbsp;&nbsp; XP Earned: %3<br>"
                 "<span style='color:#AFA9EC;font-size:12px;'>Press New Game to retry</span>")
-            .arg(rating).arg(m_score).arg(m_xp).arg(threshold));
+            .arg(rating).arg(m_score).arg(m_xp));
 
     resultPanel->adjustSize();
     resultPanel->move((m_canvasW - resultPanel->width())  / 2,

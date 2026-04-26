@@ -1,5 +1,7 @@
 /*
- * Gear mode — stage screen where the player dresses their PiPet with hats.
+ * gear.h - Theater screen where the player dresses their PiPet with unlocked hats.
+ * HatCard is a single selectable item in the horizontal hat strip.
+ * Gear manages the full screen: character display, hat strip, and particle burst on equip.
  *
  * Author(s): Luke Cerwin
  */
@@ -13,7 +15,7 @@
 #include "../character_class/character.h"
 #include "../../Player/Player.h"
 
-// ── Hat strip item ────────────────────────────────────────────────────────
+// Single hat option in the scrollable strip at the bottom of the screen.
 class HatCard : public QLabel {
     Q_OBJECT
 public:
@@ -33,14 +35,14 @@ protected:
 
 private:
     QString m_key;
-    QString m_iconPath;     
+    QString m_iconPath;
     bool    m_selected = false;
-    bool    m_locked   = false;  
-    void    loadIcon();          
+    bool    m_locked   = false;
+    void    loadIcon();
     void    applyStyle();
 };
 
-// ── Main Gear widget ──────────────────────────────────────────────────────
+// Main Theater widget showing the dressed pet and the scrollable hat strip.
 class Gear : public QWidget {
     Q_OBJECT
 public:
@@ -48,20 +50,21 @@ public:
                   Character::PetType petType,
                   QWidget *parent = nullptr);
 
-    // Call this whenever the player's pet type or stage changes externally
+    // Call whenever the player's pet type or stage changes externally.
     void refresh(Character::PetType petType);
 
-    // Call after loadGame() to restore a previously equipped hat without a particle burst
+    // Call after loadGame() to restore a previously equipped hat without a particle burst.
     void restoreHat(const QString &hatKey);
     void unlockHat(const QString &hatKey);
 
 signals:
-    void hatEquipped(const QString &hatKey); // emitted after the particle burst
+    void hatEquipped(const QString &hatKey);
 
 protected:
     void resizeEvent(QResizeEvent *e) override;
     void paintEvent (QPaintEvent  *e) override;
     void showEvent  (QShowEvent   *e) override;
+
 private slots:
     void onHatSelected(const QString &hatKey);
 
@@ -73,11 +76,12 @@ private:
     QLabel  *infoHelper;
     QTimer  *m_infoTimer;
     QPixmap m_bg;
+
 public:
     QPushButton *b_achievements;
     QPushButton *b_lootboxes;
-private:
 
+private:
     Character   *m_character;
 
     QScrollArea *m_scrollArea;
@@ -85,21 +89,18 @@ private:
     QHBoxLayout *m_stripLayout;
     QList<HatCard *> m_hatCards;
 
-    // Particle overlay (full-window transparent label, shown briefly)
+    // Particle overlay shown briefly after a hat is equipped
     QLabel  *m_particleOverlay;
     QTimer  *m_particleTimer;
     QList<QRect>  m_particles;
     QList<QColor> m_particleColors;
     int     m_particleTick = 0;
 
-    // ── Geometry helpers ──────────────────────────────────────────────────
-    // Pedestal rect (matches the blue-square region in the reference image)
     QRect pedestalCharRect() const;
-    // Hat strip rect  (matches the yellow-line region)
     QRect stripRect()        const;
 
     void layoutWidgets();
-    void loadHatGif(const QString &hatKey); // sets Character GIF
+    void loadHatGif(const QString &hatKey);
     void spawnParticles();
     void tickParticles();
     QString gifPath(const QString &hatKey) const;

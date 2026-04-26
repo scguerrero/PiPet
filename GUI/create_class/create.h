@@ -1,6 +1,8 @@
 /*
  * create.h - Pet creation screen.
- * Gallery shows animated GIF, no blue box, character_screen.jpg background.
+ * The player browses an animated gallery of pet types, picks a name from the list,
+ * and confirms to start the game. The Done button stays disabled until both are chosen.
+ *
  * Author(s): Luke Cerwin
  */
 #ifndef CREATE_H

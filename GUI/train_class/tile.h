@@ -1,5 +1,6 @@
 /*
- * Tile is a matrix element that makes up the tile-matrix for PiPatterns.
+ * Tile is a single button cell in the PiPatterns 4x4 matrix.
+ * It can be highlighted to show the pattern and flashes green or red on player input.
  *
  * Author: Sasha C. Guerrero
  */

@@ -1,5 +1,5 @@
 /*
- * Item represents a collectible reward with a name, flavor text, image, and rarity.
+ * Item represents a collectible reward with a name, flavor text, image path, and rarity tier.
  *
  * Author: Sasha C. Guerrero
  */

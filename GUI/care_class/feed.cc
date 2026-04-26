@@ -1,5 +1,8 @@
 /*
- * feed.cc - Feed screen drag and drop, Includes hat inheritence and stat logic.
+ * feed.cc - Feed screen with drag-and-drop food and crumb particle effects.
+ * Handles touch and mouse drag for food icons, hit detection against the pet sprite,
+ * and hat-aware character sync via refreshCharacter().
+ *
  * Author(s): Luke Cerwin
  */
 #include "feed.h"

@@ -47,6 +47,7 @@ private:
 
     //Widgets
     Character   *m_character;
+    QMovie      *m_hatMovie = nullptr;
 
     // Info panel
     QGroupBox *m_infoBox;

@@ -6,8 +6,6 @@
 #include <QPainter>
 
 Start::Start(QWidget *parent) : QWidget{parent} {
-    m_bg.load(":/images/Backgrounds/title_screen.png");
-
     layout  = new QVBoxLayout();
     b_start = new QPushButton("START");
 
@@ -33,6 +31,17 @@ Start::Start(QWidget *parent) : QWidget{parent} {
                 stop:0 #4A71DB, stop:1 #4850DB);
         }
     )");
+}
+
+void Start::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    if (m_bg.isNull())
+        m_bg.load(":/images/Backgrounds/title_screen.png");
+}
+
+void Start::hideEvent(QHideEvent *event) {
+    QWidget::hideEvent(event);
+    m_bg = QPixmap(); // free decoded image — title screen is never shown again
 }
 
 void Start::paintEvent(QPaintEvent *event) {

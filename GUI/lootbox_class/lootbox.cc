@@ -190,7 +190,7 @@ void Lootbox::restoreFromPlayer() {
             if (player->wonLootboxItems.contains(items[i].getName())) {
                 QPixmap px(items[i].getFilepath());
                 if (!px.isNull())
-                    labels[i]->setPixmap(px.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                    labels[i]->setPixmap(px.scaled(36, 36, Qt::KeepAspectRatio, Qt::FastTransformation));
                 labels[i]->setToolTip(items[i].getName());
                 labels[i]->setStyleSheet("QLabel { border: none; background: transparent; }");
                 labels[i]->setProperty("item_name",   items[i].getName());
@@ -232,7 +232,7 @@ void Lootbox::onOpen() {
     if (px.isNull())
         m_resultIcon->clear();
     else
-        m_resultIcon->setPixmap(px.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        m_resultIcon->setPixmap(px.scaled(64, 64, Qt::KeepAspectRatio, Qt::FastTransformation));
 
     QString rarityColor;
     switch (won.getRarity()) {
@@ -291,7 +291,7 @@ void Lootbox::onOpen() {
         QLabel *slot = (*winningLabels)[m_lastWonIndex];
         QPixmap spx(won.getFilepath());
         if (!spx.isNull())
-            slot->setPixmap(spx.scaled(36, 36, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            slot->setPixmap(spx.scaled(36, 36, Qt::KeepAspectRatio, Qt::FastTransformation));
         slot->setToolTip(won.getName());
         slot->setStyleSheet("QLabel { border: none; background: transparent; }");
         slot->setProperty("item_name",   won.getName());
@@ -351,7 +351,7 @@ bool Lootbox::eventFilter(QObject *obj, QEvent *event) {
     icon->setAlignment(Qt::AlignCenter);
     QPixmap px(path);
     if (!px.isNull())
-        icon->setPixmap(px.scaled(72, 72, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        icon->setPixmap(px.scaled(72, 72, Qt::KeepAspectRatio, Qt::FastTransformation));
     layout->addWidget(icon);
 
     QLabel *nameLabel = new QLabel(name, &dlg);

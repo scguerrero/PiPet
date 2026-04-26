@@ -41,7 +41,11 @@ private:
     Character *character;
     Character::PetType petType = Character::DragonDog;
 
-    QPixmap m_bg, m_kitchenPx, m_bathroomPx, m_bedroomPx;
+    QPixmap m_bg;
+    QPixmap m_kitchenPx, m_bathroomPx, m_bedroomPx;
+    // Pre-scaled to exact bubble size — recomputed only on resize.
+    QPixmap m_kitchenBubble, m_bathroomBubble, m_bedroomBubble;
+    QSize   m_bubbleSize;
 
     QLabel      *petNameLabel, *angerMark, *hungerHintLabel;
     QPixmap      m_angerPx;

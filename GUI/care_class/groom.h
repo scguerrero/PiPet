@@ -67,6 +67,7 @@ private:
     QLabel  *infoHelper;
     QTimer  *m_infoTimer;
     QGroupBox  *actionsBox;
+    QMovie     *m_hatMovie  = nullptr;
     GroomItem  *activeTool = nullptr;
     bool        topDone    = false;
     bool        bottomDone = false;

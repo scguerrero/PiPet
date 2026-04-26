@@ -30,7 +30,7 @@ void HatCard::loadIcon() {
     QImage img(m_iconPath);
     if (!img.isNull()) {
         QPixmap px = QPixmap::fromImage(
-            img.scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            img.scaled(80, 80, Qt::KeepAspectRatio, Qt::FastTransformation));
         setPixmap(px);
         setText("");
     } else {

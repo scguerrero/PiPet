@@ -35,12 +35,12 @@ private:
     PiPet*  m_pet;
     Player* m_player;
 
-    // QStackedWidget contains TrainHub, PiPatterns, PiDash, and mindReader
+    // QStackedWidget contains TrainHub plus minigames created on first open.
     QStackedWidget *stack;
     QWidget    *trainHub;
-    PiPatterns *pipatterns;             // Mini-game 1
-    mindReader *m_mindReader = nullptr; // Mini-game 3 (lazy — created on first open)
-    piDash *m_trackRush = nullptr; // Mini-game 2
+    PiPatterns *pipatterns    = nullptr; // Mini-game 1 (lazy)
+    piDash     *m_trackRush   = nullptr; // Mini-game 2 (lazy)
+    mindReader *m_mindReader  = nullptr; // Mini-game 3 (lazy)
 
     // TrainHub widgets ----------------------------------------------
     QVBoxLayout *layout;

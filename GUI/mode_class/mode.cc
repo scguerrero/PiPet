@@ -150,6 +150,21 @@ void Mode::layoutWidgets() {
     groomBubble->setGeometry(kMargin*2 + bubbleW,   bubbleY, bubbleW, kBubbleH);
     sleepBubble->setGeometry(kMargin*3 + bubbleW*2, bubbleY, bubbleW, kBubbleH);
 
+    QSize newBubbleSize(bubbleW, kBubbleH);
+    if (bubbleW > 0 && newBubbleSize != m_bubbleSize) {
+        m_bubbleSize = newBubbleSize;
+        auto scaleCrop = [&](const QPixmap &src) -> QPixmap {
+            QPixmap s = src.scaled(m_bubbleSize, Qt::KeepAspectRatioByExpanding,
+                                   Qt::FastTransformation);
+            int ox = (s.width()  - m_bubbleSize.width())  / 2;
+            int oy = (s.height() - m_bubbleSize.height()) / 2;
+            return s.copy(ox, oy, m_bubbleSize.width(), m_bubbleSize.height());
+        };
+        m_kitchenBubble  = scaleCrop(m_kitchenPx);
+        m_bathroomBubble = scaleCrop(m_bathroomPx);
+        m_bedroomBubble  = scaleCrop(m_bedroomPx);
+    }
+
     int btnW = (w - kMargin*4) / 3;
     b_train->setGeometry (kMargin,            btnY, btnW, kBtnH);
     b_battle->setGeometry(kMargin*2 + btnW,   btnY, btnW, kBtnH);
@@ -160,9 +175,9 @@ void Mode::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
     QPainter p(this);
     if (!m_bg.isNull()) p.drawPixmap(0, 0, width(), height(), m_bg);
-    drawBubble(p, feedBubble->geometry(),  m_kitchenPx,  "Feed",  true);
-    drawBubble(p, groomBubble->geometry(), m_bathroomPx, "Groom", true);
-    drawBubble(p, sleepBubble->geometry(), m_bedroomPx,  "Sleep", true);
+    drawBubble(p, feedBubble->geometry(),  m_kitchenBubble,  "Feed",  true);
+    drawBubble(p, groomBubble->geometry(), m_bathroomBubble, "Groom", true);
+    drawBubble(p, sleepBubble->geometry(), m_bedroomBubble,  "Sleep", true);
 }
 
 void Mode::drawBubble(QPainter &p, QRect rect,
@@ -173,13 +188,8 @@ void Mode::drawBubble(QPainter &p, QRect rect,
     QPainterPath path;
     path.addRoundedRect(rect, 12, 12);
     p.setClipPath(path);
-    if (!bg.isNull()) {
-        QPixmap scaled = bg.scaled(rect.size(), Qt::KeepAspectRatioByExpanding,
-                                   Qt::SmoothTransformation);
-        int ox = (scaled.width()  - rect.width())  / 2;
-        int oy = (scaled.height() - rect.height()) / 2;
-        p.drawPixmap(rect, scaled, QRect(ox, oy, rect.width(), rect.height()));
-    }
+    if (!bg.isNull())
+        p.drawPixmap(rect, bg);
     if (dimmed) p.fillPath(path, QColor(0, 0, 0, 130));
     p.restore();
     p.setPen(QPen(QColor(0xFB, 0xA8, 0xFF), 2));

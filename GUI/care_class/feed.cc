@@ -17,7 +17,7 @@ FoodItem::FoodItem(const QString &iconPath, const QString &name,
 {
     QPixmap px(iconPath);
     if (!px.isNull())
-        setPixmap(px.scaled(56, 56, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setPixmap(px.scaled(56, 56, Qt::KeepAspectRatio, Qt::FastTransformation));
     else
         setText(name);
     setFixedSize(64, 64);
@@ -279,6 +279,9 @@ void Feed::applyHungerAction(int boost, const QString &message) {
 // hat (if any) is always visible on the character sprite.
 
 void Feed::refreshCharacter() {
+    delete m_hatMovie;
+    m_hatMovie = nullptr;
+
     QString hat = player->getPet().hat();
     if (hat.isEmpty()) {
         character->syncWithPlayer(*player, petType);
@@ -296,13 +299,14 @@ void Feed::refreshCharacter() {
     QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
                         .arg(folder, prefix, infix, hat);
 
-    QMovie *movie = new QMovie(path, QByteArray(), character);
+    QMovie *movie = new QMovie(path, QByteArray(), this);
     if (movie->isValid()) {
         QLabel *disp = character->findChild<QLabel *>();
         if (disp) {
             if (disp->movie()) disp->movie()->stop();
             disp->setMovie(movie);
             movie->start();
+            m_hatMovie = movie;
             return;
         }
     }

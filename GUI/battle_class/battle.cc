@@ -172,6 +172,9 @@ void Battle::setPlayerInfo(Player *player, Character::PetType petType) {
     m_petType = petType;
     if (!m_player) return;
 
+    delete m_hatMovie;
+    m_hatMovie = nullptr;
+
     QString hat = m_player->getPet().hat();
     if (hat.isEmpty()) {
         m_character->syncWithPlayer(*m_player, m_petType);
@@ -189,13 +192,14 @@ void Battle::setPlayerInfo(Player *player, Character::PetType petType) {
     QString path  = QString(":/images/Sprites/pets/%1/%2_%3%4.gif")
                         .arg(folder, prefix, infix, hat);
 
-    QMovie *movie = new QMovie(path, QByteArray(), m_character);
+    QMovie *movie = new QMovie(path, QByteArray(), this);
     if (movie->isValid()) {
         QLabel *disp = m_character->findChild<QLabel *>();
         if (disp) {
             if (disp->movie()) disp->movie()->stop();
             disp->setMovie(movie);
             movie->start();
+            m_hatMovie = movie;
             return;
         }
     }

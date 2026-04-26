@@ -57,7 +57,8 @@ private:
 
     QLabel *sleepDisplay;
 
-    int m_bedTimeStoryCount = 0; // persists for session, Bookworm needs 10
+    QMovie *m_hatMovie          = nullptr;
+    int     m_bedTimeStoryCount = 0;
 
     void applySleepAction(int boost, const QString &message);
 };

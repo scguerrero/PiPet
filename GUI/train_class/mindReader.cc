@@ -128,17 +128,21 @@ void mindReader::resizeEvent(QResizeEvent *e)
 
     // Character
     int charX = (w - 200) / 2;
-    m_character->setGeometry(charX, 220, 200, 200);
+    m_character->setGeometry(charX, 180, 200, 200);
 
-    // Bottom cluster
+    // Bottom cluster — taller labels so text never gets clipped
     int bottomEdge = h - 8;
-    int feedbackY  = bottomEdge - 44;
-    int btnY       = feedbackY  - 52 - 6;
-    int thinkingY  = btnY       - 44 - 6;
+    int feedbackH  = 56;
+    int btnH       = 52;
+    int thinkingH  = 56;
 
-    m_feedbackLabel->setGeometry(8, feedbackY, w - 16, 44);
-    m_btnRow->setGeometry(8, btnY, w - 16, 52);
-    m_thinkingLabel->setGeometry(8, thinkingY, w - 16, 44);
+    int feedbackY  = bottomEdge - feedbackH;
+    int btnY       = feedbackY  - btnH      - 6;
+    int thinkingY  = btnY       - thinkingH - 6;
+
+    m_feedbackLabel->setGeometry(8, feedbackY, w - 16, feedbackH);
+    m_btnRow->setGeometry(8, btnY, w - 16, btnH);
+    m_thinkingLabel->setGeometry(8, thinkingY, w - 16, thinkingH);
     int resultTop = 200;   // charY + charH + small gap
     m_resultPanel->setGeometry(8, resultTop, w - 16, bottomEdge - resultTop);
 }
